@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "133803780128",
+    "project_id": "huma-traders",
+    "storage_bucket": "huma-traders.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133803780128:android:4ace1422a813df4ea2f445",
+        "android_client_info": {
+          "package_name": "com.humatraders.pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvw8vGas0n41BbvWfM8_zFe0MaOVe0Jk4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
