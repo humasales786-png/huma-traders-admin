@@ -1,123 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>Huma Traders Admin</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & Babel CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Huma Traders - Admin Store Management</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#065f46">
 
-    <script type="text/babel">
-      const { useState } = React;
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-      function App() {
-        const [activeTab, setActiveTab] = useState('pos');
-        const [items] = useState([
-          { id: 1, name: 'Toor Dal (Loose)', price: 135, unit: 'kg', stock: 250 },
-          { id: 2, name: 'Sugar (Mandi Special)', price: 42, unit: 'kg', stock: 500 },
-          { id: 3, name: 'Groundnut Oil (15L)', price: 2450, unit: 'tin', stock: 40 },
-          { id: 4, name: 'Wheat Lokwan', price: 38, unit: 'kg', stock: 1200 }
-        ]);
-        const [cart, setCart] = useState([]);
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        const addToCart = (item) => {
-          const existing = cart.find(c => c.id === item.id);
-          if (existing) {
-            setCart(cart.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c));
-          } else {
-            setCart([...cart, { ...item, qty: 1 }]);
-          }
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-100 antialiased selection:bg-emerald-200">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, createContext, useContext } = React;
+
+    const Icon = ({ name, className = "w-4 h-4", ...props }) => {
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }, [name]);
+      return <i data-lucide={name} className={className} {...props}></i>;
+    };
+
+    const INITIAL_CATEGORIES = [
+      { id: 'cat-1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400', subcategories: ['Wheat Atta', 'Maida', 'Besan', 'Suji', 'Rice Flour'] },
+      { id: 'cat-2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400', subcategories: ['Basmati Rice', 'Kolam Rice', 'Sona Masoori', 'Loose Rice'] },
+      { id: 'cat-3', name: 'Dal & Pulses', icon: '🫘', active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400', subcategories: ['Toor Dal', 'Moong Dal', 'Chana Dal', 'Loose Pulses'] },
+      { id: 'cat-4', name: 'Oil & Ghee', icon: '🪔', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400', subcategories: ['Cow Ghee', 'Sunflower Oil', 'Groundnut Oil', 'Mustard Oil'] },
+      { id: 'cat-5', name: 'Spices & Masala', icon: '🌶️', active: true, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400', subcategories: ['Whole Spices', 'Powdered Spices', 'Blended Masalas'] },
+      { id: 'cat-6', name: 'Dry Fruits', icon: '🥜', active: true, image: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=400', subcategories: ['Badam', 'Kaju', 'Kishmish', 'Dates'] }
+    ];
+
+    const INITIAL_PRODUCTS = [
+      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', category: 'Atta & Flour', brand: 'Aashirvaad', stock: 45, threshold: 10, mrp: 380, mandiPrice: 310, sellingPrice: 319, unit: '10 kg', isLoose: false, active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P102', name: 'Premium Solapur Kolam Rice', hindiName: 'कोलम तांदूळ (सुट्टा)', category: 'Rice & Grains', brand: 'Huma Direct', stock: 520, threshold: 100, mrp: 75, mandiPrice: 55, sellingPrice: 62, unit: '1 kg', isLoose: true, loosePresets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P103', name: 'Yellow Moong Dal', hindiName: 'मूंग दाल', category: 'Dal & Pulses', brand: 'Huma Direct', stock: 180, threshold: 25, mrp: 140, mandiPrice: 105, sellingPrice: 120, unit: '1 kg', isLoose: true, loosePresets: ['100g', '250g', '500g', '1 kg', '2 kg'], active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P104', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', category: 'Oil & Ghee', brand: 'Fortune', stock: 12, threshold: 15, mrp: 175, mandiPrice: 130, sellingPrice: 139, unit: '1 L', isLoose: false, active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+    ];
+
+    const INITIAL_KHATA = [
+      { id: 'K-1', customerName: 'Ramesh Hotel', mobile: '9822099999', balanceDue: 4200, lastUpdated: 'Today' },
+      { id: 'K-2', customerName: 'Suhail Shaikh', mobile: '9822012345', balanceDue: 850, lastUpdated: 'Yesterday' }
+    ];
+
+    const INITIAL_ORDERS = [
+      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', mobile: '9822012345', address: 'Saat Rasta, Solapur Central', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod', items: [{ name: 'Aashirvaad Atta 10kg', qty: 1, price: 319 }] },
+      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', mobile: '9423156789', address: 'Old Employment Chowk, Solapur', amount: 680, status: 'Packed', agent: 'Rahul Shinde', items: [{ name: 'Solapur Kolam Rice', qty: 5, price: 62 }] }
+    ];
+
+    const AdminContext = createContext();
+
+    const AdminProvider = ({ children }) => {
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [products, setProducts] = useState(INITIAL_PRODUCTS);
+      const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+      const [khataList, setKhataList] = useState(INITIAL_KHATA);
+      const [orders, setOrders] = useState(INITIAL_ORDERS);
+      const [posCart, setPosCart] = useState([]);
+      const [selectedOrderForThermal, setSelectedOrderForThermal] = useState(null);
+      const [toastMessage, setToastMessage] = useState(null);
+      
+      const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+      const [editingProduct, setEditingProduct] = useState(null);
+      const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+      const showNotification = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 3000);
+      };
+
+      const saveProduct = (productData) => {
+        if (editingProduct) {
+          setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...productData, id: editingProduct.id } : p));
+          showNotification('Product updated!');
+        } else {
+          const newProduct = { ...productData, id: `HT-P${Math.floor(100 + Math.random() * 900)}` };
+          setProducts(prev => [newProduct, ...prev]);
+          showNotification('Product added!');
+        }
+        setIsProductModalOpen(false);
+        setEditingProduct(null);
+      };
+
+      const saveCategory = (catData) => {
+        const newCat = {
+          ...catData,
+          id: `cat-${Math.floor(10 + Math.random() * 90)}`,
+          active: true,
+          subcategories: typeof catData.subcategories === 'string' ? catData.subcategories.split(',').map(s => s.trim()) : catData.subcategories || []
         };
+        setCategories(prev => [...prev, newCat]);
+        setIsCategoryModalOpen(false);
+        showNotification('Category added!');
+      };
 
-        const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const toggleCategoryActive = (catId) => {
+        setCategories(prev => prev.map(c => c.id === catId ? { ...c, active: !c.active } : c));
+        showNotification('Category status updated!');
+      };
 
-        return (
-          <div className="min-h-screen bg-gray-100 text-gray-800 font-sans">
-            <header className="bg-emerald-700 text-white p-4 shadow-md flex justify-between items-center">
-              <div>
-                <h1 className="text-xl font-bold">HUMA TRADERS - Solapur</h1>
-                <p className="text-xs text-emerald-200">Wholesale Grocery & POS Admin System</p>
+      const deleteProduct = (productId) => {
+        setProducts(prev => prev.filter(p => p.id !== productId));
+        showNotification('Product deleted.');
+      };
+
+      const updateOrderStatus = (orderId, newStatus) => {
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+        showNotification(`Order status: ${newStatus}`);
+      };
+
+      const bulkUpdateMandiRates = (percentage) => {
+        setProducts(prev => prev.map(p => ({
+          ...p,
+          mandiPrice: Math.round(p.mandiPrice * (1 + percentage / 100)),
+          sellingPrice: Math.round(p.sellingPrice * (1 + percentage / 100))
+        })));
+        showNotification(`Mandi rates updated by ${percentage}%`);
+      };
+
+      const addKhataEntry = (customerName, mobile, amount) => {
+        setKhataList(prev => [...prev, {
+          id: `K-${prev.length + 1}`, customerName, mobile, balanceDue: amount, lastUpdated: 'Today'
+        }]);
+        showNotification(`Khata entry added!`);
+      };
+
+      const value = {
+        activeTab, setActiveTab, products, categories, khataList, orders, posCart, setPosCart,
+        selectedOrderForThermal, setSelectedOrderForThermal, bulkUpdateMandiRates,
+        saveProduct, deleteProduct, saveCategory, toggleCategoryActive, updateOrderStatus,
+        addKhataEntry, toastMessage, isProductModalOpen, setIsProductModalOpen,
+        editingProduct, setEditingProduct, isCategoryModalOpen, setIsCategoryModalOpen
+      };
+
+      return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
+    };
+
+    const useAdmin = () => useContext(AdminContext);
+
+    const Header = () => {
+      const { setIsProductModalOpen, setEditingProduct } = useAdmin();
+
+      return (
+        <header className="sticky top-0 z-40 bg-emerald-950 text-white shadow-md">
+          <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-400 text-emerald-950 font-black text-lg flex items-center justify-center shadow-xs">
+                H
               </div>
-            </header>
+              <div>
+                <h1 className="text-xs font-black tracking-tight text-white leading-none">HUMA TRADERS ADMIN</h1>
+                <p className="text-[10px] font-bold text-amber-300">Solapur Store Management</p>
+              </div>
+            </div>
 
-            <nav className="bg-white border-b flex justify-around p-2 text-sm font-medium">
-              <button 
-                onClick={() => setActiveTab('pos')} 
-                className={`p-2 rounded-lg ${activeTab === 'pos' ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-gray-600'}`}
-              >
-                🛒 POS Counter
-              </button>
-              <button 
-                onClick={() => setActiveTab('inventory')} 
-                className={`p-2 rounded-lg ${activeTab === 'inventory' ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-gray-600'}`}
-              >
-                📦 Inventory & Mandi
-              </button>
-            </nav>
+            <button
+              onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }}
+              className="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
+            >
+              <Icon name="plus" className="w-4 h-4" /> Add Item
+            </button>
+          </div>
+        </header>
+      );
+    };
 
-            <main className="p-4 max-w-4xl mx-auto">
-              {activeTab === 'pos' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white p-4 rounded-xl shadow-sm border">
-                    <h2 className="font-bold text-gray-700 mb-3">📦 Available Items</h2>
-                    <div className="grid grid-cols-1 gap-2">
-                      {items.map(item => (
-                        <div key={item.id} className="flex justify-between items-center p-3 border rounded-lg">
-                          <div>
-                            <p className="font-semibold text-sm">{item.name}</p>
-                            <p className="text-xs text-gray-500">₹{item.price}/{item.unit}</p>
-                          </div>
-                          <button onClick={() => addToCart(item)} className="bg-emerald-600 text-white px-3 py-1 rounded-lg text-sm">
-                            + Add
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+    const DashboardView = () => {
+      const { orders, updateOrderStatus, bulkUpdateMandiRates } = useAdmin();
 
-                  <div className="bg-white p-4 rounded-xl shadow-sm border flex flex-col justify-between">
+      return (
+        <div className="space-y-4 pb-20">
+          <div className="bg-emerald-950 text-white p-3.5 rounded-2xl flex items-center justify-between shadow-md">
+            <div>
+              <h3 className="font-extrabold text-xs text-amber-300 flex items-center gap-1">
+                <Icon name="zap" className="w-3.5 h-3.5" /> Solapur Mandi Rate Sync
+              </h3>
+              <p className="text-[10px] text-emerald-200">Instant price modifier</p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => bulkUpdateMandiRates(5)} className="bg-amber-400 text-emerald-950 text-[10px] font-black px-2.5 py-1.5 rounded-lg">+5% Hike</button>
+              <button onClick={() => bulkUpdateMandiRates(-5)} className="bg-emerald-800 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg border border-emerald-700">-5% Cut</button>
+            </div>
+          </div>
+
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
+            <h3 className="font-extrabold text-xs text-slate-900 flex items-center justify-between">
+              <span>Solapur Express Orders</span>
+              <span className="text-[10px] text-slate-500 font-bold">{orders.length} Active</span>
+            </h3>
+            <div className="space-y-2">
+              {orders.map(o => (
+                <div key={o.id} className="p-3 bg-slate-50 rounded-2xl border space-y-2 text-xs">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="font-bold text-gray-700 mb-3">🧾 Current Bill</h2>
-                      {cart.length === 0 ? (
-                        <p className="text-xs text-gray-400">Cart is empty.</p>
-                      ) : (
-                        cart.map(c => (
-                          <div key={c.id} className="flex justify-between text-sm border-b pb-1 mb-1">
-                            <span>{c.name} x {c.qty}</span>
-                            <span className="font-semibold">₹{c.price * c.qty}</span>
-                          </div>
-                        ))
-                      )}
+                      <p className="font-extrabold text-slate-900">{o.id} • ₹{o.amount}</p>
+                      <p className="text-[10px] text-slate-500 font-bold">{o.customerName}</p>
                     </div>
-                    {cart.length > 0 && (
-                      <div className="border-t pt-3 mt-4">
-                        <div className="flex justify-between font-bold text-lg mb-3">
-                          <span>Total:</span>
-                          <span className="text-emerald-700">₹{totalAmount}</span>
-                        </div>
-                        <button onClick={() => alert("Printing Bill...")} className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold">
-                          🖨️ Print Thermal Bill
-                        </button>
-                      </div>
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">{o.status}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t text-[10px]">
+                    <span className="text-slate-500">Agent: <strong>{o.agent}</strong></span>
+                    {o.status !== 'Delivered' && (
+                      <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="bg-emerald-800 text-white font-bold px-2 py-1 rounded-lg">Mark Delivered</button>
                     )}
                   </div>
                 </div>
-              )}
-            </main>
+              ))}
+            </div>
           </div>
-        );
-      }
+        </div>
+      );
+    };
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<App />);
-    </script>
-  </body>
+    const PosBillingView = () => {
+      const { products, posCart, setPosCart, setSelectedOrderForThermal } = useAdmin();
+
+      const addToPosCart = (product) => {
+        setPosCart(prev => [...prev, { ...product, qty: 1, finalPrice: product.sellingPrice }]);
+      };
+
+      const posSubtotal = useMemo(() => posCart.reduce((acc, item) => acc + (item.finalPrice * item.qty), 0), [posCart]);
+
+      return (
+        <div className="space-y-4 pb-20">
+          <div className="grid grid-cols-2 gap-2">
+            {products.map(p => (
+              <div key={p.id} onClick={() => addToPosCart(p)} className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
+                <img src={p.image} className="w-full h-16 object-cover rounded-xl mb-1.5" />
+                <h4 className="font-bold text-xs text-slate-800 line-clamp-1">{p.name}</h4>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="font-black text-xs text-emerald-800">₹{p.sellingPrice}</span>
+                  <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {posCart.length > 0 && (
+            <div className="bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
+              <h4 className="font-extrabold border-b pb-2">Counter Bill ({posCart.length} Items)</h4>
+              {posCart.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center py-1">
+                  <span>{item.name}</span>
+                  <span className="font-bold">₹{item.finalPrice}</span>
+                </div>
+              ))}
+              <div className="pt-2 border-t flex justify-between items-center font-black">
+                <span>Total: ₹{posSubtotal}</span>
+                <button onClick={() => { setSelectedOrderForThermal({ id: 'HT-POS-101', items: posCart, amount: posSubtotal }); setPosCart([]); }} className="bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold">Print Bill</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const BottomNav = () => {
+      const { activeTab, setActiveTab } = useAdmin();
+
+      const navItems = [
+        { id: 'dashboard', label: 'Home', icon: 'layout-dashboard' },
+        { id: 'pos', label: 'POS Bill', icon: 'shopping-cart' },
+        { id: 'categories', label: 'Categories', icon: 'layers' },
+        { id: 'khata', label: 'Khata Book', icon: 'credit-card' },
+        { id: 'products', label: 'Products', icon: 'edit-3' }
+      ];
+
+      return (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-xl max-w-md mx-auto">
+          <div className="grid grid-cols-5 h-14">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex flex-col items-center justify-center ${activeTab === item.id ? 'text-emerald-800 font-black' : 'text-slate-500'}`}
+              >
+                <Icon name={item.icon} className="w-5 h-5" />
+                <span className="text-[10px] mt-0.5">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { activeTab } = useAdmin();
+
+      return (
+        <div className="min-h-screen bg-slate-100 max-w-md mx-auto shadow-xl relative">
+          <Header />
+          <main className="px-4 py-3">
+            {activeTab === 'dashboard' && <DashboardView />}
+            {activeTab === 'pos' && <PosBillingView />}
+          </main>
+          <BottomNav />
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <AdminProvider>
+        <App />
+      </AdminProvider>
+    );
+  </script>
+</body>
 </html>
