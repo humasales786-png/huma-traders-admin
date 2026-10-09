@@ -17,9 +17,6 @@
   <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -31,29 +28,18 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, createContext, useContext } = React;
 
-    const Icon = ({ name, className = "w-4 h-4", ...props }) => {
-      useEffect(() => {
-        if (window.lucide) {
-          window.lucide.createIcons();
-        }
-      }, [name]);
-      return <i data-lucide={name} className={className} {...props}></i>;
-    };
-
     const INITIAL_CATEGORIES = [
-      { id: 'cat-1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400', subcategories: ['Wheat Atta', 'Maida', 'Besan', 'Suji', 'Rice Flour'] },
-      { id: 'cat-2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400', subcategories: ['Basmati Rice', 'Kolam Rice', 'Sona Masoori', 'Loose Rice'] },
-      { id: 'cat-3', name: 'Dal & Pulses', icon: '🫘', active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400', subcategories: ['Toor Dal', 'Moong Dal', 'Chana Dal', 'Loose Pulses'] },
-      { id: 'cat-4', name: 'Oil & Ghee', icon: '🪔', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400', subcategories: ['Cow Ghee', 'Sunflower Oil', 'Groundnut Oil', 'Mustard Oil'] },
-      { id: 'cat-5', name: 'Spices & Masala', icon: '🌶️', active: true, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400', subcategories: ['Whole Spices', 'Powdered Spices', 'Blended Masalas'] },
-      { id: 'cat-6', name: 'Dry Fruits', icon: '🥜', active: true, image: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=400', subcategories: ['Badam', 'Kaju', 'Kishmish', 'Dates'] }
+      { id: 'cat-1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400', subcategories: ['Wheat Atta', 'Maida', 'Besan', 'Suji'] },
+      { id: 'cat-2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400', subcategories: ['Basmati Rice', 'Kolam Rice', 'Sona Masoori'] },
+      { id: 'cat-3', name: 'Dal & Pulses', icon: '🫘', active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400', subcategories: ['Toor Dal', 'Moong Dal', 'Chana Dal'] },
+      { id: 'cat-4', name: 'Oil & Ghee', icon: '🪔', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400', subcategories: ['Cow Ghee', 'Sunflower Oil', 'Groundnut Oil'] }
     ];
 
     const INITIAL_PRODUCTS = [
-      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', category: 'Atta & Flour', brand: 'Aashirvaad', stock: 45, threshold: 10, mrp: 380, mandiPrice: 310, sellingPrice: 319, unit: '10 kg', isLoose: false, active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P102', name: 'Premium Solapur Kolam Rice', hindiName: 'कोलम तांदूळ (सुट्टा)', category: 'Rice & Grains', brand: 'Huma Direct', stock: 520, threshold: 100, mrp: 75, mandiPrice: 55, sellingPrice: 62, unit: '1 kg', isLoose: true, loosePresets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Yellow Moong Dal', hindiName: 'मूंग दाल', category: 'Dal & Pulses', brand: 'Huma Direct', stock: 180, threshold: 25, mrp: 140, mandiPrice: 105, sellingPrice: 120, unit: '1 kg', isLoose: true, loosePresets: ['100g', '250g', '500g', '1 kg', '2 kg'], active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P104', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', category: 'Oil & Ghee', brand: 'Fortune', stock: 12, threshold: 15, mrp: 175, mandiPrice: 130, sellingPrice: 139, unit: '1 L', isLoose: false, active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', category: 'Atta & Flour', brand: 'Aashirvaad', stock: 45, mrp: 380, sellingPrice: 319, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', category: 'Rice & Grains', brand: 'Huma Direct', stock: 520, mrp: 75, sellingPrice: 62, unit: '1 kg', isLoose: true, loosePresets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P103', name: 'Yellow Moong Dal', hindiName: 'मूंग दाल', category: 'Dal & Pulses', brand: 'Huma Direct', stock: 180, mrp: 140, sellingPrice: 120, unit: '1 kg', isLoose: true, loosePresets: ['100g', '250g', '500g', '1 kg'], image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P104', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', category: 'Oil & Ghee', brand: 'Fortune', stock: 12, mrp: 175, sellingPrice: 139, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
     ];
 
     const INITIAL_KHATA = [
@@ -62,8 +48,8 @@
     ];
 
     const INITIAL_ORDERS = [
-      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', mobile: '9822012345', address: 'Saat Rasta, Solapur Central', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod', items: [{ name: 'Aashirvaad Atta 10kg', qty: 1, price: 319 }] },
-      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', mobile: '9423156789', address: 'Old Employment Chowk, Solapur', amount: 680, status: 'Packed', agent: 'Rahul Shinde', items: [{ name: 'Solapur Kolam Rice', qty: 5, price: 62 }] }
+      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', mobile: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod' },
+      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', mobile: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Packed', agent: 'Rahul Shinde' }
     ];
 
     const AdminContext = createContext();
@@ -90,11 +76,11 @@
       const saveProduct = (productData) => {
         if (editingProduct) {
           setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...productData, id: editingProduct.id } : p));
-          showNotification('Product updated!');
+          showNotification('Product details updated!');
         } else {
           const newProduct = { ...productData, id: `HT-P${Math.floor(100 + Math.random() * 900)}` };
           setProducts(prev => [newProduct, ...prev]);
-          showNotification('Product added!');
+          showNotification('New product added!');
         }
         setIsProductModalOpen(false);
         setEditingProduct(null);
@@ -127,28 +113,19 @@
         showNotification(`Order status: ${newStatus}`);
       };
 
-      const bulkUpdateMandiRates = (percentage) => {
-        setProducts(prev => prev.map(p => ({
-          ...p,
-          mandiPrice: Math.round(p.mandiPrice * (1 + percentage / 100)),
-          sellingPrice: Math.round(p.sellingPrice * (1 + percentage / 100))
-        })));
-        showNotification(`Mandi rates updated by ${percentage}%`);
-      };
-
       const addKhataEntry = (customerName, mobile, amount) => {
         setKhataList(prev => [...prev, {
-          id: `K-${prev.length + 1}`, customerName, mobile, balanceDue: amount, lastUpdated: 'Today'
+          id: `K-${prev.length + 1}`, customerName, mobile, balanceDue: Number(amount), lastUpdated: 'Today'
         }]);
         showNotification(`Khata entry added!`);
       };
 
       const value = {
         activeTab, setActiveTab, products, categories, khataList, orders, posCart, setPosCart,
-        selectedOrderForThermal, setSelectedOrderForThermal, bulkUpdateMandiRates,
-        saveProduct, deleteProduct, saveCategory, toggleCategoryActive, updateOrderStatus,
-        addKhataEntry, toastMessage, isProductModalOpen, setIsProductModalOpen,
-        editingProduct, setEditingProduct, isCategoryModalOpen, setIsCategoryModalOpen
+        selectedOrderForThermal, setSelectedOrderForThermal, saveProduct, deleteProduct,
+        saveCategory, toggleCategoryActive, updateOrderStatus, addKhataEntry, toastMessage,
+        isProductModalOpen, setIsProductModalOpen, editingProduct, setEditingProduct,
+        isCategoryModalOpen, setIsCategoryModalOpen
       };
 
       return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
@@ -176,35 +153,202 @@
               onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }}
               className="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
             >
-              <Icon name="plus" className="w-4 h-4" /> Add Item
+              + Add Item
             </button>
           </div>
         </header>
       );
     };
 
+    const Toast = () => {
+      const { toastMessage } = useAdmin();
+      if (!toastMessage) return null;
+      return (
+        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
+          ✓ {toastMessage}
+        </div>
+      );
+    };
+
+    const ProductModal = () => {
+      const { isProductModalOpen, setIsProductModalOpen, editingProduct, saveProduct, categories } = useAdmin();
+
+      const [formData, setFormData] = useState({
+        name: '', hindiName: '', category: 'Rice & Grains',
+        mrp: '', sellingPrice: '', stock: '', unit: '1 kg',
+        isLoose: false, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
+      });
+
+      useEffect(() => {
+        if (editingProduct) {
+          setFormData({
+            name: editingProduct.name || '',
+            hindiName: editingProduct.hindiName || '',
+            category: editingProduct.category || 'Rice & Grains',
+            mrp: editingProduct.mrp || '',
+            sellingPrice: editingProduct.sellingPrice || '',
+            stock: editingProduct.stock || '',
+            unit: editingProduct.unit || '1 kg',
+            isLoose: !!editingProduct.isLoose,
+            image: editingProduct.image || 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
+          });
+        } else {
+          setFormData({
+            name: '', hindiName: '', category: 'Rice & Grains',
+            mrp: '', sellingPrice: '', stock: '', unit: '1 kg',
+            isLoose: false, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
+          });
+        }
+      }, [editingProduct, isProductModalOpen]);
+
+      if (!isProductModalOpen) return null;
+
+      const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => setFormData(prev => ({ ...prev, image: reader.result }));
+          reader.readAsDataURL(file);
+        }
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        saveProduct({
+          name: formData.name,
+          hindiName: formData.hindiName,
+          category: formData.category,
+          mrp: Number(formData.mrp),
+          sellingPrice: Number(formData.sellingPrice),
+          stock: Number(formData.stock),
+          unit: formData.unit,
+          isLoose: formData.isLoose,
+          image: formData.image
+        });
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-extrabold text-slate-900 uppercase">
+                {editingProduct ? 'Edit Product' : 'Add New Product'}
+              </h3>
+              <button onClick={() => setIsProductModalOpen(false)} className="text-slate-400 text-base font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-2.5">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Product Name *</label>
+                <input type="text" required placeholder="e.g. Toor Dal" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Hindi Name</label>
+                <input type="text" placeholder="e.g. तूर डाळ" value={formData.hindiName} onChange={(e) => setFormData({ ...formData, hindiName: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Category</label>
+                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none">
+                  {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">MRP (₹)</label>
+                  <input type="number" required placeholder="160" value={formData.mrp} onChange={(e) => setFormData({ ...formData, mrp: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+                </div>
+                <div>
+                  <label className="font-bold text-emerald-900 block mb-1">Selling Price (₹)</label>
+                  <input type="number" required placeholder="135" value={formData.sellingPrice} onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })} className="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Stock Qty</label>
+                  <input type="number" required placeholder="50" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Unit</label>
+                  <input type="text" required placeholder="1 kg / 1 L" value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 py-1">
+                <input type="checkbox" id="isLoose" checked={formData.isLoose} onChange={(e) => setFormData({ ...formData, isLoose: e.target.checked })} className="w-4 h-4 text-emerald-800 rounded" />
+                <label htmlFor="isLoose" className="font-bold text-slate-700">Loose Item (Weight Presets for Customer)</label>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Product Photo</label>
+                <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full bg-slate-50 border p-1.5 rounded-xl text-[10px]" />
+                {formData.image && <img src={formData.image} className="w-12 h-12 rounded-xl object-cover mt-2 border" />}
+              </div>
+
+              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">
+                Save Product
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    const CategoryModal = () => {
+      const { isCategoryModalOpen, setIsCategoryModalOpen, saveCategory } = useAdmin();
+      const [name, setName] = useState('');
+      const [icon, setIcon] = useState('📦');
+      const [subcategories, setSubcategories] = useState('');
+      const [imageUrl, setImageUrl] = useState('');
+
+      if (!isCategoryModalOpen) return null;
+
+      const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => setImageUrl(reader.result);
+          reader.readAsDataURL(file);
+        }
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        saveCategory({ name, icon, image: imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400', subcategories });
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl text-xs">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-extrabold text-slate-900">Add New Category</h3>
+              <button onClick={() => setIsCategoryModalOpen(false)} className="text-slate-400 text-base font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-2.5">
+              <input type="text" required placeholder="Category Name (e.g. Snacks)" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              <input type="text" placeholder="Emoji Icon (e.g. 🍪)" value={icon} onChange={(e) => setIcon(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              <input type="text" placeholder="Subcategories (comma separated)" value={subcategories} onChange={(e) => setSubcategories(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full bg-slate-50 border p-1.5 rounded-xl text-[10px]" />
+              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Category</button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
     const DashboardView = () => {
-      const { orders, updateOrderStatus, bulkUpdateMandiRates } = useAdmin();
+      const { orders, updateOrderStatus } = useAdmin();
 
       return (
         <div className="space-y-4 pb-20">
-          <div className="bg-emerald-950 text-white p-3.5 rounded-2xl flex items-center justify-between shadow-md">
-            <div>
-              <h3 className="font-extrabold text-xs text-amber-300 flex items-center gap-1">
-                <Icon name="zap" className="w-3.5 h-3.5" /> Solapur Mandi Rate Sync
-              </h3>
-              <p className="text-[10px] text-emerald-200">Instant price modifier</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => bulkUpdateMandiRates(5)} className="bg-amber-400 text-emerald-950 text-[10px] font-black px-2.5 py-1.5 rounded-lg">+5% Hike</button>
-              <button onClick={() => bulkUpdateMandiRates(-5)} className="bg-emerald-800 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg border border-emerald-700">-5% Cut</button>
-            </div>
-          </div>
-
           <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
             <h3 className="font-extrabold text-xs text-slate-900 flex items-center justify-between">
-              <span>Solapur Express Orders</span>
-              <span className="text-[10px] text-slate-500 font-bold">{orders.length} Active</span>
+              <span>Solapur Express Active Orders</span>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">{orders.length} Active</span>
             </h3>
             <div className="space-y-2">
               {orders.map(o => (
@@ -212,14 +356,14 @@
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-extrabold text-slate-900">{o.id} • ₹{o.amount}</p>
-                      <p className="text-[10px] text-slate-500 font-bold">{o.customerName}</p>
+                      <p className="text-[10px] text-slate-500 font-bold">{o.customerName} ({o.address})</p>
                     </div>
                     <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">{o.status}</span>
                   </div>
                   <div className="flex items-center justify-between pt-1 border-t text-[10px]">
-                    <span className="text-slate-500">Agent: <strong>{o.agent}</strong></span>
+                    <span className="text-slate-500">Delivery Agent: <strong>{o.agent}</strong></span>
                     {o.status !== 'Delivered' && (
-                      <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="bg-emerald-800 text-white font-bold px-2 py-1 rounded-lg">Mark Delivered</button>
+                      <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="bg-emerald-800 text-white font-bold px-2.5 py-1 rounded-lg">Mark Delivered</button>
                     )}
                   </div>
                 </div>
@@ -241,6 +385,7 @@
 
       return (
         <div className="space-y-4 pb-20">
+          <h3 className="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3>
           <div className="grid grid-cols-2 gap-2">
             {products.map(p => (
               <div key={p.id} onClick={() => addToPosCart(p)} className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
@@ -256,7 +401,7 @@
 
           {posCart.length > 0 && (
             <div className="bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
-              <h4 className="font-extrabold border-b pb-2">Counter Bill ({posCart.length} Items)</h4>
+              <h4 className="font-extrabold border-b pb-2">Current Bill ({posCart.length} Items)</h4>
               {posCart.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-center py-1">
                   <span>{item.name}</span>
@@ -264,11 +409,147 @@
                 </div>
               ))}
               <div className="pt-2 border-t flex justify-between items-center font-black">
-                <span>Total: ₹{posSubtotal}</span>
-                <button onClick={() => { setSelectedOrderForThermal({ id: 'HT-POS-101', items: posCart, amount: posSubtotal }); setPosCart([]); }} className="bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold">Print Bill</button>
+                <span>Total Amount: ₹{posSubtotal}</span>
+                <button onClick={() => { setSelectedOrderForThermal({ id: `HT-POS-${Math.floor(1000 + Math.random() * 9000)}`, items: posCart, amount: posSubtotal }); setPosCart([]); }} className="bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs">Print Thermal Receipt</button>
               </div>
             </div>
           )}
+        </div>
+      );
+    };
+
+    const CategoryView = () => {
+      const { categories, toggleCategoryActive, setIsCategoryModalOpen } = useAdmin();
+
+      return (
+        <div className="space-y-4 pb-20">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black text-slate-900 uppercase">Categories Manager</h3>
+            <button onClick={() => setIsCategoryModalOpen(true)} className="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs">+ Add Category</button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {categories.map(cat => (
+              <div key={cat.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+                <div className="h-20 w-full bg-slate-100 relative">
+                  <img src={cat.image} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
+                    <span className="font-bold text-xs">{cat.icon} {cat.name}</span>
+                    <button onClick={() => toggleCategoryActive(cat.id)} className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded-full ${cat.active ? 'bg-emerald-500' : 'bg-slate-600'}`}>
+                      {cat.active ? 'Active' : 'Hidden'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const KhataView = () => {
+      const { khataList, addKhataEntry } = useAdmin();
+      const [name, setName] = useState('');
+      const [phone, setPhone] = useState('');
+      const [amount, setAmount] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        addKhataEntry(name, phone, amount);
+        setName(''); setPhone(''); setAmount('');
+      };
+
+      return (
+        <div className="space-y-4 pb-20">
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-2xs text-xs">
+            <h3 className="font-extrabold text-slate-900 uppercase">Add New Udhar Entry</h3>
+            <form onSubmit={handleSubmit} className="space-y-2">
+              <input type="text" required placeholder="Customer / Hotel Name *" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              <div className="grid grid-cols-2 gap-2">
+                <input type="tel" placeholder="Mobile Number" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+                <input type="number" required placeholder="Udhar Amount (₹) *" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              </div>
+              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2 rounded-xl">Add Udhar</button>
+            </form>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            <h3 className="font-extrabold text-slate-900 uppercase">Pending Udhar Khata Ledger</h3>
+            {khataList.map(k => (
+              <div key={k.id} className="bg-white p-3 rounded-2xl border flex justify-between items-center shadow-2xs">
+                <div>
+                  <p className="font-bold text-slate-900">{k.customerName}</p>
+                  <p className="text-[10px] text-slate-500">Ph: {k.mobile}</p>
+                </div>
+                <div className="text-right">
+                  <span className="font-black text-rose-600 block">₹{k.balanceDue}</span>
+                  <button onClick={() => window.open(`https://wa.me/91${k.mobile}?text=Hello%20${k.customerName},%20your%20pending%20Udhar%20balance%20at%20Huma%20Traders%20is%20₹${k.balanceDue}.`, '_blank')} className="text-[9px] bg-emerald-700 text-white font-bold px-2 py-0.5 rounded mt-1">Reminder</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const ProductsView = () => {
+      const { products, setEditingProduct, setIsProductModalOpen, deleteProduct } = useAdmin();
+
+      return (
+        <div className="space-y-3 pb-20">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-black text-slate-900 uppercase">All Store Products ({products.length})</h3>
+          </div>
+
+          <div className="space-y-2">
+            {products.map(p => (
+              <div key={p.id} className="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs">
+                <img src={p.image} className="w-12 h-12 rounded-xl object-cover border shrink-0" />
+                <div className="flex-1 min-w-0 text-xs">
+                  <h4 className="font-extrabold text-slate-900 truncate">{p.name}</h4>
+                  <p className="text-[10px] text-slate-500">{p.category} • Stock: {p.stock} {p.unit}</p>
+                  <span className="font-black text-emerald-800">₹{p.sellingPrice}</span>
+                </div>
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => { setEditingProduct(p); setIsProductModalOpen(true); }} className="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
+                  <button onClick={() => deleteProduct(p.id)} className="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const ThermalBillModal = () => {
+      const { selectedOrderForThermal, setSelectedOrderForThermal } = useAdmin();
+      if (!selectedOrderForThermal) return null;
+
+      return (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 font-mono text-xs shadow-2xl">
+            <div className="border border-dashed p-3 rounded-xl bg-slate-50 text-center space-y-1">
+              <h2 className="font-black text-sm text-emerald-950">HUMA TRADERS</h2>
+              <p className="text-[9px] text-slate-500">Solapur Store Counter Bill</p>
+              <div className="divide-y text-left pt-2">
+                {selectedOrderForThermal.items.map((item, idx) => (
+                  <div key={idx} className="py-1 flex justify-between text-[10px]">
+                    <span>{item.name} x{item.qty}</span>
+                    <span className="font-bold">₹{item.finalPrice}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t pt-2 flex justify-between font-black text-xs">
+                <span>TOTAL:</span>
+                <span>₹{selectedOrderForThermal.amount}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button onClick={() => window.print()} className="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs">Print Receipt</button>
+              <button onClick={() => setSelectedOrderForThermal(null)} className="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">Close</button>
+            </div>
+          </div>
         </div>
       );
     };
@@ -277,15 +558,15 @@
       const { activeTab, setActiveTab } = useAdmin();
 
       const navItems = [
-        { id: 'dashboard', label: 'Home', icon: 'layout-dashboard' },
-        { id: 'pos', label: 'POS Bill', icon: 'shopping-cart' },
-        { id: 'categories', label: 'Categories', icon: 'layers' },
-        { id: 'khata', label: 'Khata Book', icon: 'credit-card' },
-        { id: 'products', label: 'Products', icon: 'edit-3' }
+        { id: 'dashboard', label: 'Home', icon: '🏠' },
+        { id: 'pos', label: 'POS Bill', icon: '🛒' },
+        { id: 'categories', label: 'Categories', icon: '📚' },
+        { id: 'khata', label: 'Khata Book', icon: '💳' },
+        { id: 'products', label: 'Products', icon: '📦' }
       ];
 
       return (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-xl max-w-md mx-auto">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg max-w-md mx-auto">
           <div className="grid grid-cols-5 h-14">
             {navItems.map(item => (
               <button
@@ -293,8 +574,8 @@
                 onClick={() => setActiveTab(item.id)}
                 className={`flex flex-col items-center justify-center ${activeTab === item.id ? 'text-emerald-800 font-black' : 'text-slate-500'}`}
               >
-                <Icon name={item.icon} className="w-5 h-5" />
-                <span className="text-[10px] mt-0.5">{item.label}</span>
+                <span className="text-base leading-none">{item.icon}</span>
+                <span className="text-[10px] mt-1 font-bold">{item.label}</span>
               </button>
             ))}
           </div>
@@ -308,9 +589,16 @@
       return (
         <div className="min-h-screen bg-slate-100 max-w-md mx-auto shadow-xl relative">
           <Header />
+          <Toast />
+          <ProductModal />
+          <CategoryModal />
+          <ThermalBillModal />
           <main className="px-4 py-3">
             {activeTab === 'dashboard' && <DashboardView />}
             {activeTab === 'pos' && <PosBillingView />}
+            {activeTab === 'categories' && <CategoryView />}
+            {activeTab === 'khata' && <KhataView />}
+            {activeTab === 'products' && <ProductsView />}
           </main>
           <BottomNav />
         </div>
@@ -320,7 +608,7 @@
     ReactDOM.createRoot(document.getElementById('root')).render(
       <AdminProvider>
         <App />
-      </AdminProvider>
+      </AppProvider>
     );
   </script>
 </body>
