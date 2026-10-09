@@ -9,607 +9,470 @@
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React & ReactDOM CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  
-  <!-- Babel for JSX -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-100 antialiased selection:bg-emerald-200">
-  <div id="root"></div>
+<body class="bg-slate-100 antialiased selection:bg-emerald-200 min-h-screen pb-20">
 
-  <script type="text/babel">
-    const { useState, useEffect, useMemo, createContext, useContext } = React;
-
-    const INITIAL_CATEGORIES = [
-      { id: 'cat-1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400', subcategories: ['Wheat Atta', 'Maida', 'Besan', 'Suji'] },
-      { id: 'cat-2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400', subcategories: ['Basmati Rice', 'Kolam Rice', 'Sona Masoori'] },
-      { id: 'cat-3', name: 'Dal & Pulses', icon: '🫘', active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400', subcategories: ['Toor Dal', 'Moong Dal', 'Chana Dal'] },
-      { id: 'cat-4', name: 'Oil & Ghee', icon: '🪔', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400', subcategories: ['Cow Ghee', 'Sunflower Oil', 'Groundnut Oil'] }
-    ];
-
-    const INITIAL_PRODUCTS = [
-      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', category: 'Atta & Flour', brand: 'Aashirvaad', stock: 45, mrp: 380, sellingPrice: 319, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', category: 'Rice & Grains', brand: 'Huma Direct', stock: 520, mrp: 75, sellingPrice: 62, unit: '1 kg', isLoose: true, loosePresets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Yellow Moong Dal', hindiName: 'मूंग दाल', category: 'Dal & Pulses', brand: 'Huma Direct', stock: 180, mrp: 140, sellingPrice: 120, unit: '1 kg', isLoose: true, loosePresets: ['100g', '250g', '500g', '1 kg'], image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P104', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', category: 'Oil & Ghee', brand: 'Fortune', stock: 12, mrp: 175, sellingPrice: 139, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
-    ];
-
-    const INITIAL_KHATA = [
-      { id: 'K-1', customerName: 'Ramesh Hotel', mobile: '9822099999', balanceDue: 4200, lastUpdated: 'Today' },
-      { id: 'K-2', customerName: 'Suhail Shaikh', mobile: '9822012345', balanceDue: 850, lastUpdated: 'Yesterday' }
-    ];
-
-    const INITIAL_ORDERS = [
-      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', mobile: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod' },
-      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', mobile: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Packed', agent: 'Rahul Shinde' }
-    ];
-
-    const AdminContext = createContext();
-
-    const AdminProvider = ({ children }) => {
-      const [activeTab, setActiveTab] = useState('dashboard');
-      const [products, setProducts] = useState(INITIAL_PRODUCTS);
-      const [categories, setCategories] = useState(INITIAL_CATEGORIES);
-      const [khataList, setKhataList] = useState(INITIAL_KHATA);
-      const [orders, setOrders] = useState(INITIAL_ORDERS);
-      const [posCart, setPosCart] = useState([]);
-      const [selectedOrderForThermal, setSelectedOrderForThermal] = useState(null);
-      const [toastMessage, setToastMessage] = useState(null);
-      
-      const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-      const [editingProduct, setEditingProduct] = useState(null);
-      const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-
-      const showNotification = (msg) => {
-        setToastMessage(msg);
-        setTimeout(() => setToastMessage(null), 3000);
-      };
-
-      const saveProduct = (productData) => {
-        if (editingProduct) {
-          setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...productData, id: editingProduct.id } : p));
-          showNotification('Product details updated!');
-        } else {
-          const newProduct = { ...productData, id: `HT-P${Math.floor(100 + Math.random() * 900)}` };
-          setProducts(prev => [newProduct, ...prev]);
-          showNotification('New product added!');
-        }
-        setIsProductModalOpen(false);
-        setEditingProduct(null);
-      };
-
-      const saveCategory = (catData) => {
-        const newCat = {
-          ...catData,
-          id: `cat-${Math.floor(10 + Math.random() * 90)}`,
-          active: true,
-          subcategories: typeof catData.subcategories === 'string' ? catData.subcategories.split(',').map(s => s.trim()) : catData.subcategories || []
-        };
-        setCategories(prev => [...prev, newCat]);
-        setIsCategoryModalOpen(false);
-        showNotification('Category added!');
-      };
-
-      const toggleCategoryActive = (catId) => {
-        setCategories(prev => prev.map(c => c.id === catId ? { ...c, active: !c.active } : c));
-        showNotification('Category status updated!');
-      };
-
-      const deleteProduct = (productId) => {
-        setProducts(prev => prev.filter(p => p.id !== productId));
-        showNotification('Product deleted.');
-      };
-
-      const updateOrderStatus = (orderId, newStatus) => {
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-        showNotification(`Order status: ${newStatus}`);
-      };
-
-      const addKhataEntry = (customerName, mobile, amount) => {
-        setKhataList(prev => [...prev, {
-          id: `K-${prev.length + 1}`, customerName, mobile, balanceDue: Number(amount), lastUpdated: 'Today'
-        }]);
-        showNotification(`Khata entry added!`);
-      };
-
-      const value = {
-        activeTab, setActiveTab, products, categories, khataList, orders, posCart, setPosCart,
-        selectedOrderForThermal, setSelectedOrderForThermal, saveProduct, deleteProduct,
-        saveCategory, toggleCategoryActive, updateOrderStatus, addKhataEntry, toastMessage,
-        isProductModalOpen, setIsProductModalOpen, editingProduct, setEditingProduct,
-        isCategoryModalOpen, setIsCategoryModalOpen
-      };
-
-      return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
-    };
-
-    const useAdmin = () => useContext(AdminContext);
-
-    const Header = () => {
-      const { setIsProductModalOpen, setEditingProduct } = useAdmin();
-
-      return (
-        <header className="sticky top-0 z-40 bg-emerald-950 text-white shadow-md">
-          <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-amber-400 text-emerald-950 font-black text-lg flex items-center justify-center shadow-xs">
-                H
-              </div>
-              <div>
-                <h1 className="text-xs font-black tracking-tight text-white leading-none">HUMA TRADERS ADMIN</h1>
-                <p className="text-[10px] font-bold text-amber-300">Solapur Store Management</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }}
-              className="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
-            >
-              + Add Item
-            </button>
-          </div>
-        </header>
-      );
-    };
-
-    const Toast = () => {
-      const { toastMessage } = useAdmin();
-      if (!toastMessage) return null;
-      return (
-        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
-          ✓ {toastMessage}
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-emerald-950 text-white shadow-md">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-amber-400 text-emerald-950 font-black text-lg flex items-center justify-center shadow-xs">
+          H
         </div>
-      );
-    };
+        <div>
+          <h1 class="text-xs font-black tracking-tight text-white leading-none">HUMA TRADERS ADMIN</h1>
+          <p class="text-[10px] font-bold text-amber-300">Solapur Store Management</p>
+        </div>
+      </div>
+      <button onclick="openProductModal()" class="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl shadow-xs">
+        + Add Item
+      </button>
+    </div>
+  </header>
 
-    const ProductModal = () => {
-      const { isProductModalOpen, setIsProductModalOpen, editingProduct, saveProduct, categories } = useAdmin();
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
+    ✓ Toast Message
+  </div>
 
-      const [formData, setFormData] = useState({
-        name: '', hindiName: '', category: 'Rice & Grains',
-        mrp: '', sellingPrice: '', stock: '', unit: '1 kg',
-        isLoose: false, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
+  <!-- Main View Container -->
+  <main className="px-4 py-3 max-w-md mx-auto" id="mainContainer">
+    
+    <!-- 1. DASHBOARD VIEW -->
+    <div id="view-dashboard" class="space-y-4 p-4">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-xs text-slate-900 uppercase">Active Customer Orders</h3>
+          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" id="orderCountTag">2 Active</span>
+        </div>
+        <div class="space-y-2" id="ordersList">
+          <!-- Orders injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. POS BILLING VIEW -->
+    <div id="view-pos" class="hidden space-y-4 p-4">
+      <h3 class="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3>
+      <div class="grid grid-cols-2 gap-2" id="posProductsGrid">
+        <!-- POS items injected here -->
+      </div>
+
+      <div id="posCartBox" class="hidden bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
+        <h4 class="font-extrabold border-b pb-2">Current Bill</h4>
+        <div id="posCartItems" class="space-y-1"></div>
+        <div class="pt-2 border-t flex justify-between items-center font-black">
+          <span>Total: ₹<span id="posTotalAmount">0</span></span>
+          <button onclick="printPOSBill()" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs">Print Bill</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CATEGORIES VIEW -->
+    <div id="view-categories" class="hidden space-y-4 p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-black text-slate-900 uppercase">Categories Manager</h3>
+        <button onclick="openCategoryModal()" class="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs">+ Add Category</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5" id="categoriesGrid">
+        <!-- Categories injected here -->
+      </div>
+    </div>
+
+    <!-- 4. KHATA BOOK VIEW -->
+    <div id="view-khata" class="hidden space-y-4 p-4">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-2xs text-xs">
+        <h3 class="font-extrabold text-slate-900 uppercase">Add New Udhar Entry</h3>
+        <form onsubmit="handleKhataSubmit(event)" class="space-y-2">
+          <input type="text" id="khataName" required placeholder="Customer / Hotel Name *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          <div class="grid grid-cols-2 gap-2">
+            <input type="tel" id="khataPhone" placeholder="Mobile Number" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+            <input type="number" id="khataAmount" required placeholder="Udhar Amount (₹) *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          </div>
+          <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2 rounded-xl">Add Udhar</button>
+        </form>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <h3 class="font-extrabold text-slate-900 uppercase">Pending Udhar Khata Ledger</h3>
+        <div class="space-y-2" id="khataList">
+          <!-- Khata entries injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. PRODUCTS VIEW -->
+    <div id="view-products" class="hidden space-y-3 p-4">
+      <h3 class="text-xs font-black text-slate-900 uppercase">All Store Products</h3>
+      <div class="space-y-2" id="productsList">
+        <!-- Product items injected here -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Product Modal -->
+  <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-slate-900 uppercase" id="modalTitle">Add New Product</h3>
+        <button onclick="closeProductModal()" class="text-slate-400 text-base font-bold">✕</button>
+      </div>
+      <form onsubmit="handleProductSubmit(event)" class="space-y-2.5">
+        <input type="hidden" id="editProductId" />
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Product Name *</label>
+          <input type="text" id="pName" required placeholder="e.g. Toor Dal" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Category</label>
+          <select id="pCategory" class="w-full bg-slate-50 border p-2 rounded-xl outline-none">
+            <option value="Atta & Flour">Atta & Flour</option>
+            <option value="Rice & Grains">Rice & Grains</option>
+            <option value="Dal & Pulses">Dal & Pulses</option>
+            <option value="Oil & Ghee">Oil & Ghee</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">MRP (₹)</label>
+            <input type="number" id="pMrp" required placeholder="160" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          </div>
+          <div>
+            <label class="font-bold text-emerald-900 block mb-1">Selling Price (₹)</label>
+            <input type="number" id="pPrice" required placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Stock Qty</label>
+            <input type="number" id="pStock" required placeholder="50" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Unit</label>
+            <input type="text" id="pUnit" required placeholder="1 kg / 1 L" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Photo Upload</label>
+          <input type="file" id="pImgFile" accept="image/*" onchange="handleImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
+        </div>
+        <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Thermal Bill Print Modal -->
+  <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 font-mono text-xs shadow-2xl">
+      <div class="border border-dashed p-3 rounded-xl bg-slate-50 text-center space-y-1">
+        <h2 class="font-black text-sm text-emerald-950">HUMA TRADERS</h2>
+        <p class="text-[9px] text-slate-500">Solapur Store Counter Bill</p>
+        <div id="printBillItems" class="divide-y text-left pt-2"></div>
+        <div class="border-t pt-2 flex justify-between font-black text-xs">
+          <span>TOTAL:</span>
+          <span>₹<span id="printBillTotal">0</span></span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs">Print Receipt</button>
+        <button onclick="document.getElementById('printModal').classList.add('hidden')" class="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg max-w-md mx-auto">
+    <div class="grid grid-cols-5 h-14">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center justify-center text-emerald-800 font-black">
+        <span class="text-base leading-none">🏠</span>
+        <span class="text-[10px] mt-1 font-bold">Home</span>
+      </button>
+      <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center justify-center text-slate-500">
+        <span class="text-base leading-none">🛒</span>
+        <span class="text-[10px] mt-1 font-bold">POS Bill</span>
+      </button>
+      <button onclick="switchTab('categories')" id="nav-categories" class="flex flex-col items-center justify-center text-slate-500">
+        <span class="text-base leading-none">📚</span>
+        <span class="text-[10px] mt-1 font-bold">Categories</span>
+      </button>
+      <button onclick="switchTab('khata')" id="nav-khata" class="flex flex-col items-center justify-center text-slate-500">
+        <span class="text-base leading-none">💳</span>
+        <span class="text-[10px] mt-1 font-bold">Khata</span>
+      </button>
+      <button onclick="switchTab('products')" id="nav-products" class="flex flex-col items-center justify-center text-slate-500">
+        <span class="text-base leading-none">📦</span>
+        <span class="text-[10px] mt-1 font-bold">Products</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Pure Data State
+    let products = [
+      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, stock: 45, unit: '10 kg', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, stock: 520, unit: '1 kg', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P103', name: 'Yellow Moong Dal', category: 'Dal & Pulses', mrp: 140, sellingPrice: 120, stock: 180, unit: '1 kg', image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' }
+    ];
+
+    let categories = [
+      { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c3', name: 'Dal & Pulses', icon: '🫘', active: true, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400' }
+    ];
+
+    let orders = [
+      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod' },
+      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', address: 'Old Employment Chowk', amount: 680, status: 'Packed', agent: 'Rahul Shinde' }
+    ];
+
+    let khata = [
+      { id: 'k1', name: 'Ramesh Hotel', phone: '9822099999', amount: 4200 },
+      { id: 'k2', name: 'Suhail Shaikh', phone: '9822012345', amount: 850 }
+    ];
+
+    let posCart = [];
+    let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = '✓ ' + msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2500);
+    }
+
+    function switchTab(tabId) {
+      ['dashboard', 'pos', 'categories', 'khata', 'products'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        document.getElementById(`nav-${t}`).classList.remove('text-emerald-800', 'font-black');
+        document.getElementById(`nav-${t}`).classList.add('text-slate-500');
       });
 
-      useEffect(() => {
-        if (editingProduct) {
-          setFormData({
-            name: editingProduct.name || '',
-            hindiName: editingProduct.hindiName || '',
-            category: editingProduct.category || 'Rice & Grains',
-            mrp: editingProduct.mrp || '',
-            sellingPrice: editingProduct.sellingPrice || '',
-            stock: editingProduct.stock || '',
-            unit: editingProduct.unit || '1 kg',
-            isLoose: !!editingProduct.isLoose,
-            image: editingProduct.image || 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
-          });
-        } else {
-          setFormData({
-            name: '', hindiName: '', category: 'Rice & Grains',
-            mrp: '', sellingPrice: '', stock: '', unit: '1 kg',
-            isLoose: false, image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400'
-          });
-        }
-      }, [editingProduct, isProductModalOpen]);
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      document.getElementById(`nav-${tabId}`).classList.add('text-emerald-800', 'font-black');
+      document.getElementById(`nav-${tabId}`).classList.remove('text-slate-500');
+    }
 
-      if (!isProductModalOpen) return null;
-
-      const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => setFormData(prev => ({ ...prev, image: reader.result }));
-          reader.readAsDataURL(file);
-        }
-      };
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        saveProduct({
-          name: formData.name,
-          hindiName: formData.hindiName,
-          category: formData.category,
-          mrp: Number(formData.mrp),
-          sellingPrice: Number(formData.sellingPrice),
-          stock: Number(formData.stock),
-          unit: formData.unit,
-          isLoose: formData.isLoose,
-          image: formData.image
-        });
-      };
-
-      return (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
-            <div className="flex justify-between items-center border-b pb-2">
-              <h3 className="font-extrabold text-slate-900 uppercase">
-                {editingProduct ? 'Edit Product' : 'Add New Product'}
-              </h3>
-              <button onClick={() => setIsProductModalOpen(false)} className="text-slate-400 text-base font-bold">✕</button>
+    function renderOrders() {
+      const container = document.getElementById('ordersList');
+      container.innerHTML = orders.map(o => `
+        <div class="p-3 bg-slate-50 rounded-2xl border space-y-2 text-xs">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-extrabold text-slate-900">${o.id} • ₹${o.amount}</p>
+              <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.address})</p>
             </div>
-
-            <form onSubmit={handleSubmit} className="space-y-2.5">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Product Name *</label>
-                <input type="text" required placeholder="e.g. Toor Dal" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Hindi Name</label>
-                <input type="text" placeholder="e.g. तूर डाळ" value={formData.hindiName} onChange={(e) => setFormData({ ...formData, hindiName: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Category</label>
-                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none">
-                  {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">MRP (₹)</label>
-                  <input type="number" required placeholder="160" value={formData.mrp} onChange={(e) => setFormData({ ...formData, mrp: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-                </div>
-                <div>
-                  <label className="font-bold text-emerald-900 block mb-1">Selling Price (₹)</label>
-                  <input type="number" required placeholder="135" value={formData.sellingPrice} onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })} className="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Stock Qty</label>
-                  <input type="number" required placeholder="50" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-                </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Unit</label>
-                  <input type="text" required placeholder="1 kg / 1 L" value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 py-1">
-                <input type="checkbox" id="isLoose" checked={formData.isLoose} onChange={(e) => setFormData({ ...formData, isLoose: e.target.checked })} className="w-4 h-4 text-emerald-800 rounded" />
-                <label htmlFor="isLoose" className="font-bold text-slate-700">Loose Item (Weight Presets for Customer)</label>
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Product Photo</label>
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full bg-slate-50 border p-1.5 rounded-xl text-[10px]" />
-                {formData.image && <img src={formData.image} className="w-12 h-12 rounded-xl object-cover mt-2 border" />}
-              </div>
-
-              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">
-                Save Product
-              </button>
-            </form>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">${o.status}</span>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t text-[10px]">
+            <span class="text-slate-500">Delivery Agent: <strong>${o.agent}</strong></span>
+            ${o.status !== 'Delivered' ? `<button onclick="markDelivered('${o.id}')" class="bg-emerald-800 text-white font-bold px-2 py-1 rounded-lg">Mark Delivered</button>` : ''}
           </div>
         </div>
-      );
-    };
+      `).join('');
+    }
 
-    const CategoryModal = () => {
-      const { isCategoryModalOpen, setIsCategoryModalOpen, saveCategory } = useAdmin();
-      const [name, setName] = useState('');
-      const [icon, setIcon] = useState('📦');
-      const [subcategories, setSubcategories] = useState('');
-      const [imageUrl, setImageUrl] = useState('');
+    function markDelivered(id) {
+      orders = orders.map(o => o.id === id ? { ...o, status: 'Delivered' } : o);
+      renderOrders();
+      showToast('Order delivered!');
+    }
 
-      if (!isCategoryModalOpen) return null;
+    function renderProducts() {
+      const container = document.getElementById('productsList');
+      const posGrid = document.getElementById('posProductsGrid');
 
-      const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => setImageUrl(reader.result);
-          reader.readAsDataURL(file);
-        }
-      };
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        saveCategory({ name, icon, image: imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400', subcategories });
-      };
-
-      return (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl text-xs">
-            <div className="flex justify-between items-center border-b pb-2">
-              <h3 className="font-extrabold text-slate-900">Add New Category</h3>
-              <button onClick={() => setIsCategoryModalOpen(false)} className="text-slate-400 text-base font-bold">✕</button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-2.5">
-              <input type="text" required placeholder="Category Name (e.g. Snacks)" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              <input type="text" placeholder="Emoji Icon (e.g. 🍪)" value={icon} onChange={(e) => setIcon(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              <input type="text" placeholder="Subcategories (comma separated)" value={subcategories} onChange={(e) => setSubcategories(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full bg-slate-50 border p-1.5 rounded-xl text-[10px]" />
-              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Category</button>
-            </form>
+      container.innerHTML = products.map(p => `
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
+          <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
+          <div class="flex-1 min-w-0">
+            <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
+            <p class="text-[10px] text-slate-500">${p.category} • Stock: ${p.stock} ${p.unit}</p>
+            <span class="font-black text-emerald-800">₹${p.sellingPrice}</span>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
+            <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
           </div>
         </div>
-      );
-    };
+      `).join('');
 
-    const DashboardView = () => {
-      const { orders, updateOrderStatus } = useAdmin();
+      posGrid.innerHTML = products.map(p => `
+        <div onclick="addToPos('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
+          <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
+          <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+          <div class="flex justify-between items-center mt-1">
+            <span class="font-black text-xs text-emerald-800">₹${p.sellingPrice}</span>
+            <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
+          </div>
+        </div>
+      `).join('');
+    }
 
-      return (
-        <div className="space-y-4 pb-20">
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
-            <h3 className="font-extrabold text-xs text-slate-900 flex items-center justify-between">
-              <span>Solapur Express Active Orders</span>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">{orders.length} Active</span>
-            </h3>
-            <div className="space-y-2">
-              {orders.map(o => (
-                <div key={o.id} className="p-3 bg-slate-50 rounded-2xl border space-y-2 text-xs">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-extrabold text-slate-900">{o.id} • ₹{o.amount}</p>
-                      <p className="text-[10px] text-slate-500 font-bold">{o.customerName} ({o.address})</p>
-                    </div>
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">{o.status}</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1 border-t text-[10px]">
-                    <span className="text-slate-500">Delivery Agent: <strong>{o.agent}</strong></span>
-                    {o.status !== 'Delivered' && (
-                      <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="bg-emerald-800 text-white font-bold px-2.5 py-1 rounded-lg">Mark Delivered</button>
-                    )}
-                  </div>
-                </div>
-              ))}
+    function addToPos(id) {
+      const prod = products.find(p => p.id === id);
+      posCart.push(prod);
+      renderPosCart();
+      showToast(prod.name + ' added to bill');
+    }
+
+    function renderPosCart() {
+      const cartBox = document.getElementById('posCartBox');
+      const itemsContainer = document.getElementById('posCartItems');
+      const totalSpan = document.getElementById('posTotalAmount');
+
+      if (posCart.length === 0) {
+        cartBox.classList.add('hidden');
+        return;
+      }
+
+      cartBox.classList.remove('hidden');
+      let total = 0;
+      itemsContainer.innerHTML = posCart.map(i => {
+        total += i.sellingPrice;
+        return `<div class="flex justify-between items-center py-1"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
+      }).join('');
+
+      totalSpan.innerText = total;
+    }
+
+    function printPOSBill() {
+      const itemsDiv = document.getElementById('printBillItems');
+      const totalSpan = document.getElementById('printBillTotal');
+
+      let total = 0;
+      itemsDiv.innerHTML = posCart.map(i => {
+        total += i.sellingPrice;
+        return `<div class="py-1 flex justify-between text-[10px]"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
+      }).join('');
+
+      totalSpan.innerText = total;
+      document.getElementById('printModal').classList.remove('hidden');
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoriesGrid');
+      container.innerHTML = categories.map(c => `
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+          <div class="h-20 w-full bg-slate-100 relative">
+            <img src="${c.image}" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
+              <span class="font-bold text-xs">${c.icon} ${c.name}</span>
             </div>
           </div>
         </div>
-      );
-    };
+      `).join('');
+    }
 
-    const PosBillingView = () => {
-      const { products, posCart, setPosCart, setSelectedOrderForThermal } = useAdmin();
-
-      const addToPosCart = (product) => {
-        setPosCart(prev => [...prev, { ...product, qty: 1, finalPrice: product.sellingPrice }]);
-      };
-
-      const posSubtotal = useMemo(() => posCart.reduce((acc, item) => acc + (item.finalPrice * item.qty), 0), [posCart]);
-
-      return (
-        <div className="space-y-4 pb-20">
-          <h3 className="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {products.map(p => (
-              <div key={p.id} onClick={() => addToPosCart(p)} className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
-                <img src={p.image} className="w-full h-16 object-cover rounded-xl mb-1.5" />
-                <h4 className="font-bold text-xs text-slate-800 line-clamp-1">{p.name}</h4>
-                <div className="flex justify-between items-center mt-1">
-                  <span className="font-black text-xs text-emerald-800">₹{p.sellingPrice}</span>
-                  <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
-                </div>
-              </div>
-            ))}
+    function renderKhata() {
+      const container = document.getElementById('khataList');
+      container.innerHTML = khata.map(k => `
+        <div class="bg-white p-3 rounded-2xl border flex justify-between items-center shadow-2xs">
+          <div>
+            <p class="font-bold text-slate-900">${k.name}</p>
+            <p class="text-[10px] text-slate-500">Ph: ${k.phone}</p>
           </div>
-
-          {posCart.length > 0 && (
-            <div className="bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
-              <h4 className="font-extrabold border-b pb-2">Current Bill ({posCart.length} Items)</h4>
-              {posCart.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center py-1">
-                  <span>{item.name}</span>
-                  <span className="font-bold">₹{item.finalPrice}</span>
-                </div>
-              ))}
-              <div className="pt-2 border-t flex justify-between items-center font-black">
-                <span>Total Amount: ₹{posSubtotal}</span>
-                <button onClick={() => { setSelectedOrderForThermal({ id: `HT-POS-${Math.floor(1000 + Math.random() * 9000)}`, items: posCart, amount: posSubtotal }); setPosCart([]); }} className="bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs">Print Thermal Receipt</button>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    const CategoryView = () => {
-      const { categories, toggleCategoryActive, setIsCategoryModalOpen } = useAdmin();
-
-      return (
-        <div className="space-y-4 pb-20">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black text-slate-900 uppercase">Categories Manager</h3>
-            <button onClick={() => setIsCategoryModalOpen(true)} className="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs">+ Add Category</button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            {categories.map(cat => (
-              <div key={cat.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-                <div className="h-20 w-full bg-slate-100 relative">
-                  <img src={cat.image} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
-                    <span className="font-bold text-xs">{cat.icon} {cat.name}</span>
-                    <button onClick={() => toggleCategoryActive(cat.id)} className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded-full ${cat.active ? 'bg-emerald-500' : 'bg-slate-600'}`}>
-                      {cat.active ? 'Active' : 'Hidden'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div class="text-right">
+            <span class="font-black text-rose-600 block">₹${k.amount}</span>
+            <button onclick="sendKhataWhatsApp('${k.phone}', '${k.name}', '${k.amount}')" class="text-[9px] bg-emerald-700 text-white font-bold px-2 py-0.5 rounded mt-1">Reminder</button>
           </div>
         </div>
-      );
+      `).join('');
+    }
+
+    function sendKhataWhatsApp(phone, name, amount) {
+      window.open(`https://wa.me/91${phone}?text=Hello%20${name},%20your%20pending%20Udhar%20balance%20at%20Huma%20Traders%20is%20₹${amount}.`, '_blank');
+    }
+
+    function handleKhataSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('khataName').value;
+      const phone = document.getElementById('khataPhone').value;
+      const amount = document.getElementById('khataAmount').value;
+
+      khata.push({ id: 'k' + Date.now(), name, phone, amount: Number(amount) });
+      renderKhata();
+      showToast('Khata entry added!');
+      e.target.reset();
+    }
+
+    function openProductModal() {
+      document.getElementById('editProductId').value = '';
+      document.getElementById('modalTitle').innerText = 'Add New Product';
+      document.getElementById('pName').value = '';
+      document.getElementById('pMrp').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pStock').value = '';
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function handleImgUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => { uploadedImg = reader.result; };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editProductId').value;
+      const name = document.getElementById('pName').value;
+      const category = document.getElementById('pCategory').value;
+      const mrp = Number(document.getElementById('pMrp').value);
+      const sellingPrice = Number(document.getElementById('pPrice').value);
+      const stock = Number(document.getElementById('pStock').value);
+      const unit = document.getElementById('pUnit').value;
+
+      if (editId) {
+        products = products.map(p => p.id === editId ? { ...p, name, category, mrp, sellingPrice, stock, unit, image: uploadedImg } : p);
+        showToast('Product updated!');
+      } else {
+        products.unshift({ id: 'HT-P' + Math.floor(100 + Math.random() * 900), name, category, mrp, sellingPrice, stock, unit, image: uploadedImg });
+        showToast('New Product added!');
+      }
+
+      closeProductModal();
+      renderProducts();
+    }
+
+    function editProduct(id) {
+      const p = products.find(prod => prod.id === id);
+      document.getElementById('editProductId').value = p.id;
+      document.getElementById('modalTitle').innerText = 'Edit Product';
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pCategory').value = p.category;
+      document.getElementById('pMrp').value = p.mrp;
+      document.getElementById('pPrice').value = p.sellingPrice;
+      document.getElementById('pStock').value = p.stock;
+      document.getElementById('pUnit').value = p.unit;
+      uploadedImg = p.image;
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      renderProducts();
+      showToast('Product deleted.');
+    }
+
+    // Initial Load
+    window.onload = () => {
+      renderOrders();
+      renderProducts();
+      renderCategories();
+      renderKhata();
     };
-
-    const KhataView = () => {
-      const { khataList, addKhataEntry } = useAdmin();
-      const [name, setName] = useState('');
-      const [phone, setPhone] = useState('');
-      const [amount, setAmount] = useState('');
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        addKhataEntry(name, phone, amount);
-        setName(''); setPhone(''); setAmount('');
-      };
-
-      return (
-        <div className="space-y-4 pb-20">
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-2xs text-xs">
-            <h3 className="font-extrabold text-slate-900 uppercase">Add New Udhar Entry</h3>
-            <form onSubmit={handleSubmit} className="space-y-2">
-              <input type="text" required placeholder="Customer / Hotel Name *" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              <div className="grid grid-cols-2 gap-2">
-                <input type="tel" placeholder="Mobile Number" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-                <input type="number" required placeholder="Udhar Amount (₹) *" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-              </div>
-              <button type="submit" className="w-full bg-emerald-800 text-white font-bold py-2 rounded-xl">Add Udhar</button>
-            </form>
-          </div>
-
-          <div className="space-y-2 text-xs">
-            <h3 className="font-extrabold text-slate-900 uppercase">Pending Udhar Khata Ledger</h3>
-            {khataList.map(k => (
-              <div key={k.id} className="bg-white p-3 rounded-2xl border flex justify-between items-center shadow-2xs">
-                <div>
-                  <p className="font-bold text-slate-900">{k.customerName}</p>
-                  <p className="text-[10px] text-slate-500">Ph: {k.mobile}</p>
-                </div>
-                <div className="text-right">
-                  <span className="font-black text-rose-600 block">₹{k.balanceDue}</span>
-                  <button onClick={() => window.open(`https://wa.me/91${k.mobile}?text=Hello%20${k.customerName},%20your%20pending%20Udhar%20balance%20at%20Huma%20Traders%20is%20₹${k.balanceDue}.`, '_blank')} className="text-[9px] bg-emerald-700 text-white font-bold px-2 py-0.5 rounded mt-1">Reminder</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    };
-
-    const ProductsView = () => {
-      const { products, setEditingProduct, setIsProductModalOpen, deleteProduct } = useAdmin();
-
-      return (
-        <div className="space-y-3 pb-20">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xs font-black text-slate-900 uppercase">All Store Products ({products.length})</h3>
-          </div>
-
-          <div className="space-y-2">
-            {products.map(p => (
-              <div key={p.id} className="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs">
-                <img src={p.image} className="w-12 h-12 rounded-xl object-cover border shrink-0" />
-                <div className="flex-1 min-w-0 text-xs">
-                  <h4 className="font-extrabold text-slate-900 truncate">{p.name}</h4>
-                  <p className="text-[10px] text-slate-500">{p.category} • Stock: {p.stock} {p.unit}</p>
-                  <span className="font-black text-emerald-800">₹{p.sellingPrice}</span>
-                </div>
-                <div className="flex gap-1 shrink-0">
-                  <button onClick={() => { setEditingProduct(p); setIsProductModalOpen(true); }} className="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
-                  <button onClick={() => deleteProduct(p.id)} className="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    };
-
-    const ThermalBillModal = () => {
-      const { selectedOrderForThermal, setSelectedOrderForThermal } = useAdmin();
-      if (!selectedOrderForThermal) return null;
-
-      return (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 font-mono text-xs shadow-2xl">
-            <div className="border border-dashed p-3 rounded-xl bg-slate-50 text-center space-y-1">
-              <h2 className="font-black text-sm text-emerald-950">HUMA TRADERS</h2>
-              <p className="text-[9px] text-slate-500">Solapur Store Counter Bill</p>
-              <div className="divide-y text-left pt-2">
-                {selectedOrderForThermal.items.map((item, idx) => (
-                  <div key={idx} className="py-1 flex justify-between text-[10px]">
-                    <span>{item.name} x{item.qty}</span>
-                    <span className="font-bold">₹{item.finalPrice}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t pt-2 flex justify-between font-black text-xs">
-                <span>TOTAL:</span>
-                <span>₹{selectedOrderForThermal.amount}</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button onClick={() => window.print()} className="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs">Print Receipt</button>
-              <button onClick={() => setSelectedOrderForThermal(null)} className="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">Close</button>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    const BottomNav = () => {
-      const { activeTab, setActiveTab } = useAdmin();
-
-      const navItems = [
-        { id: 'dashboard', label: 'Home', icon: '🏠' },
-        { id: 'pos', label: 'POS Bill', icon: '🛒' },
-        { id: 'categories', label: 'Categories', icon: '📚' },
-        { id: 'khata', label: 'Khata Book', icon: '💳' },
-        { id: 'products', label: 'Products', icon: '📦' }
-      ];
-
-      return (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg max-w-md mx-auto">
-          <div className="grid grid-cols-5 h-14">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center justify-center ${activeTab === item.id ? 'text-emerald-800 font-black' : 'text-slate-500'}`}
-              >
-                <span className="text-base leading-none">{item.icon}</span>
-                <span className="text-[10px] mt-1 font-bold">{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      );
-    };
-
-    const App = () => {
-      const { activeTab } = useAdmin();
-
-      return (
-        <div className="min-h-screen bg-slate-100 max-w-md mx-auto shadow-xl relative">
-          <Header />
-          <Toast />
-          <ProductModal />
-          <CategoryModal />
-          <ThermalBillModal />
-          <main className="px-4 py-3">
-            {activeTab === 'dashboard' && <DashboardView />}
-            {activeTab === 'pos' && <PosBillingView />}
-            {activeTab === 'categories' && <CategoryView />}
-            {activeTab === 'khata' && <KhataView />}
-            {activeTab === 'products' && <ProductsView />}
-          </main>
-          <BottomNav />
-        </div>
-      );
-    };
-
-    ReactDOM.createRoot(document.getElementById('root')).render(
-      <AdminProvider>
-        <App />
-      </AppProvider>
-    );
   </script>
 </body>
 </html>
