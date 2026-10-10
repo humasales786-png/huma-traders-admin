@@ -51,7 +51,7 @@
       </div>
       <div class="flex items-center gap-1.5">
         <button onclick="connectBluetoothPrinter()" class="bg-emerald-800 hover:bg-emerald-700 text-amber-300 text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-emerald-700 flex items-center gap-1">
-          🖨️ <span id="btStatus">Connected</span>
+          🖨️ <span id="btStatus">BT Print</span>
         </button>
         <button onclick="openProductModal()" class="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl shadow-xs">
           + Add Item
@@ -60,7 +60,7 @@
     </div>
   </header>
 
-  <!-- Notification Toast -->
+  <!-- Toast Notification -->
   <div id="toast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
     ✓ Toast Message
   </div>
@@ -71,10 +71,8 @@
     <!-- 1. DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
       
-      <!-- Interactive Analytics Cards -->
+      <!-- Analytics Cards -->
       <div class="grid grid-cols-2 gap-2 text-xs">
-        
-        <!-- Today's Sales Card -->
         <div onclick="switchTab('pos'); showToast('Opening POS Billing');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Today's Sales</span>
@@ -84,7 +82,6 @@
           <span class="text-[9px] text-emerald-600 font-bold">Online + Counter POS</span>
         </div>
 
-        <!-- Orders Today Card -->
         <div onclick="switchTab('orders'); showToast('Opening Orders List');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Orders Today</span>
@@ -94,7 +91,6 @@
           <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">2</span> Pending Delivery</span>
         </div>
 
-        <!-- Total Khata Due Card -->
         <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Total Khata Due</span>
@@ -104,7 +100,6 @@
           <span class="text-[9px] text-slate-500 font-bold">Pending Udhar Balance</span>
         </div>
 
-        <!-- Low Stock Alert Card -->
         <div onclick="switchTab('products'); showToast('Opening Low Stock Items');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Low Stock Alert</span>
@@ -113,15 +108,12 @@
           <p class="text-base font-black text-amber-600 mt-0.5"><span id="statLowStock">2</span> Items</p>
           <span class="text-[9px] text-rose-500 font-bold">Action Needed</span>
         </div>
-
       </div>
 
-      <!-- Ration Parchi Order Request Box -->
+      <!-- Ration Parchi Box -->
       <div class="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl space-y-2 shadow-2xs">
         <div class="flex justify-between items-center">
-          <h3 class="font-black text-xs text-amber-950 flex items-center gap-1">
-            📜 Live Customer Ration Parchi Alert
-          </h3>
+          <h3 class="font-black text-xs text-amber-950 flex items-center gap-1">📜 Live Customer Ration Parchi Alert</h3>
           <span class="text-[9px] bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-full">1 New Parchi</span>
         </div>
         <div class="bg-white p-2.5 rounded-xl border border-amber-200 text-xs space-y-1">
@@ -137,13 +129,13 @@
         </div>
       </div>
 
-      <!-- Low Stock Warning Box -->
+      <!-- Low Stock Alert Box -->
       <div class="bg-rose-50 border border-rose-200 p-3 rounded-2xl space-y-2 text-xs">
         <h3 class="font-extrabold text-rose-950">⚠️ Low Stock Warning Items</h3>
         <div class="space-y-1.5" id="lowStockList"></div>
       </div>
 
-      <!-- Recent Orders Quick List -->
+      <!-- Recent Orders List -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
         <div class="flex justify-between items-center">
           <h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders</h3>
@@ -154,20 +146,18 @@
 
     </div>
 
-    <!-- 2. ORDERS TAB (LIVE TRACKING & MANAGEMENT) -->
+    <!-- 2. ORDERS TAB -->
     <div id="view-orders" class="hidden space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-slate-900 uppercase">Order Management & Tracking</h3>
         <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" id="allOrdersTag">2 Orders</span>
       </div>
-
       <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar">
         <button onclick="filterOrders('All')" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All Orders</button>
         <button onclick="filterOrders('Placed')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Placed</button>
         <button onclick="filterOrders('Out for Delivery')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Out for Delivery</button>
         <button onclick="filterOrders('Delivered')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Delivered</button>
       </div>
-
       <div class="space-y-3.5" id="fullOrdersList"></div>
     </div>
 
@@ -197,8 +187,6 @@
 
     <!-- 5. ADVANCED KHATA BOOK VIEW -->
     <div id="view-khata" class="hidden space-y-4">
-      
-      <!-- Summary Bar -->
       <div class="bg-emerald-950 text-white p-3.5 rounded-2xl shadow-md grid grid-cols-3 gap-2 text-center text-xs">
         <div>
           <p class="text-[9px] text-emerald-300 font-bold uppercase">Total Udhar</p>
@@ -214,7 +202,6 @@
         </div>
       </div>
 
-      <!-- Add Account Form -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-2xs text-xs">
         <h3 class="font-extrabold text-slate-900 uppercase">Create New Khata Account</h3>
         <form onsubmit="handleKhataSubmit(event)" class="space-y-2">
@@ -227,7 +214,6 @@
         </form>
       </div>
 
-      <!-- Ledger Accounts List -->
       <div class="space-y-2 text-xs">
         <h3 class="font-extrabold text-slate-900 uppercase">Customer Khata Register</h3>
         <div class="space-y-2" id="khataList"></div>
@@ -291,7 +277,7 @@
     </div>
   </div>
 
-  <!-- Advance Product Modal -->
+  <!-- FULLY FIXED PRODUCT MODAL -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -357,7 +343,7 @@
 
         <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Purchase Cost</label>
+            <label class="font-bold text-slate-700 block mb-1">Cost Price</label>
             <input type="number" id="pCost" oninput="calcMargin()" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
           </div>
           <div>
@@ -400,7 +386,7 @@
     </div>
   </div>
 
-  <!-- Category Modal -->
+  <!-- FULLY FIXED CATEGORY MODAL -->
   <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -512,39 +498,54 @@
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
-      toast.innerText = '✓ ' + msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 2500);
+      if (toast) {
+        toast.innerText = '✓ ' + msg;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2500);
+      }
     }
 
     function switchTab(tabId) {
       ['dashboard', 'orders', 'pos', 'categories', 'khata', 'products'].forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`nav-${t}`).classList.remove('text-emerald-800', 'font-black');
-        document.getElementById(`nav-${t}`).classList.add('text-slate-500');
+        const viewEl = document.getElementById(`view-${t}`);
+        const navEl = document.getElementById(`nav-${t}`);
+        if (viewEl) viewEl.classList.add('hidden');
+        if (navEl) {
+          navEl.classList.remove('text-emerald-800', 'font-black');
+          navEl.classList.add('text-slate-500');
+        }
       });
 
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.getElementById(`nav-${tabId}`).classList.add('text-emerald-800', 'font-black');
-      document.getElementById(`nav-${tabId}`).classList.remove('text-slate-500');
+      const activeView = document.getElementById(`view-${tabId}`);
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) {
+        activeNav.classList.add('text-emerald-800', 'font-black');
+        activeNav.classList.remove('text-slate-500');
+      }
     }
 
     function toggleLoosePresets(checked) {
-      document.getElementById('loosePresetsBox').classList.toggle('hidden', !checked);
+      const box = document.getElementById('loosePresetsBox');
+      if (box) box.classList.toggle('hidden', !checked);
     }
 
     function calcMargin() {
-      const cost = Number(document.getElementById('pCost').value);
-      const sell = Number(document.getElementById('pPrice').value);
+      const costEl = document.getElementById('pCost');
+      const sellEl = document.getElementById('pPrice');
       const badge = document.getElementById('marginBadge');
       const val = document.getElementById('marginVal');
 
-      if (cost > 0 && sell > 0) {
-        const margin = Math.round(((sell - cost) / cost) * 100);
-        val.innerText = `${margin}% (${margin >= 0 ? 'Profit' : 'Loss'})`;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
+      if (costEl && sellEl && badge && val) {
+        const cost = Number(costEl.value);
+        const sell = Number(sellEl.value);
+        if (cost > 0 && sell > 0) {
+          const margin = Math.round(((sell - cost) / cost) * 100);
+          val.innerText = `${margin}% (${margin >= 0 ? 'Profit' : 'Loss'})`;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
       }
     }
 
@@ -558,7 +559,8 @@
           acceptAllDevices: true,
           optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
         });
-        document.getElementById('btStatus').innerText = 'Connected';
+        const statusEl = document.getElementById('btStatus');
+        if (statusEl) statusEl.innerText = 'Connected';
         showToast('Bluetooth Printer Connected!');
       } catch (error) {
         console.log(error);
@@ -567,8 +569,11 @@
 
     function renderLowStock() {
       const container = document.getElementById('lowStockList');
+      const statEl = document.getElementById('statLowStock');
       const lowItems = products.filter(p => p.stock <= p.threshold);
-      document.getElementById('statLowStock').innerText = lowItems.length;
+      if (statEl) statEl.innerText = lowItems.length;
+
+      if (!container) return;
 
       if (lowItems.length === 0) {
         container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
@@ -587,45 +592,53 @@
       const dbContainer = document.getElementById('dashboardOrdersList');
       const fullContainer = document.getElementById('fullOrdersList');
 
-      document.getElementById('statOrders').innerText = orders.length;
+      const statOrders = document.getElementById('statOrders');
+      const statPending = document.getElementById('statPending');
+      const allTag = document.getElementById('allOrdersTag');
+
+      if (statOrders) statOrders.innerText = orders.length;
       const pending = orders.filter(o => o.status !== 'Delivered').length;
-      document.getElementById('statPending').innerText = pending;
-      document.getElementById('allOrdersTag').innerText = `${orders.length} Total`;
+      if (statPending) statPending.innerText = pending;
+      if (allTag) allTag.innerText = `${orders.length} Total`;
 
-      dbContainer.innerHTML = orders.slice(0, 2).map(o => `
-        <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
-          <div class="flex justify-between font-bold">
-            <span>${o.id} • ₹${o.amount}</span>
-            <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
-          </div>
-          <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
-        </div>
-      `).join('');
-
-      fullContainer.innerHTML = orders.map(o => `
-        <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
-          <div class="flex justify-between items-start border-b pb-2">
-            <div>
-              <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
-              <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
-              <p class="text-[10px] text-slate-400">${o.address}</p>
+      if (dbContainer) {
+        dbContainer.innerHTML = orders.slice(0, 2).map(o => `
+          <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
+            <div class="flex justify-between font-bold">
+              <span>${o.id} • ₹${o.amount}</span>
+              <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
             </div>
-            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+            <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
           </div>
-          <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
-          
-          <div class="flex items-center justify-between pt-1">
-            <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-100 text-slate-800 text-[10px] font-bold p-1 rounded-lg outline-none">
-              <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Status: Placed</option>
-              <option value="Packing" ${o.status === 'Packing' ? 'selected' : ''}>Status: Packing</option>
-              <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Status: Out for Delivery</option>
-              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
-            </select>
+        `).join('');
+      }
 
-            <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Update</button>
+      if (fullContainer) {
+        fullContainer.innerHTML = orders.map(o => `
+          <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+            <div class="flex justify-between items-start border-b pb-2">
+              <div>
+                <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
+                <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
+                <p class="text-[10px] text-slate-400">${o.address}</p>
+              </div>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+            </div>
+            <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
+            
+            <div class="flex items-center justify-between pt-1">
+              <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-100 text-slate-800 text-[10px] font-bold p-1 rounded-lg outline-none">
+                <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Status: Placed</option>
+                <option value="Packing" ${o.status === 'Packing' ? 'selected' : ''}>Status: Packing</option>
+                <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Status: Out for Delivery</option>
+                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
+              </select>
+
+              <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Update</button>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     function updateOrderStatus(id, newStatus) {
@@ -643,41 +656,50 @@
       let grandTotalUdhar = 0;
       let grandTotalJama = 0;
 
-      container.innerHTML = khataAccounts.map(acc => {
-        const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
-        const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
-        const netBalance = totalUdhar - totalJama;
+      if (container) {
+        container.innerHTML = khataAccounts.map(acc => {
+          const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
+          const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
+          const netBalance = totalUdhar - totalJama;
 
-        grandTotalUdhar += totalUdhar;
-        grandTotalJama += totalJama;
+          grandTotalUdhar += totalUdhar;
+          grandTotalJama += totalJama;
 
-        return `
-          <div onclick="openPassbook('${acc.id}')" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center shadow-2xs cursor-pointer active:scale-98 transition-transform">
-            <div>
-              <p class="font-bold text-slate-900 text-xs">${acc.name}</p>
-              <p class="text-[10px] text-slate-500">Ph: ${acc.phone} • ${acc.history.length} Txns</p>
-              <p class="text-[9px] text-slate-400">Total Udhar: ₹${totalUdhar} | Jama: ₹${totalJama}</p>
+          return `
+            <div onclick="openPassbook('${acc.id}')" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center shadow-2xs cursor-pointer active:scale-98 transition-transform">
+              <div>
+                <p class="font-bold text-slate-900 text-xs">${acc.name}</p>
+                <p class="text-[10px] text-slate-500">Ph: ${acc.phone} • ${acc.history.length} Txns</p>
+                <p class="text-[9px] text-slate-400">Total Udhar: ₹${totalUdhar} | Jama: ₹${totalJama}</p>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-xs ${netBalance > 0 ? 'text-rose-600' : 'text-emerald-700'} block">
+                  ₹${netBalance} ${netBalance > 0 ? 'Due' : 'Clear'}
+                </span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-800 font-extrabold px-2 py-0.5 rounded mt-1 inline-block">View Passbook →</span>
+              </div>
             </div>
-            <div class="text-right">
-              <span class="font-black text-xs ${netBalance > 0 ? 'text-rose-600' : 'text-emerald-700'} block">
-                ₹${netBalance} ${netBalance > 0 ? 'Due' : 'Clear'}
-              </span>
-              <span class="text-[9px] bg-emerald-50 text-emerald-800 font-extrabold px-2 py-0.5 rounded mt-1 inline-block">View Passbook →</span>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
 
-      document.getElementById('khataTotalUdhar').innerText = grandTotalUdhar;
-      document.getElementById('khataTotalJama').innerText = grandTotalJama;
+      const uEl = document.getElementById('khataTotalUdhar');
+      const jEl = document.getElementById('khataTotalJama');
+      const nEl = document.getElementById('khataNetBalance');
+      const sEl = document.getElementById('statKhata');
+
+      if (uEl) uEl.innerText = grandTotalUdhar;
+      if (jEl) jEl.innerText = grandTotalJama;
       const net = grandTotalUdhar - grandTotalJama;
-      document.getElementById('khataNetBalance').innerText = net;
-      document.getElementById('statKhata').innerText = net;
+      if (nEl) nEl.innerText = net;
+      if (sEl) sEl.innerText = net;
     }
 
     function openPassbook(accId) {
       activeKhataId = accId;
       const acc = khataAccounts.find(a => a.id === accId);
+      if (!acc) return;
+
       document.getElementById('pbCustomerName').innerText = acc.name;
       document.getElementById('pbCustomerPhone').innerText = 'Mobile: ' + acc.phone;
 
@@ -688,17 +710,19 @@
       document.getElementById('pbBalanceDue').innerText = balance;
 
       const histDiv = document.getElementById('pbHistoryList');
-      histDiv.innerHTML = acc.history.map(h => `
-        <div class="flex justify-between items-center p-2 rounded-xl ${h.type === 'jama' ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} text-xs">
-          <div>
-            <p class="font-bold text-slate-800">${h.type === 'jama' ? '🟢 Jama (Payment Received)' : '🔴 Udhar (Debit Item)'}</p>
-            <p class="text-[9px] text-slate-500">${h.date} • ${h.note || ''}</p>
+      if (histDiv) {
+        histDiv.innerHTML = acc.history.map(h => `
+          <div class="flex justify-between items-center p-2 rounded-xl ${h.type === 'jama' ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} text-xs">
+            <div>
+              <p class="font-bold text-slate-800">${h.type === 'jama' ? '🟢 Jama (Payment Received)' : '🔴 Udhar (Debit Item)'}</p>
+              <p class="text-[9px] text-slate-500">${h.date} • ${h.note || ''}</p>
+            </div>
+            <span class="font-black text-xs ${h.type === 'jama' ? 'text-emerald-700' : 'text-rose-600'}">
+              ${h.type === 'jama' ? '-' : '+'} ₹${h.amount}
+            </span>
           </div>
-          <span class="font-black text-xs ${h.type === 'jama' ? 'text-emerald-700' : 'text-rose-600'}">
-            ${h.type === 'jama' ? '-' : '+'} ₹${h.amount}
-          </span>
-        </div>
-      `).join('');
+        `).join('');
+      }
 
       document.getElementById('passbookModal').classList.remove('hidden');
     }
@@ -718,10 +742,12 @@
       const note = document.getElementById('txnNote').value;
 
       const acc = khataAccounts.find(a => a.id === activeKhataId);
-      acc.history.unshift({
-        date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type, amount, note
-      });
+      if (acc) {
+        acc.history.unshift({
+          date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type, amount, note
+        });
+      }
 
       document.getElementById('txnModal').classList.add('hidden');
       openPassbook(activeKhataId);
@@ -731,6 +757,7 @@
 
     function sendKhataWhatsAppStatement() {
       const acc = khataAccounts.find(a => a.id === activeKhataId);
+      if (!acc) return;
       const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
       const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
       const balance = totalUdhar - totalJama;
@@ -760,52 +787,60 @@
       const container = document.getElementById('productsList');
       const posGrid = document.getElementById('posProductsGrid');
 
-      container.innerHTML = products.map(p => `
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
-          <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
-          <div class="flex-1 min-w-0">
-            <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
-            <p class="text-[10px] text-slate-500">${p.category} • Stock: ${p.stock} ${p.unit}</p>
-            <span class="font-black text-emerald-800">₹${p.sellingPrice}</span>
+      if (container) {
+        container.innerHTML = products.map(p => `
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
+            <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
+            <div class="flex-1 min-w-0">
+              <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
+              <p class="text-[10px] text-slate-500">${p.category} • Stock: ${p.stock} ${p.unit}</p>
+              <span class="font-black text-emerald-800">₹${p.sellingPrice}</span>
+            </div>
+            <div class="flex gap-1 shrink-0">
+              <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
+              <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
+            </div>
           </div>
-          <div class="flex gap-1 shrink-0">
-            <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
-            <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
 
-      posGrid.innerHTML = products.map(p => `
-        <div onclick="addToPos('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
-          <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
-          <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
-          <div class="flex justify-between items-center mt-1">
-            <span class="font-black text-xs text-emerald-800">₹${p.sellingPrice}</span>
-            <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
+      if (posGrid) {
+        posGrid.innerHTML = products.map(p => `
+          <div onclick="addToPos('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
+            <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
+            <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+            <div class="flex justify-between items-center mt-1">
+              <span class="font-black text-xs text-emerald-800">₹${p.sellingPrice}</span>
+              <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     function renderCategories() {
       const container = document.getElementById('categoriesGrid');
       const select = document.getElementById('pCategory');
 
-      select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      if (select) {
+        select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      }
 
-      container.innerHTML = categories.map(c => `
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs p-3 space-y-2 text-xs">
-          <div class="h-20 w-full bg-slate-100 rounded-xl relative overflow-hidden">
-            <img src="${c.image}" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
-              <span class="font-bold text-xs">${c.icon} ${c.name}</span>
+      if (container) {
+        container.innerHTML = categories.map(c => `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs p-3 space-y-2 text-xs">
+            <div class="h-20 w-full bg-slate-100 rounded-xl relative overflow-hidden">
+              <img src="${c.image}" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
+                <span class="font-bold text-xs">${c.icon} ${c.name}</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              ${(c.subcategories || []).map(s => `<span class="bg-slate-100 text-slate-700 text-[9px] font-bold px-2 py-0.5 rounded">${s}</span>`).join('')}
             </div>
           </div>
-          <div class="flex flex-wrap gap-1">
-            ${(c.subcategories || []).map(s => `<span class="bg-slate-100 text-slate-700 text-[9px] font-bold px-2 py-0.5 rounded">${s}</span>`).join('')}
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     function openProductModal() {
@@ -901,6 +936,7 @@
 
     function addToPos(id) {
       const prod = products.find(p => p.id === id);
+      if (!prod) return;
       posCart.push(prod);
       renderPosCart();
       showToast(prod.name + ' added to bill');
@@ -910,6 +946,8 @@
       const cartBox = document.getElementById('posCartBox');
       const itemsContainer = document.getElementById('posCartItems');
       const totalSpan = document.getElementById('posTotalAmount');
+
+      if (!cartBox) return;
 
       if (posCart.length === 0) {
         cartBox.classList.add('hidden');
@@ -931,17 +969,20 @@
       const totalSpan = document.getElementById('printBillTotal');
 
       let total = 0;
-      itemsDiv.innerHTML = posCart.map(i => {
-        total += i.sellingPrice;
-        return `<div class="py-1 flex justify-between text-[10px]"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
-      }).join('');
+      if (itemsDiv) {
+        itemsDiv.innerHTML = posCart.map(i => {
+          total += i.sellingPrice;
+          return `<div class="py-1 flex justify-between text-[10px]"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
+        }).join('');
+      }
 
-      totalSpan.innerText = total;
+      if (totalSpan) totalSpan.innerText = total;
       document.getElementById('printModal').classList.remove('hidden');
     }
 
     function editProduct(id) {
       const p = products.find(prod => prod.id === id);
+      if (!p) return;
       document.getElementById('editProductId').value = p.id;
       document.getElementById('modalTitle').innerText = 'Edit Product';
       document.getElementById('pName').value = p.name;
