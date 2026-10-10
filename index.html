@@ -13,6 +13,14 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Print specific styles for 58mm thermal receipts */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; font-size: 11px; }
+      #printModal, .no-print { display: none !important; }
+    }
   </style>
 </head>
 <body class="bg-slate-100 antialiased selection:bg-emerald-200 min-h-screen pb-20 font-sans">
@@ -38,7 +46,7 @@
   </div>
 
   <!-- Header -->
-  <header class="sticky top-0 z-40 bg-emerald-950 text-white shadow-md">
+  <header class="sticky top-0 z-40 bg-emerald-950 text-white shadow-md no-print">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <div class="w-9 h-9 rounded-xl bg-amber-400 text-emerald-950 font-black text-lg flex items-center justify-center shadow-xs">
@@ -61,12 +69,12 @@
   </header>
 
   <!-- Toast Notification -->
-  <div id="toast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
+  <div id="toast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700 no-print">
     ✓ Toast Message
   </div>
 
   <!-- Main View Container -->
-  <main class="px-4 py-3 max-w-md mx-auto" id="mainContainer">
+  <main class="px-4 py-3 max-w-md mx-auto no-print" id="mainContainer">
     
     <!-- 1. DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
@@ -167,7 +175,10 @@
       <div class="grid grid-cols-2 gap-2" id="posProductsGrid"></div>
 
       <div id="posCartBox" class="hidden bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
-        <h4 class="font-extrabold border-b pb-2">Current Bill Summary</h4>
+        <h4 class="font-extrabold border-b pb-2 flex justify-between">
+          <span>Current Bill Summary</span>
+          <button onclick="clearPosCart()" class="text-[10px] text-rose-600 font-bold">Clear All</button>
+        </h4>
         <div id="posCartItems" class="space-y-1"></div>
         <div class="pt-2 border-t flex justify-between items-center font-black">
           <span>Total: ₹<span id="posTotalAmount">0</span></span>
@@ -229,7 +240,7 @@
   </main>
 
   <!-- Customer Passbook Modal -->
-  <div id="passbookModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <div id="passbookModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-4 max-w-sm w-full space-y-3 text-xs max-h-[90vh] overflow-y-auto shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
         <div>
@@ -262,7 +273,7 @@
   </div>
 
   <!-- Transaction Add Modal -->
-  <div id="txnModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <div id="txnModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-xs shadow-2xl">
       <h3 class="font-black text-slate-900 uppercase" id="txnModalTitle">Add Transaction</h3>
       <form onsubmit="handleTxnSubmit(event)" class="space-y-2">
@@ -277,8 +288,8 @@
     </div>
   </div>
 
-  <!-- FULLY FIXED PRODUCT MODAL -->
-  <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <!-- PRODUCT MODAL -->
+  <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="font-extrabold text-slate-900 uppercase" id="modalTitle">Add New Product</h3>
@@ -386,8 +397,8 @@
     </div>
   </div>
 
-  <!-- FULLY FIXED CATEGORY MODAL -->
-  <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <!-- CATEGORY MODAL -->
+  <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl text-xs">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="font-extrabold text-slate-900">Add Advance Category</h3>
@@ -404,27 +415,85 @@
     </div>
   </div>
 
-  <!-- Thermal Bill Modal -->
+  <!-- ADVANCED 58MM THERMAL RECEIPT PRINT MODAL -->
   <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 font-mono text-xs shadow-2xl">
-      <div class="border border-dashed p-3 rounded-xl bg-slate-50 text-center space-y-1">
-        <h2 class="font-black text-sm text-emerald-950">HUMA TRADERS</h2>
-        <p class="text-[9px] text-slate-500">Solapur Store Counter Bill</p>
-        <div id="printBillItems" class="divide-y text-left pt-2"></div>
-        <div class="border-t pt-2 flex justify-between font-black text-xs">
-          <span>TOTAL:</span>
-          <span>₹<span id="printBillTotal">0</span></span>
+    <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
+      
+      <!-- PRINT RECEIPT CONTAINER -->
+      <div id="printArea" class="bg-white p-2 font-mono text-[11px] leading-tight space-y-2 text-black">
+        
+        <!-- Header -->
+        <div class="text-center space-y-0.5 border-b border-dashed border-black pb-2">
+          <h2 class="font-black text-sm tracking-wider">HUMA TRADERS</h2>
+          <p class="text-[9px] font-bold">Solapur Wholesale & Retail Store</p>
+          <p class="text-[8px]">Saat Rasta Chowk, Solapur, MS</p>
+          <p class="text-[8px]">Ph: +91 98220 12345</p>
         </div>
+
+        <!-- Bill Meta -->
+        <div class="text-[9px] border-b border-dashed border-black pb-1 space-y-0.5">
+          <div class="flex justify-between">
+            <span>Bill No: <b id="pBillNo">#HT-1042</b></span>
+            <span id="pBillDate">10/10/2026</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Time: <span id="pBillTime">02:45 PM</span></span>
+            <span>Mode: <b>Counter Cash</b></span>
+          </div>
+        </div>
+
+        <!-- Itemized Table Header -->
+        <div class="border-b border-black pb-1 pt-1 font-bold text-[9px] flex justify-between">
+          <span class="w-1/2">ITEM NAME</span>
+          <span class="w-1/4 text-center">QTY</span>
+          <span class="w-1/4 text-right">AMT</span>
+        </div>
+
+        <!-- Items Container -->
+        <div id="printBillItems" class="space-y-1 border-b border-dashed border-black pb-2 pt-1 text-[10px]"></div>
+
+        <!-- Calculations -->
+        <div class="space-y-1 text-[10px] pt-1">
+          <div class="flex justify-between">
+            <span>Sub Total:</span>
+            <span>₹<span id="pSubTotal">0</span></span>
+          </div>
+          <div class="flex justify-between text-emerald-800 font-bold" id="pSavingsRow">
+            <span>Total Savings:</span>
+            <span>- ₹<span id="pSavings">0</span></span>
+          </div>
+          <div class="flex justify-between font-black text-xs border-t border-b border-black py-1 my-1">
+            <span>GRAND TOTAL:</span>
+            <span>₹<span id="printBillTotal">0</span></span>
+          </div>
+        </div>
+
+        <!-- Footer & QR -->
+        <div class="text-center space-y-1.5 pt-1">
+          <p class="text-[9px] font-bold uppercase">*** Thank You! Visit Again ***</p>
+          <div class="flex flex-col items-center justify-center">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=upi://pay?pa=9822012345@paytm%26pn=HumaTraders" class="w-16 h-16 border p-0.5" />
+            <span class="text-[7px] font-bold mt-0.5">Scan to Pay via PhonePe / GPay</span>
+          </div>
+        </div>
+
       </div>
-      <div class="flex gap-2">
-        <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs">Print Receipt</button>
-        <button onclick="document.getElementById('printModal').classList.add('hidden')" class="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">Close</button>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 pt-1 no-print">
+        <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+          🖨️ Print 58mm Bill
+        </button>
+        <button onclick="document.getElementById('printModal').classList.add('hidden')" class="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">
+          Close
+        </button>
       </div>
+
     </div>
   </div>
 
   <!-- Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg max-w-md mx-auto">
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg max-w-md mx-auto no-print">
     <div class="grid grid-cols-6 h-14">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center justify-center text-emerald-800 font-black">
         <span class="text-sm leading-none">🏠</span>
@@ -457,7 +526,8 @@
     let products = [
       { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', brand: 'Aashirvaad', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, costPrice: 290, stock: 8, threshold: 10, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
       { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', brand: 'Huma Direct', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, costPrice: 52, stock: 520, threshold: 50, unit: '1 kg', isLoose: true, presets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P104', name: 'Toor Dal', hindiName: 'तूर डाळ', brand: 'Huma', category: 'Pulses', mrp: 180, sellingPrice: 150, costPrice: 130, stock: 45, threshold: 10, unit: '1 kg', isLoose: true, image: 'https://images.unsplash.com/photo-1585992227540-3b6f8490a2a4?auto=format&fit=crop&q=80&w=400' }
     ];
 
     let categories = [
@@ -937,9 +1007,22 @@
     function addToPos(id) {
       const prod = products.find(p => p.id === id);
       if (!prod) return;
-      posCart.push(prod);
+      
+      const existing = posCart.find(item => item.id === id);
+      if (existing) {
+        existing.qty = (existing.qty || 1) + 1;
+      } else {
+        posCart.push({ ...prod, qty: 1 });
+      }
+
       renderPosCart();
       showToast(prod.name + ' added to bill');
+    }
+
+    function clearPosCart() {
+      posCart = [];
+      renderPosCart();
+      showToast('Cart cleared');
     }
 
     function renderPosCart() {
@@ -957,8 +1040,17 @@
       cartBox.classList.remove('hidden');
       let total = 0;
       itemsContainer.innerHTML = posCart.map(i => {
-        total += i.sellingPrice;
-        return `<div class="flex justify-between items-center py-1"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
+        const itemTotal = i.sellingPrice * (i.qty || 1);
+        total += itemTotal;
+        return `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100">
+            <div>
+              <p class="font-bold text-slate-800">${i.name}</p>
+              <p class="text-[9px] text-slate-500">₹${i.sellingPrice} x ${i.qty || 1}</p>
+            </div>
+            <span class="font-black text-emerald-800">₹${itemTotal}</span>
+          </div>
+        `;
       }).join('');
 
       totalSpan.innerText = total;
@@ -966,17 +1058,48 @@
 
     function printPOSBill() {
       const itemsDiv = document.getElementById('printBillItems');
-      const totalSpan = document.getElementById('printBillTotal');
+      const grandTotalSpan = document.getElementById('printBillTotal');
+      const subTotalSpan = document.getElementById('pSubTotal');
+      const savingsSpan = document.getElementById('pSavings');
+      const savingsRow = document.getElementById('pSavingsRow');
 
-      let total = 0;
+      const now = new Date();
+      document.getElementById('pBillNo').innerText = '#HT-' + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('pBillDate').innerText = now.toLocaleDateString('en-IN');
+      document.getElementById('pBillTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let grandTotal = 0;
+      let totalMrp = 0;
+
       if (itemsDiv) {
         itemsDiv.innerHTML = posCart.map(i => {
-          total += i.sellingPrice;
-          return `<div class="py-1 flex justify-between text-[10px]"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
+          const qty = i.qty || 1;
+          const lineTotal = i.sellingPrice * qty;
+          grandTotal += lineTotal;
+          totalMrp += (i.mrp || i.sellingPrice) * qty;
+
+          return `
+            <div class="flex justify-between items-start py-0.5">
+              <span class="w-1/2 font-medium truncate">${i.name}</span>
+              <span class="w-1/4 text-center">${qty}</span>
+              <span class="w-1/4 text-right font-bold">₹${lineTotal}</span>
+            </div>
+          `;
         }).join('');
       }
 
-      if (totalSpan) totalSpan.innerText = total;
+      const savings = totalMrp - grandTotal;
+
+      if (subTotalSpan) subTotalSpan.innerText = grandTotal;
+      if (grandTotalSpan) grandTotalSpan.innerText = grandTotal;
+
+      if (savings > 0) {
+        if (savingsSpan) savingsSpan.innerText = savings;
+        if (savingsRow) savingsRow.classList.remove('hidden');
+      } else {
+        if (savingsRow) savingsRow.classList.add('hidden');
+      }
+
       document.getElementById('printModal').classList.remove('hidden');
     }
 
