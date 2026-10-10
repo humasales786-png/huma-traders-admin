@@ -101,7 +101,7 @@
             <span>Total Khata Due</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
           </p>
-          <p class="text-base font-black text-rose-600 mt-0.5">₹<span id="statKhata">2,70,386</span></p>
+          <p class="text-base font-black text-rose-600 mt-0.5">₹<span id="statKhata">0</span></p>
           <span class="text-[9px] text-slate-500 font-bold">Pending Udhar Balance</span>
         </div>
 
@@ -110,7 +110,7 @@
             <span>Low Stock Alert</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
           </p>
-          <p class="text-base font-black text-amber-600 mt-0.5"><span id="statLowStock">2</span> Items</p>
+          <p class="text-base font-black text-amber-600 mt-0.5"><span id="statLowStock">0</span> Items</p>
           <span class="text-[9px] text-rose-500 font-bold">Action Needed</span>
         </div>
       </div>
@@ -151,13 +151,13 @@
     <div id="view-orders" class="hidden space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-slate-900 uppercase">Order Management & Tracking</h3>
-        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" id="allOrdersTag">2 Orders</span>
+        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" id="allOrdersTag">0 Orders</span>
       </div>
       <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar">
-        <button onclick="filterOrders('All')" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All Orders</button>
-        <button onclick="filterOrders('Placed')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Placed</button>
-        <button onclick="filterOrders('Out for Delivery')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Out for Delivery</button>
-        <button onclick="filterOrders('Delivered')" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Delivered</button>
+        <button onclick="filterOrders('All')" id="btnFilterAll" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All Orders</button>
+        <button onclick="filterOrders('Placed')" id="btnFilterPlaced" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Placed</button>
+        <button onclick="filterOrders('Out for Delivery')" id="btnFilterOut" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Out for Delivery</button>
+        <button onclick="filterOrders('Delivered')" id="btnFilterDelivered" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Delivered</button>
       </div>
       <div class="space-y-3.5" id="fullOrdersList"></div>
     </div>
@@ -195,28 +195,21 @@
         <div class="flex justify-between items-center">
           <div class="flex items-center gap-1.5">
             <span class="text-lg">📖</span>
-            <span class="font-extrabold text-sm">Huma Trader's</span>
-            <span class="text-xs">▼</span>
+            <span class="font-extrabold text-sm">Huma Trader's Ledger</span>
           </div>
-          <div class="bg-blue-900 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border border-blue-700">
-            🟡 <span>0</span>
+          <div class="bg-blue-900 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border border-blue-700">
+            🟢 <span id="khataCustCount">1 Customer</span>
           </div>
-        </div>
-
-        <div class="flex justify-around border-b border-blue-700 pb-1 text-xs font-bold">
-          <span class="border-b-2 border-amber-400 pb-1 text-white">CUSTOMERS</span>
-          <span class="text-blue-300">SUPPLIERS</span>
-          <span class="text-blue-300">STAFF ›</span>
         </div>
 
         <div class="bg-white rounded-xl text-slate-800 p-3 shadow-sm grid grid-cols-2 gap-2 text-center text-xs">
           <div class="border-r pr-2">
             <p class="text-[10px] font-bold text-slate-500">You will give</p>
-            <p class="text-base font-black text-emerald-600">₹ <span id="khataTotalGive">10,785</span></p>
+            <p class="text-base font-black text-emerald-600">₹ <span id="khataTotalGive">0</span></p>
           </div>
           <div class="pl-2">
             <p class="text-[10px] font-bold text-slate-500">You will get</p>
-            <p class="text-base font-black text-rose-600">₹ <span id="khataTotalGet">2,70,386</span></p>
+            <p class="text-base font-black text-rose-600">₹ <span id="khataTotalGet">0</span></p>
           </div>
         </div>
       </div>
@@ -225,21 +218,14 @@
         <div class="flex gap-2 items-center">
           <div class="flex-1 bg-white border rounded-xl p-2.5 flex items-center gap-2 shadow-2xs">
             <span class="text-slate-400">🔍</span>
-            <input type="text" id="khataSearch" oninput="filterKhataCustomers(this.value)" placeholder="Search Customer" class="w-full text-xs outline-none bg-transparent" />
+            <input type="text" id="khataSearch" oninput="filterKhataCustomers(this.value)" placeholder="Search Customer..." class="w-full text-xs outline-none bg-transparent" />
           </div>
           <button onclick="openAddCustomerModal()" class="bg-blue-800 text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1 shadow-xs">
-            📑 Cashbook
+            + Add Person
           </button>
         </div>
 
         <div class="bg-white rounded-xl border border-slate-200 divide-y text-xs shadow-2xs" id="khataCustomerList"></div>
-      </div>
-
-      <div class="fixed bottom-16 right-4 z-40">
-        <button onclick="openAddCustomerModal()" class="bg-rose-700 text-white font-extrabold text-xs px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white">
-          <span>👤+</span>
-          <span>ADD CUSTOMER</span>
-        </button>
       </div>
     </div>
 
@@ -250,6 +236,22 @@
     </div>
 
   </main>
+
+  <!-- UPDATE ORDER STATUS MODAL -->
+  <div id="orderStatusModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-black text-slate-900 uppercase">Update Order Status</h3>
+        <button onclick="closeOrderStatusModal()" class="text-slate-400 text-lg">✕</button>
+      </div>
+      <input type="hidden" id="activeOrderId" />
+      <div class="space-y-2">
+        <button onclick="changeOrderStatus('Placed')" class="w-full text-left p-2.5 rounded-xl border font-bold hover:bg-amber-50 border-amber-300 text-amber-900">🟡 Placed (Pending)</button>
+        <button onclick="changeOrderStatus('Out for Delivery')" class="w-full text-left p-2.5 rounded-xl border font-bold hover:bg-blue-50 border-blue-300 text-blue-900">🚚 Out for Delivery</button>
+        <button onclick="changeOrderStatus('Delivered')" class="w-full text-left p-2.5 rounded-xl border font-bold hover:bg-emerald-50 border-emerald-300 text-emerald-900">✅ Delivered</button>
+      </div>
+    </div>
+  </div>
 
   <!-- CUSTOMER VARIANT SELECTOR MODAL -->
   <div id="variantSelectorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -271,47 +273,30 @@
     <div class="bg-blue-800 text-white px-4 py-3 flex items-center justify-between shadow-md">
       <div class="flex items-center gap-3">
         <button onclick="closePassbook()" class="text-lg font-bold">←</button>
-        <div class="w-9 h-9 rounded-full bg-slate-200 text-blue-900 font-extrabold flex items-center justify-center text-xs" id="kbAvatar">
+        <div class="w-9 h-9 rounded-full bg-amber-400 text-blue-950 font-extrabold flex items-center justify-center text-xs" id="kbAvatar">
           NB
         </div>
         <div>
-          <h3 class="font-extrabold text-sm leading-tight" id="kbName">Navid Bejali</h3>
-          <p class="text-[10px] text-blue-200">Customer • View settings</p>
+          <h3 class="font-extrabold text-sm leading-tight" id="kbName">Customer Name</h3>
+          <p class="text-[10px] text-blue-200" id="kbPhone">Phone Number</p>
         </div>
       </div>
-      <button onclick="sendKhataWhatsAppStatement()" class="text-lg">📞</button>
+      <button onclick="sendKhataWhatsAppStatement()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs">
+        💬 WhatsApp
+      </button>
     </div>
 
     <div class="flex-1 overflow-y-auto p-3 space-y-3">
       <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-2xs space-y-2">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-bold text-slate-600">You will get</span>
-          <span class="text-xl font-black text-rose-600">₹ <span id="kbBalance">15,618</span></span>
+          <span class="text-xs font-bold text-slate-600">Net Due Balance</span>
+          <span class="text-xl font-black text-rose-600">₹ <span id="kbBalance">0</span></span>
         </div>
-        <div class="bg-blue-50 p-2 rounded-lg flex justify-between items-center text-xs border border-blue-100">
-          <span class="text-blue-900 font-semibold">📅 Set collection reminder</span>
-          <button onclick="showToast('Reminder Date Set')" class="text-blue-800 font-extrabold text-[10px]">SET DATE</button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-        <button onclick="showToast('Downloading PDF Report...')" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
-          <span>📄</span>
-          <span class="text-[10px] text-slate-700">Report</span>
-        </button>
-        <button onclick="sendKhataWhatsAppStatement()" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
-          <span>💬</span>
-          <span class="text-[10px] text-slate-700">Reminder</span>
-        </button>
-        <button onclick="showToast('SMS Sent')" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
-          <span>📱</span>
-          <span class="text-[10px] text-slate-700">SMS</span>
-        </button>
       </div>
 
       <div class="space-y-2">
         <div class="flex justify-between text-[10px] font-extrabold text-slate-400 px-1 uppercase">
-          <span>Entries</span>
+          <span>Date & Note</span>
           <div class="flex gap-12">
             <span class="text-rose-600">YOU GAVE</span>
             <span class="text-emerald-700">YOU GOT</span>
@@ -323,11 +308,11 @@
     </div>
 
     <div class="bg-white border-t p-3 grid grid-cols-2 gap-3">
-      <button onclick="openEntryForm('gave')" class="bg-rose-700 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
-        YOU GAVE ₹
+      <button onclick="openEntryForm('gave')" class="bg-rose-700 hover:bg-rose-800 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
+        YOU GAVE ₹ (Udhar)
       </button>
-      <button onclick="openEntryForm('got')" class="bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
-        YOU GOT ₹
+      <button onclick="openEntryForm('got')" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
+        YOU GOT ₹ (Jama)
       </button>
     </div>
   </div>
@@ -335,65 +320,46 @@
   <!-- ENTRY INPUT SCREEN WITH CALCULATOR -->
   <div id="entryCalculatorModal" class="hidden fixed inset-0 z-50 bg-slate-50 flex flex-col">
     <div class="bg-white px-4 py-3 border-b flex items-center justify-between">
-      <button onclick="closeEntryForm()" class="text-rose-700 text-lg font-bold">←</button>
-      <h3 class="font-extrabold text-xs text-rose-800" id="entryTitle">You gave ₹ 0 to Customer</h3>
+      <button onclick="closeEntryForm()" class="text-slate-700 text-lg font-bold">←</button>
+      <h3 class="font-extrabold text-xs text-slate-800" id="entryTitle">Add Transaction Entry</h3>
       <div></div>
     </div>
 
-    <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+    <div class="p-4 space-y-3 flex-1 overflow-y-auto max-w-md mx-auto w-full">
       <div class="bg-white p-3 rounded-xl border-2 border-slate-200 shadow-xs flex items-center justify-between">
-        <span class="text-xl font-black text-rose-700">₹ <span id="calcDisplay">0</span></span>
+        <span class="text-xl font-black text-slate-900">₹ <span id="calcDisplay">0</span></span>
       </div>
 
-      <input type="text" id="calcNote" placeholder="Enter details (Items, bill no., quantity, etc.)" class="w-full bg-white border p-3 rounded-xl text-xs outline-none" />
+      <input type="text" id="calcNote" placeholder="Enter details (e.g., 10kg Atta, Cash, Bill #102)" class="w-full bg-white border p-3 rounded-xl text-xs outline-none" />
 
-      <div class="flex gap-2">
-        <button class="bg-white border text-slate-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-2xs">
-          📅 <span id="calcDateText">10 Oct 26</span> ▼
-        </button>
-      </div>
-
-      <div class="space-y-1.5">
-        <p class="text-[10px] text-slate-500 font-bold">📎 Attach bills (max 4)</p>
-        <div class="flex gap-2">
-          <button onclick="showToast('Photo Attached')" class="flex-1 bg-white border border-slate-300 py-2 rounded-xl text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1">
-            🖼️ Add photo
-          </button>
-          <button onclick="showToast('PDF Attached')" class="flex-1 bg-white border border-slate-300 py-2 rounded-xl text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1">
-            📄 Add PDF
-          </button>
-        </div>
-      </div>
-
-      <button onclick="saveCalcEntry()" class="w-full bg-rose-800 text-white font-black py-3 rounded-xl text-xs shadow-md">
-        SAVE
+      <button onclick="saveCalcEntry()" class="w-full bg-blue-800 text-white font-black py-3 rounded-xl text-xs shadow-md">
+        SAVE TRANSACTION
       </button>
 
+      <!-- Calculator Buttons -->
       <div class="grid grid-cols-4 gap-1.5 pt-2 text-sm font-bold">
         <button onclick="pressCalc('C')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">C</button>
-        <button onclick="pressCalc('M+')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">M+</button>
-        <button onclick="pressCalc('M-')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">M-</button>
-        <button onclick="pressCalc('DEL')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">⌫</button>
+        <button onclick="pressCalc('DEL')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center col-span-2">⌫ Delete</button>
+        <button onclick="pressCalc('/')" class="bg-blue-100 p-3 rounded-xl text-center">÷</button>
 
         <button onclick="pressCalc('7')" class="bg-white border p-3 rounded-xl text-center">7</button>
         <button onclick="pressCalc('8')" class="bg-white border p-3 rounded-xl text-center">8</button>
         <button onclick="pressCalc('9')" class="bg-white border p-3 rounded-xl text-center">9</button>
-        <button onclick="pressCalc('/')" class="bg-blue-100 p-3 rounded-xl text-center">÷</button>
+        <button onclick="pressCalc('*')" class="bg-blue-100 p-3 rounded-xl text-center">×</button>
 
         <button onclick="pressCalc('4')" class="bg-white border p-3 rounded-xl text-center">4</button>
         <button onclick="pressCalc('5')" class="bg-white border p-3 rounded-xl text-center">5</button>
         <button onclick="pressCalc('6')" class="bg-white border p-3 rounded-xl text-center">6</button>
-        <button onclick="pressCalc('*')" class="bg-blue-100 p-3 rounded-xl text-center">×</button>
+        <button onclick="pressCalc('-')" class="bg-blue-800 text-white p-3 rounded-xl text-center">-</button>
 
         <button onclick="pressCalc('1')" class="bg-white border p-3 rounded-xl text-center">1</button>
         <button onclick="pressCalc('2')" class="bg-white border p-3 rounded-xl text-center">2</button>
         <button onclick="pressCalc('3')" class="bg-white border p-3 rounded-xl text-center">3</button>
-        <button onclick="pressCalc('-')" class="bg-blue-800 text-white p-3 rounded-xl text-center">-</button>
-
-        <button onclick="pressCalc('0')" class="bg-white border p-3 rounded-xl text-center">0</button>
-        <button onclick="pressCalc('.')" class="bg-white border p-3 rounded-xl text-center">.</button>
-        <button onclick="pressCalc('=')" class="bg-white border p-3 rounded-xl text-center">=</button>
         <button onclick="pressCalc('+')" class="bg-blue-800 text-white p-3 rounded-xl text-center">+</button>
+
+        <button onclick="pressCalc('0')" class="bg-white border p-3 rounded-xl text-center col-span-2">0</button>
+        <button onclick="pressCalc('.')" class="bg-white border p-3 rounded-xl text-center">.</button>
+        <button onclick="pressCalc('=')" class="bg-amber-400 text-blue-950 p-3 rounded-xl text-center font-black">=</button>
       </div>
     </div>
   </div>
@@ -405,7 +371,7 @@
       <form onsubmit="handleNewCustomerSubmit(event)" class="space-y-2">
         <input type="text" id="newCustName" required placeholder="Customer Full Name *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         <input type="tel" id="newCustPhone" required placeholder="Mobile Number *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-        <input type="number" id="newCustInitial" placeholder="Opening Balance (₹)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="number" id="newCustInitial" placeholder="Opening Udhar Balance (₹)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         <div class="flex gap-2 pt-1">
           <button type="submit" class="flex-1 bg-blue-800 text-white font-bold py-2 rounded-xl">Save Customer</button>
           <button type="button" onclick="document.getElementById('addCustomerModal').classList.add('hidden')" class="px-3 bg-slate-100 font-bold py-2 rounded-xl">Cancel</button>
@@ -478,7 +444,7 @@
           <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="font-bold text-slate-700 block mb-1">Cost Price</label>
-              <input type="number" id="pCost" oninput="calcMargin()" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+              <input type="number" id="pCost" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
             </div>
             <div>
               <label class="font-bold text-slate-700 block mb-1">MRP (₹)</label>
@@ -486,12 +452,8 @@
             </div>
             <div>
               <label class="font-bold text-emerald-900 block mb-1">Sell Price (₹)</label>
-              <input type="number" id="pPrice" oninput="calcMargin()" placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
+              <input type="number" id="pPrice" placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
             </div>
-          </div>
-
-          <div id="marginBadge" class="hidden bg-emerald-100 text-emerald-800 p-2 rounded-xl font-bold text-center text-[10px]">
-            Estimated Profit Margin: <span id="marginVal">0%</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -584,10 +546,6 @@
             <span>Sub Total:</span>
             <span>₹<span id="pSubTotal">0</span></span>
           </div>
-          <div class="flex justify-between text-emerald-800 font-bold" id="pSavingsRow">
-            <span>Total Savings:</span>
-            <span>- ₹<span id="pSavings">0</span></span>
-          </div>
           <div class="flex justify-between font-black text-xs border-t border-b border-black py-1 my-1">
             <span>GRAND TOTAL:</span>
             <span>₹<span id="printBillTotal">0</span></span>
@@ -596,10 +554,6 @@
 
         <div class="text-center space-y-1.5 pt-1">
           <p class="text-[9px] font-bold uppercase">*** Thank You! Visit Again ***</p>
-          <div class="flex flex-col items-center justify-center">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=upi://pay?pa=9822012345@paytm%26pn=HumaTraders" class="w-16 h-16 border p-0.5" />
-            <span class="text-[7px] font-bold mt-0.5">Scan to Pay via PhonePe / GPay</span>
-          </div>
         </div>
       </div>
 
@@ -645,7 +599,7 @@
   </div>
 
   <script>
-    // INITIAL PRODUCTS WITH ADVANCED CONFIGURABLE VARIANTS
+    // DEFAULT INITIAL DATA
     let defaultProducts = [
       {
         id: 'HT-P101',
@@ -656,9 +610,9 @@
         unit: '1 kg',
         hasVariants: true,
         variants: [
-          { name: '1 kg Packet', price: 55, mrp: 65, stock: 20, inStock: true, sku: '' },
-          { name: '5 kg Bag', price: 245, mrp: 280, stock: 12, inStock: true, sku: '' },
-          { name: '10 kg Sack', price: 319, mrp: 380, stock: 8, inStock: true, sku: '' }
+          { name: '1 kg Packet', price: 55, mrp: 65, stock: 20, inStock: true },
+          { name: '5 kg Bag', price: 245, mrp: 280, stock: 12, inStock: true },
+          { name: '10 kg Sack', price: 319, mrp: 380, stock: 8, inStock: true }
         ],
         image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400'
       },
@@ -671,11 +625,9 @@
         unit: '1 kg',
         hasVariants: true,
         variants: [
-          { name: '100 gm', price: 16, mrp: 20, stock: 100, inStock: true, sku: '' },
-          { name: '250 gm', price: 38, mrp: 45, stock: 100, inStock: true, sku: '' },
-          { name: '500 gm', price: 72, mrp: 85, stock: 80, inStock: true, sku: '' },
-          { name: '1 kg', price: 140, mrp: 165, stock: 50, inStock: true, sku: '' },
-          { name: '5 kg Bori', price: 680, mrp: 800, stock: 10, inStock: true, sku: '' }
+          { name: '100 gm', price: 16, mrp: 20, stock: 100, inStock: true },
+          { name: '500 gm', price: 72, mrp: 85, stock: 80, inStock: true },
+          { name: '1 kg', price: 140, mrp: 165, stock: 50, inStock: true }
         ],
         image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400'
       },
@@ -693,61 +645,59 @@
         stock: 3,
         threshold: 10,
         image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400'
-      },
-      {
-        id: 'HT-P104',
-        name: 'Parle-G Biscuit Box & Patti',
-        hindiName: 'पारले-जी बिस्किट',
-        brand: 'Parle',
-        category: 'Snacks & Biscuits',
-        unit: '1 Pc',
-        hasVariants: true,
-        variants: [
-          { name: '1 Packet (10 Rs)', price: 10, mrp: 10, stock: 150, inStock: true, sku: '' },
-          { name: '1 Patti (12 Packets)', price: 110, mrp: 120, stock: 25, inStock: true, sku: '' },
-          { name: '1 Carton / Box (120 Pkts)', price: 1050, mrp: 1200, stock: 5, inStock: true, sku: '' }
-        ],
-        image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=400'
       }
     ];
 
-    let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
-    let posCart = JSON.parse(localStorage.getItem('ht_cart')) || [];
-
-    let categories = [
-      { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, subcategories: ['Wheat Atta', 'Maida', 'Besan'], image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'c2', name: 'Rice & Grains', icon: '🍚', active: true, subcategories: ['Basmati', 'Kolam', 'Loose Rice'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' }
-    ];
-
-    let orders = [
+    let defaultOrders = [
       { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', phone: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod', items: 'Atta 10kg x 1, Rice 5kg x 2' },
       { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', agent: 'Rahul Shinde', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
     ];
 
-    let khataCustomers = [
+    let defaultKhata = [
       {
         id: 'k1',
         name: 'Navid Bejali',
         phone: '9822011111',
         avatar: 'NB',
-        lastActive: '6 seconds ago',
         history: [
-          { date: '10 Oct 26 • 02:59 PM', type: 'gave', amount: 3072, note: 'Grocery Items', runningBal: 15618 },
-          { date: '10 Sep 26 • 01:00 PM', type: 'got', amount: 1074, note: 'Cash Received', runningBal: 12546 },
-          { date: '03 Aug 26 • 12:06 PM', type: 'gave', amount: 5000, note: 'Monthly Bill', runningBal: 13620 }
+          { date: '10 Oct 2026', type: 'gave', amount: 3072, note: 'Monthly Grocery Purchase' },
+          { date: '10 Sep 2026', type: 'got', amount: 1000, note: 'UPI Payment Received' }
+        ]
+      },
+      {
+        id: 'k2',
+        name: 'Suhail Shaikh',
+        phone: '9822012345',
+        avatar: 'SS',
+        history: [
+          { date: '05 Oct 2026', type: 'gave', amount: 1500, note: 'Ration Parchi Bill' }
         ]
       }
     ];
 
+    let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
+    let orders = JSON.parse(localStorage.getItem('ht_orders')) || defaultOrders;
+    let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || defaultKhata;
+    let posCart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+
     let activeKbId = null;
     let entryType = 'gave';
     let calcVal = '0';
+    let activeFilter = 'All';
     let printCharacteristic = null;
     let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
     let uploadedCatImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
 
+    let categories = [
+      { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c3', name: 'Oil & Ghee', icon: '🛢️', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+    ];
+
     function saveData() {
       localStorage.setItem('ht_products', JSON.stringify(products));
+      localStorage.setItem('ht_orders', JSON.stringify(orders));
+      localStorage.setItem('ht_khata', JSON.stringify(khataCustomers));
       localStorage.setItem('ht_cart', JSON.stringify(posCart));
     }
 
@@ -780,20 +730,351 @@
       }
     }
 
-    // VARIANT TOGGLE IN ADMIN MODAL
+    /* ---------------- ORDER MANAGEMENT FUNCTIONS ---------------- */
+    function renderOrders() {
+      const dbContainer = document.getElementById('dashboardOrdersList');
+      const fullContainer = document.getElementById('fullOrdersList');
+      const statOrders = document.getElementById('statOrders');
+      const statPending = document.getElementById('statPending');
+      const allOrdersTag = document.getElementById('allOrdersTag');
+
+      const pendingCount = orders.filter(o => o.status !== 'Delivered').length;
+
+      if (statOrders) statOrders.innerText = orders.length;
+      if (statPending) statPending.innerText = pendingCount;
+      if (allOrdersTag) allOrdersTag.innerText = orders.length + ' Orders';
+
+      if (dbContainer) {
+        dbContainer.innerHTML = orders.slice(0, 3).map(o => `
+          <div class="p-2.5 bg-slate-50 rounded-xl border flex justify-between items-center text-xs">
+            <div>
+              <p class="font-extrabold text-slate-900">${o.id} • ₹${o.amount}</p>
+              <p class="text-[10px] text-slate-500">${o.customerName}</p>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-1 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+          </div>
+        `).join('');
+      }
+
+      if (fullContainer) {
+        let filtered = orders;
+        if (activeFilter !== 'All') {
+          filtered = orders.filter(o => o.status === activeFilter);
+        }
+
+        if (filtered.length === 0) {
+          fullContainer.innerHTML = `<p class="text-center text-slate-400 font-bold py-6">No ${activeFilter} orders found.</p>`;
+          return;
+        }
+
+        fullContainer.innerHTML = filtered.map(o => `
+          <div class="p-3.5 bg-white rounded-2xl border border-slate-200 space-y-2.5 text-xs shadow-2xs">
+            <div class="flex justify-between items-start border-b pb-2">
+              <div>
+                <span class="font-black text-slate-900 text-sm">${o.id}</span>
+                <span class="text-emerald-800 font-black ml-2 text-sm">₹${o.amount}</span>
+                <p class="text-[11px] text-slate-700 font-bold mt-0.5">${o.customerName} (${o.phone})</p>
+                <p class="text-[10px] text-slate-400">${o.address}</p>
+              </div>
+              <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : o.status === 'Out for Delivery' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-900'}">
+                ${o.status}
+              </span>
+            </div>
+            
+            <div class="bg-slate-50 p-2 rounded-xl text-[11px] font-semibold text-slate-700">
+              🛒 Items: ${o.items}
+            </div>
+
+            <div class="flex gap-2 pt-1">
+              <button onclick="openOrderStatusModal('${o.id}')" class="flex-1 bg-emerald-800 text-white font-extrabold py-2 rounded-xl text-center text-xs shadow-xs">
+                Update Status
+              </button>
+              <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${encodeURIComponent(o.customerName)},%20Your%20Order%20${o.id}%20status%20is:%20${encodeURIComponent(o.status)}', '_blank')" class="bg-emerald-100 text-emerald-900 font-bold px-3 py-2 rounded-xl flex items-center gap-1">
+                💬 WhatsApp
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function filterOrders(status) {
+      activeFilter = status;
+      ['All', 'Placed', 'Out', 'Delivered'].forEach(btn => {
+        const el = document.getElementById(`btnFilter${btn}`);
+        if (el) {
+          el.className = 'bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0';
+        }
+      });
+      const current = document.getElementById(`btnFilter${status === 'Out for Delivery' ? 'Out' : status}`);
+      if (current) current.className = 'bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0';
+
+      renderOrders();
+    }
+
+    function openOrderStatusModal(orderId) {
+      document.getElementById('activeOrderId').value = orderId;
+      document.getElementById('orderStatusModal').classList.remove('hidden');
+    }
+
+    function closeOrderStatusModal() {
+      document.getElementById('orderStatusModal').classList.add('hidden');
+    }
+
+    function changeOrderStatus(newStatus) {
+      const orderId = document.getElementById('activeOrderId').value;
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveData();
+        renderOrders();
+        showToast(`Order status updated to ${newStatus}`);
+      }
+      closeOrderStatusModal();
+    }
+
+    /* ---------------- KHATABOOK SYSTEM FUNCTIONS ---------------- */
+    function renderKhata() {
+      const list = document.getElementById('khataCustomerList');
+      const giveEl = document.getElementById('khataTotalGive');
+      const getEl = document.getElementById('khataTotalGet');
+      const statKhata = document.getElementById('statKhata');
+      const custCountEl = document.getElementById('khataCustCount');
+
+      if (!list) return;
+
+      let totalGet = 0;
+      let totalGive = 0;
+
+      list.innerHTML = khataCustomers.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+        const net = gaveSum - gotSum;
+
+        if (net > 0) totalGet += net;
+        if (net < 0) totalGive += Math.abs(net);
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-900 font-black flex items-center justify-center text-xs shrink-0">
+                ${c.avatar || 'CU'}
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.phone}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs ${net >= 0 ? 'text-rose-600' : 'text-emerald-600'}">
+                ₹ ${Math.abs(net).toLocaleString('en-IN')}
+              </p>
+              <span class="text-[9px] ${net >= 0 ? 'text-rose-700' : 'text-emerald-700'} font-bold">
+                ${net >= 0 ? 'You will get' : 'You will give'} ›
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (giveEl) giveEl.innerText = totalGive.toLocaleString('en-IN');
+      if (getEl) getEl.innerText = totalGet.toLocaleString('en-IN');
+      if (statKhata) statKhata.innerText = totalGet.toLocaleString('en-IN');
+      if (custCountEl) custCountEl.innerText = khataCustomers.length + ' Persons';
+    }
+
+    function openKbPassbook(custId) {
+      activeKbId = custId;
+      const c = khataCustomers.find(item => item.id === custId);
+      if (!c) return;
+
+      document.getElementById('kbName').innerText = c.name;
+      document.getElementById('kbPhone').innerText = c.phone;
+      document.getElementById('kbAvatar').innerText = c.avatar || 'CU';
+
+      renderPassbookEntries(c);
+      document.getElementById('khatabookPassbookModal').classList.remove('hidden');
+    }
+
+    function closePassbook() {
+      document.getElementById('khatabookPassbookModal').classList.add('hidden');
+    }
+
+    function renderPassbookEntries(customer) {
+      const container = document.getElementById('kbEntriesList');
+      const balanceSpan = document.getElementById('kbBalance');
+
+      let totalGave = customer.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+      let totalGot = customer.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+      let netBalance = totalGave - totalGot;
+
+      if (balanceSpan) balanceSpan.innerText = netBalance.toLocaleString('en-IN');
+
+      if (container) {
+        if (customer.history.length === 0) {
+          container.innerHTML = `<p class="text-center text-slate-400 font-bold py-6 text-xs">No transaction history yet.</p>`;
+          return;
+        }
+
+        container.innerHTML = customer.history.map(h => `
+          <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
+            <div>
+              <p class="font-extrabold text-slate-800">${h.note || (h.type === 'gave' ? 'Udhar Entry' : 'Jama Entry')}</p>
+              <p class="text-[9px] text-slate-400">${h.date}</p>
+            </div>
+            <div class="text-right">
+              ${h.type === 'gave' 
+                ? `<span class="font-black text-rose-600 text-sm">₹ ${Number(h.amount).toLocaleString('en-IN')}</span>` 
+                : `<span class="font-black text-emerald-600 text-sm">₹ ${Number(h.amount).toLocaleString('en-IN')}</span>`
+              }
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function openEntryForm(type) {
+      entryType = type;
+      calcVal = '0';
+      document.getElementById('calcDisplay').innerText = '0';
+      document.getElementById('calcNote').value = '';
+      document.getElementById('entryTitle').innerText = type === 'gave' ? 'You Gave ₹ (Udhar)' : 'You Got ₹ (Jama)';
+      document.getElementById('entryCalculatorModal').classList.remove('hidden');
+    }
+
+    function closeEntryForm() {
+      document.getElementById('entryCalculatorModal').classList.add('hidden');
+    }
+
+    function pressCalc(v) {
+      if (v === 'C') {
+        calcVal = '0';
+      } else if (v === 'DEL') {
+        calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : '0';
+      } else if (v === '=') {
+        try {
+          calcVal = String(eval(calcVal));
+        } catch {
+          calcVal = 'Error';
+        }
+      } else {
+        calcVal = calcVal === '0' ? v : calcVal + v;
+      }
+      document.getElementById('calcDisplay').innerText = calcVal;
+    }
+
+    function saveCalcEntry() {
+      const amt = Number(eval(calcVal));
+      if (isNaN(amt) || amt <= 0) {
+        showToast('Please enter a valid amount');
+        return;
+      }
+
+      const note = document.getElementById('calcNote').value || (entryType === 'gave' ? 'Udhar Entry' : 'Payment Received');
+      const c = khataCustomers.find(item => item.id === activeKbId);
+
+      if (c) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        c.history.unshift({
+          date: dateStr,
+          type: entryType,
+          amount: amt,
+          note: note
+        });
+
+        saveData();
+        renderPassbookEntries(c);
+        renderKhata();
+        closeEntryForm();
+        showToast('Khata Entry Saved!');
+      }
+    }
+
+    function openAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('hidden');
+    }
+
+    function handleNewCustomerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCustName').value;
+      const phone = document.getElementById('newCustPhone').value;
+      const initial = Number(document.getElementById('newCustInitial').value) || 0;
+
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+      const newCust = {
+        id: 'k_' + Date.now(),
+        name,
+        phone,
+        avatar: initials || 'CU',
+        history: initial > 0 ? [{ date: new Date().toLocaleDateString('en-IN'), type: 'gave', amount: initial, note: 'Opening Udhar Balance' }] : []
+      };
+
+      khataCustomers.unshift(newCust);
+      saveData();
+      renderKhata();
+      document.getElementById('addCustomerModal').classList.add('hidden');
+      showToast('Customer Added!');
+    }
+
+    function sendKhataWhatsAppStatement() {
+      const c = khataCustomers.find(item => item.id === activeKbId);
+      if (!c) return;
+
+      let totalGave = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+      let totalGot = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+      let net = totalGave - totalGot;
+
+      const msg = `Hello ${c.name}, Your pending Udhar balance at HUMA TRADERS Solapur is Rs. ${net}. Please pay at your earliest convenience via PhonePe/GPay. Thank You!`;
+      window.open(`https://wa.me/91${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function filterKhataCustomers(query) {
+      const q = query.toLowerCase();
+      const filtered = khataCustomers.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+      
+      const list = document.getElementById('khataCustomerList');
+      if (!list) return;
+
+      list.innerHTML = filtered.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+        const net = gaveSum - gotSum;
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-900 font-black flex items-center justify-center text-xs shrink-0">
+                ${c.avatar || 'CU'}
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.phone}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs ${net >= 0 ? 'text-rose-600' : 'text-emerald-600'}">₹ ${Math.abs(net).toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ---------------- OTHER PRODUCT & POS FUNCTIONS ---------------- */
     function toggleVariantSection(hasVariants) {
       document.getElementById('singleProductSection').classList.toggle('hidden', hasVariants);
       document.getElementById('variantsBuilderSection').classList.toggle('hidden', !hasVariants);
 
       if (hasVariants && document.getElementById('variantsContainer').children.length === 0) {
         addVariantRow('1 kg', 100, 120, 50);
-        addVariantRow('5 kg Bag', 480, 550, 20);
       }
     }
 
-    function addVariantRow(vName = '', vPrice = '', vMrp = '', vStock = '', vInStock = true) {
+    function addVariantRow(vName = '', vPrice = '', vMrp = '', vStock = '') {
       const container = document.getElementById('variantsContainer');
-      const rowId = 'var_' + Date.now() + Math.floor(Math.random() * 1000);
+      const rowId = 'var_' + Date.now();
 
       const div = document.createElement('div');
       div.className = 'bg-slate-50 border p-2 rounded-xl space-y-1.5 relative variant-row';
@@ -801,29 +1082,19 @@
 
       div.innerHTML = `
         <div class="flex justify-between items-center">
-          <input type="text" placeholder="Option Name (e.g. 500 gm, 1 Patti, 1 Box)" value="${vName}" class="v-name font-bold bg-white border p-1.5 rounded-lg text-xs w-3/4 outline-none" required />
-          <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 font-extrabold text-xs px-2 py-1">✕ Delete</button>
+          <input type="text" placeholder="Option Name (e.g. 500 gm, 1 Box)" value="${vName}" class="v-name font-bold bg-white border p-1.5 rounded-lg text-xs w-3/4 outline-none" required />
+          <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 font-bold text-xs px-2">✕ Delete</button>
         </div>
         <div class="grid grid-cols-3 gap-1.5">
-          <div>
-            <label class="text-[9px] text-slate-500 font-bold">Sell Price (₹)</label>
-            <input type="number" placeholder="Price" value="${vPrice}" class="v-price bg-white border p-1 rounded-lg text-xs outline-none" required />
-          </div>
-          <div>
-            <label class="text-[9px] text-slate-500 font-bold">MRP (₹)</label>
-            <input type="number" placeholder="MRP" value="${vMrp}" class="v-mrp bg-white border p-1 rounded-lg text-xs outline-none" />
-          </div>
-          <div>
-            <label class="text-[9px] text-slate-500 font-bold">Stock Qty</label>
-            <input type="number" placeholder="Stock" value="${vStock}" class="v-stock bg-white border p-1 rounded-lg text-xs outline-none" required />
-          </div>
+          <input type="number" placeholder="Sell Price" value="${vPrice}" class="v-price bg-white border p-1 rounded-lg text-xs outline-none" required />
+          <input type="number" placeholder="MRP" value="${vMrp}" class="v-mrp bg-white border p-1 rounded-lg text-xs outline-none" />
+          <input type="number" placeholder="Stock" value="${vStock}" class="v-stock bg-white border p-1 rounded-lg text-xs outline-none" required />
         </div>
       `;
 
       container.appendChild(div);
     }
 
-    // POS & CUSTOMER VARIANT MODAL SELECTION
     function handleProductAddClick(productId) {
       const p = products.find(prod => prod.id === productId);
       if (!p) return;
@@ -848,26 +1119,21 @@
           <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
             <div>
               <p class="font-extrabold text-slate-900 text-xs">${v.name}</p>
-              <div class="flex items-center gap-1.5 mt-0.5">
-                <span class="font-black text-emerald-800 text-xs">₹${v.price}</span>
-                ${v.mrp ? `<span class="line-through text-slate-400 text-[10px]">₹${v.mrp}</span>` : ''}
-              </div>
+              <p class="font-black text-emerald-800 text-xs">₹${v.price}</p>
             </div>
 
             <div>
-              ${v.stock <= 0 ? `<span class="bg-rose-100 text-rose-700 font-bold text-[10px] px-2 py-1 rounded-lg">Out of Stock</span>` : 
-                qty === 0 ? `
-                  <button onclick="addVariantToCart('${product.id}',${idx})" class="bg-emerald-800 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-xs active:scale-95">
-                    + Add
-                  </button>
-                ` : `
-                  <div class="flex items-center bg-emerald-800 text-white rounded-xl font-black text-xs overflow-hidden">
-                    <button onclick="updateCartQty('${cartKey}', -1)" class="px-2.5 py-1 hover:bg-emerald-900">-</button>
-                    <span class="px-2 bg-emerald-900 py-1 text-[11px]">${qty}</span>
-                    <button onclick="updateCartQty('${cartKey}', 1)" class="px-2.5 py-1 hover:bg-emerald-900">+</button>
-                  </div>
-                `
-              }
+              ${qty === 0 ? `
+                <button onclick="addVariantToCart('${product.id}',${idx})" class="bg-emerald-800 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-xs">
+                  + Add
+                </button>
+              ` : `
+                <div class="flex items-center bg-emerald-800 text-white rounded-xl font-black text-xs overflow-hidden">
+                  <button onclick="updateCartQty('${cartKey}', -1)" class="px-2.5 py-1 hover:bg-emerald-900">-</button>
+                  <span class="px-2 bg-emerald-900 py-1 text-[11px]">${qty}</span>
+                  <button onclick="updateCartQty('${cartKey}', 1)" class="px-2.5 py-1 hover:bg-emerald-900">+</button>
+                </div>
+              `}
             </div>
           </div>
         `;
@@ -892,7 +1158,6 @@
           productId: p.id,
           name: p.name + ' (' + v.name + ')',
           sellingPrice: Number(v.price),
-          mrp: Number(v.mrp || v.price),
           qty: 1
         };
       } else {
@@ -901,7 +1166,6 @@
           productId: p.id,
           name: p.name,
           sellingPrice: Number(p.sellingPrice),
-          mrp: Number(p.mrp || p.sellingPrice),
           qty: 1
         };
       }
@@ -915,7 +1179,7 @@
 
       saveData();
       renderPosCart();
-      showToast(itemToAdd.name + ' added to bill');
+      showToast(itemToAdd.name + ' added');
 
       if (p.hasVariants) {
         openVariantModal(p);
@@ -933,7 +1197,6 @@
       saveData();
       renderPosCart();
 
-      // Refresh variant modal if open
       const openModalName = document.getElementById('variantModalProductName').innerText;
       const currentProd = products.find(p => p.name === openModalName);
       if (currentProd) openVariantModal(currentProd);
@@ -995,11 +1258,10 @@
               <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
               <div class="flex-1 min-w-0">
                 <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
-                <p class="text-[10px] text-slate-500">${p.category} • ${p.hasVariants ? p.variants.length + ' Options' : 'Single Item'}</p>
+                <p class="text-[10px] text-slate-500">${p.category}</p>
                 <span class="font-black text-emerald-800">${priceDisplay}</span>
               </div>
               <div class="flex gap-1 shrink-0">
-                <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
                 <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
               </div>
             </div>
@@ -1027,7 +1289,6 @@
 
     function openProductModal() {
       document.getElementById('editProductId').value = '';
-      document.getElementById('modalTitle').innerText = 'Add New Product';
       document.getElementById('pName').value = '';
       document.getElementById('pHindiName').value = '';
       document.getElementById('pBrand').value = '';
@@ -1035,8 +1296,6 @@
       document.getElementById('pPrice').value = '';
       document.getElementById('pCost').value = '';
       document.getElementById('pStock').value = '';
-      document.getElementById('pThreshold').value = '';
-      document.getElementById('pBarcode').value = '';
       document.getElementById('pHasVariants').checked = false;
       document.getElementById('variantsContainer').innerHTML = '';
       toggleVariantSection(false);
@@ -1047,55 +1306,18 @@
       document.getElementById('productModal').classList.add('hidden');
     }
 
-    function editProduct(id) {
-      const p = products.find(prod => prod.id === id);
-      if (!p) return;
-
-      document.getElementById('editProductId').value = p.id;
-      document.getElementById('modalTitle').innerText = 'Edit Product';
-      document.getElementById('pName').value = p.name;
-      document.getElementById('pHindiName').value = p.hindiName || '';
-      document.getElementById('pBrand').value = p.brand || '';
-      document.getElementById('pCategory').value = p.category;
-      document.getElementById('pUnit').value = p.unit;
-      document.getElementById('pBarcode').value = p.barcode || '';
-      
-      const hasVar = !!p.hasVariants;
-      document.getElementById('pHasVariants').checked = hasVar;
-      toggleVariantSection(hasVar);
-
-      if (!hasVar) {
-        document.getElementById('pMrp').value = p.mrp || '';
-        document.getElementById('pPrice').value = p.sellingPrice || '';
-        document.getElementById('pCost').value = p.costPrice || '';
-        document.getElementById('pStock').value = p.stock || '';
-        document.getElementById('pThreshold').value = p.threshold || 10;
-      } else {
-        const container = document.getElementById('variantsContainer');
-        container.innerHTML = '';
-        (p.variants || []).forEach(v => {
-          addVariantRow(v.name, v.price, v.mrp, v.stock, v.inStock);
-        });
-      }
-
-      uploadedImg = p.image;
-      document.getElementById('productModal').classList.remove('hidden');
-    }
-
     function handleProductSubmit(e) {
       e.preventDefault();
-      const editId = document.getElementById('editProductId').value;
       const name = document.getElementById('pName').value;
       const hindiName = document.getElementById('pHindiName').value;
       const brand = document.getElementById('pBrand').value;
       const category = document.getElementById('pCategory').value;
       const unit = document.getElementById('pUnit').value;
-      const barcode = document.getElementById('pBarcode').value;
       const hasVariants = document.getElementById('pHasVariants').checked;
 
       let productObj = {
-        id: editId || ('HT-P' + Math.floor(100 + Math.random() * 900)),
-        name, hindiName, brand, category, unit, barcode,
+        id: 'HT-P' + Math.floor(100 + Math.random() * 900),
+        name, hindiName, brand, category, unit,
         hasVariants,
         image: uploadedImg
       };
@@ -1122,18 +1344,12 @@
         productObj.threshold = Number(document.getElementById('pThreshold').value) || 10;
       }
 
-      if (editId) {
-        products = products.map(p => p.id === editId ? productObj : p);
-        showToast('Product updated!');
-      } else {
-        products.unshift(productObj);
-        showToast('New Product added!');
-      }
-
+      products.unshift(productObj);
       saveData();
       closeProductModal();
       renderProducts();
       renderLowStock();
+      showToast('Product added!');
     }
 
     function deleteProduct(id) {
@@ -1174,185 +1390,10 @@
       e.preventDefault();
       const name = document.getElementById('cName').value;
       const icon = document.getElementById('cIcon').value || '📦';
-      const subStr = document.getElementById('cSub').value;
-      const subcategories = subStr ? subStr.split(',').map(s => s.trim()) : [];
-
-      categories.push({ id: 'c' + Date.now(), name, icon, subcategories, active: true, image: uploadedCatImg });
+      categories.push({ id: 'c' + Date.now(), name, icon, active: true, image: uploadedCatImg });
       closeCategoryModal();
       renderCategories();
       showToast('Category added!');
-    }
-
-    function printPOSBill() {
-      const itemsDiv = document.getElementById('printBillItems');
-      const grandTotalSpan = document.getElementById('printBillTotal');
-      const subTotalSpan = document.getElementById('pSubTotal');
-      const savingsSpan = document.getElementById('pSavings');
-      const savingsRow = document.getElementById('pSavingsRow');
-
-      const now = new Date();
-      document.getElementById('pBillNo').innerText = '#HT-' + Math.floor(1000 + Math.random() * 9000);
-      document.getElementById('pBillDate').innerText = now.toLocaleDateString('en-IN');
-      document.getElementById('pBillTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      let grandTotal = 0;
-      let totalMrp = 0;
-
-      if (itemsDiv) {
-        itemsDiv.innerHTML = posCart.map(i => {
-          const qty = i.qty || 1;
-          const lineTotal = i.sellingPrice * qty;
-          grandTotal += lineTotal;
-          totalMrp += (i.mrp || i.sellingPrice) * qty;
-
-          return `
-            <div class="flex justify-between items-start py-0.5">
-              <span class="w-1/2 font-medium truncate">${i.name}</span>
-              <span class="w-1/4 text-center">${qty}</span>
-              <span class="w-1/4 text-right font-bold">₹${lineTotal}</span>
-            </div>
-          `;
-        }).join('');
-      }
-
-      const savings = totalMrp - grandTotal;
-
-      if (subTotalSpan) subTotalSpan.innerText = grandTotal;
-      if (grandTotalSpan) grandTotalSpan.innerText = grandTotal;
-
-      if (savings > 0) {
-        if (savingsSpan) savingsSpan.innerText = savings;
-        if (savingsRow) savingsRow.classList.remove('hidden');
-      } else {
-        if (savingsRow) savingsRow.classList.add('hidden');
-      }
-
-      document.getElementById('printModal').classList.remove('hidden');
-    }
-
-    async function connectBluetoothPrinter() {
-      if (!navigator.bluetooth) {
-        alert("Aapka Browser Web Bluetooth Support nahi karta. Chrome Mobile use karein.");
-        return;
-      }
-      try {
-        showToast("Searching Printer...");
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb']
-        });
-
-        const server = await device.gatt.connect();
-        const services = await server.getPrimaryServices();
-        
-        for (const service of services) {
-          const characteristics = await service.getCharacteristics();
-          for (const char of characteristics) {
-            if (char.properties.write || char.properties.writeWithoutResponse) {
-              printCharacteristic = char;
-              break;
-            }
-          }
-          if (printCharacteristic) break;
-        }
-
-        if (printCharacteristic) {
-          document.getElementById('btStatus').innerText = 'Connected';
-          showToast('Printer Connected!');
-        }
-      } catch (error) {
-        console.log(error);
-        showToast("Bluetooth Connection Error");
-      }
-    }
-
-    async function printThermalDirect() {
-      if (!printCharacteristic) {
-        await connectBluetoothPrinter();
-        if (!printCharacteristic) {
-          window.print();
-          return;
-        }
-      }
-
-      try {
-        const encoder = new TextEncoder();
-        let receiptText = "\x1B\x40\x1B\x61\x01HUMA TRADERS\nSolapur Wholesale Store\nPh: +91 98220 12345\n--------------------------------\n\x1B\x61\x00";
-
-        const billNo = document.getElementById('pBillNo').innerText;
-        const billDate = document.getElementById('pBillDate').innerText;
-        receiptText += `Bill: ${billNo}  Date: ${billDate}\n--------------------------------\nITEM              QTY      AMT\n--------------------------------\n`;
-
-        posCart.forEach(i => {
-          const name = i.name.substring(0, 15).padEnd(16, ' ');
-          const qty = String(i.qty).padStart(4, ' ');
-          const amt = ("Rs." + (i.sellingPrice * i.qty)).padStart(8, ' ');
-          receiptText += `${name}${qty}${amt}\n`;
-        });
-
-        const grandTotal = document.getElementById('printBillTotal').innerText;
-        receiptText += `--------------------------------\nGRAND TOTAL:       Rs.${grandTotal}\n--------------------------------\n\x1B\x61\x01*** THANK YOU! VISIT AGAIN ***\n\n\n\n`;
-
-        const data = encoder.encode(receiptText);
-        await printCharacteristic.writeValue(data);
-        showToast("Bill Printed Successfully!");
-      } catch (err) {
-        window.print();
-      }
-    }
-
-    function renderLowStock() {
-      const container = document.getElementById('lowStockList');
-      const statEl = document.getElementById('statLowStock');
-      const lowItems = products.filter(p => !p.hasVariants && p.stock <= p.threshold);
-      if (statEl) statEl.innerText = lowItems.length;
-
-      if (!container) return;
-
-      if (lowItems.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
-        return;
-      }
-
-      container.innerHTML = lowItems.map(i => `
-        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
-          <span class="font-bold text-slate-800">${i.name}</span>
-          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} Left</span>
-        </div>
-      `).join('');
-    }
-
-    function renderOrders() {
-      const dbContainer = document.getElementById('dashboardOrdersList');
-      const fullContainer = document.getElementById('fullOrdersList');
-
-      if (dbContainer) {
-        dbContainer.innerHTML = orders.slice(0, 2).map(o => `
-          <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
-            <div class="flex justify-between font-bold">
-              <span>${o.id} • ₹${o.amount}</span>
-              <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
-            </div>
-            <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
-          </div>
-        `).join('');
-      }
-
-      if (fullContainer) {
-        fullContainer.innerHTML = orders.map(o => `
-          <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
-            <div class="flex justify-between items-start border-b pb-2">
-              <div>
-                <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
-                <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
-                <p class="text-[10px] text-slate-400">${o.address}</p>
-              </div>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
-            </div>
-            <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
-          </div>
-        `).join('');
-      }
     }
 
     function renderCategories() {
@@ -1377,39 +1418,63 @@
       }
     }
 
-    function renderKhata() {
-      const list = document.getElementById('khataCustomerList');
-      if (!list) return;
+    function renderLowStock() {
+      const container = document.getElementById('lowStockList');
+      const statEl = document.getElementById('statLowStock');
+      const lowItems = products.filter(p => !p.hasVariants && p.stock <= (p.threshold || 10));
+      if (statEl) statEl.innerText = lowItems.length;
 
-      let totalGet = 0;
+      if (!container) return;
 
-      list.innerHTML = khataCustomers.map(c => {
-        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-        const net = gaveSum - gotSum;
-        if (net > 0) totalGet += net;
+      if (lowItems.length === 0) {
+        container.innerHTML = `<p class="text-slate-500 font-bold">All items have sufficient stock!</p>`;
+        return;
+      }
 
-        return `
-          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
-                ${c.avatar}
-              </div>
-              <div>
-                <p class="font-black text-slate-900 text-xs">${c.name}</p>
-                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
-              </div>
+      container.innerHTML = lowItems.map(i => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
+          <span class="font-bold text-slate-800">${i.name}</span>
+          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} Left</span>
+        </div>
+      `).join('');
+    }
+
+    function printPOSBill() {
+      const itemsDiv = document.getElementById('printBillItems');
+      const grandTotalSpan = document.getElementById('printBillTotal');
+      const subTotalSpan = document.getElementById('pSubTotal');
+
+      const now = new Date();
+      document.getElementById('pBillNo').innerText = '#HT-' + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('pBillDate').innerText = now.toLocaleDateString('en-IN');
+      document.getElementById('pBillTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let grandTotal = 0;
+
+      if (itemsDiv) {
+        itemsDiv.innerHTML = posCart.map(i => {
+          const qty = i.qty || 1;
+          const lineTotal = i.sellingPrice * qty;
+          grandTotal += lineTotal;
+
+          return `
+            <div class="flex justify-between items-start py-0.5">
+              <span class="w-1/2 font-medium truncate">${i.name}</span>
+              <span class="w-1/4 text-center">${qty}</span>
+              <span class="w-1/4 text-right font-bold">₹${lineTotal}</span>
             </div>
-            <div class="text-right">
-              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
-              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
 
-      document.getElementById('khataTotalGet').innerText = totalGet.toLocaleString('en-IN');
-      document.getElementById('statKhata').innerText = totalGet.toLocaleString('en-IN');
+      if (subTotalSpan) subTotalSpan.innerText = grandTotal;
+      if (grandTotalSpan) grandTotalSpan.innerText = grandTotal;
+
+      document.getElementById('printModal').classList.remove('hidden');
+    }
+
+    async function printThermalDirect() {
+      window.print();
     }
 
     window.onload = () => {
@@ -1419,7 +1484,7 @@
           splash.style.opacity = '0';
           setTimeout(() => splash.remove(), 500);
         }
-      }, 1200);
+      }, 1000);
 
       renderLowStock();
       renderOrders();
