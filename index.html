@@ -191,8 +191,6 @@
 
     <!-- 5. KHATABOOK STYLE KHATA VIEW -->
     <div id="view-khata" class="hidden space-y-3 -mx-4 -mt-3">
-      
-      <!-- Blue Header Bar -->
       <div class="bg-blue-800 text-white px-4 py-3 shadow-md space-y-2">
         <div class="flex justify-between items-center">
           <div class="flex items-center gap-1.5">
@@ -211,7 +209,6 @@
           <span class="text-blue-300">STAFF ›</span>
         </div>
 
-        <!-- Summary Cards (You will give / You will get) -->
         <div class="bg-white rounded-xl text-slate-800 p-3 shadow-sm grid grid-cols-2 gap-2 text-center text-xs">
           <div class="border-r pr-2">
             <p class="text-[10px] font-bold text-slate-500">You will give</p>
@@ -225,7 +222,6 @@
       </div>
 
       <div class="px-4 space-y-3">
-        <!-- Search Bar -->
         <div class="flex gap-2 items-center">
           <div class="flex-1 bg-white border rounded-xl p-2.5 flex items-center gap-2 shadow-2xs">
             <span class="text-slate-400">🔍</span>
@@ -236,18 +232,15 @@
           </button>
         </div>
 
-        <!-- Customer Register List -->
         <div class="bg-white rounded-xl border border-slate-200 divide-y text-xs shadow-2xs" id="khataCustomerList"></div>
       </div>
 
-      <!-- Add Customer Floating Button -->
       <div class="fixed bottom-16 right-4 z-40">
         <button onclick="openAddCustomerModal()" class="bg-rose-700 text-white font-extrabold text-xs px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white">
           <span>👤+</span>
           <span>ADD CUSTOMER</span>
         </button>
       </div>
-
     </div>
 
     <!-- 6. PRODUCTS VIEW -->
@@ -260,8 +253,6 @@
 
   <!-- KHATABOOK PASSBOOK STATEMENT SCREEN (MODAL) -->
   <div id="khatabookPassbookModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col">
-    
-    <!-- Top Customer Nav -->
     <div class="bg-blue-800 text-white px-4 py-3 flex items-center justify-between shadow-md">
       <div class="flex items-center gap-3">
         <button onclick="closePassbook()" class="text-lg font-bold">←</button>
@@ -277,8 +268,6 @@
     </div>
 
     <div class="flex-1 overflow-y-auto p-3 space-y-3">
-      
-      <!-- You Will Get Card -->
       <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-2xs space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-slate-600">You will get</span>
@@ -290,7 +279,6 @@
         </div>
       </div>
 
-      <!-- Quick Actions -->
       <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
         <button onclick="showToast('Downloading PDF Report...')" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
           <span>📄</span>
@@ -306,7 +294,6 @@
         </button>
       </div>
 
-      <!-- Entries History Table -->
       <div class="space-y-2">
         <div class="flex justify-between text-[10px] font-extrabold text-slate-400 px-1 uppercase">
           <span>Entries</span>
@@ -318,10 +305,8 @@
 
         <div id="kbEntriesList" class="space-y-2"></div>
       </div>
-
     </div>
 
-    <!-- Bottom Red / Green Transaction Buttons -->
     <div class="bg-white border-t p-3 grid grid-cols-2 gap-3">
       <button onclick="openEntryForm('gave')" class="bg-rose-700 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
         YOU GAVE ₹
@@ -330,10 +315,9 @@
         YOU GOT ₹
       </button>
     </div>
-
   </div>
 
-  <!-- ENTRY INPUT SCREEN WITH CALCULATOR (KHATABOOK STYLE) -->
+  <!-- ENTRY INPUT SCREEN WITH CALCULATOR -->
   <div id="entryCalculatorModal" class="hidden fixed inset-0 z-50 bg-slate-50 flex flex-col">
     <div class="bg-white px-4 py-3 border-b flex items-center justify-between">
       <button onclick="closeEntryForm()" class="text-rose-700 text-lg font-bold">←</button>
@@ -342,23 +326,18 @@
     </div>
 
     <div class="p-4 space-y-3 flex-1 overflow-y-auto">
-      
-      <!-- Amount Display Bar -->
       <div class="bg-white p-3 rounded-xl border-2 border-slate-200 shadow-xs flex items-center justify-between">
         <span class="text-xl font-black text-rose-700">₹ <span id="calcDisplay">0</span></span>
       </div>
 
-      <!-- Details & Note -->
       <input type="text" id="calcNote" placeholder="Enter details (Items, bill no., quantity, etc.)" class="w-full bg-white border p-3 rounded-xl text-xs outline-none" />
 
-      <!-- Date Button -->
       <div class="flex gap-2">
         <button class="bg-white border text-slate-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-2xs">
           📅 <span id="calcDateText">10 Oct 26</span> ▼
         </button>
       </div>
 
-      <!-- Attachments -->
       <div class="space-y-1.5">
         <p class="text-[10px] text-slate-500 font-bold">📎 Attach bills (max 4)</p>
         <div class="flex gap-2">
@@ -371,12 +350,10 @@
         </div>
       </div>
 
-      <!-- SAVE Button -->
       <button onclick="saveCalcEntry()" class="w-full bg-rose-800 text-white font-black py-3 rounded-xl text-xs shadow-md">
         SAVE
       </button>
 
-      <!-- CALCULATOR KEYPAD -->
       <div class="grid grid-cols-4 gap-1.5 pt-2 text-sm font-bold">
         <button onclick="pressCalc('C')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">C</button>
         <button onclick="pressCalc('M+')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">M+</button>
@@ -403,7 +380,6 @@
         <button onclick="pressCalc('=')" class="bg-white border p-3 rounded-xl text-center">=</button>
         <button onclick="pressCalc('+')" class="bg-blue-800 text-white p-3 rounded-xl text-center">+</button>
       </div>
-
     </div>
   </div>
 
@@ -605,7 +581,8 @@
       </div>
 
       <div class="flex gap-2 pt-1 no-print">
-        <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+        <!-- Direct Thermal Printer Commands via Web Bluetooth -->
+        <button onclick="printThermalDirect()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
           🖨️ Print 58mm Bill
         </button>
         <button onclick="document.getElementById('printModal').classList.add('hidden')" class="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">
@@ -662,7 +639,6 @@
       { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', agent: 'Rahul Shinde', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
     ];
 
-    // KHATABOOK CUSTOMERS DATA STRUCTURE
     let khataCustomers = [
       {
         id: 'k1',
@@ -685,26 +661,6 @@
         history: [
           { date: '08 Oct 26', type: 'gave', amount: 6400, note: 'Sack Atta & Oil', runningBal: 6400 }
         ]
-      },
-      {
-        id: 'k3',
-        name: 'Abubakar mazar bhai ke sadu',
-        phone: '9822033333',
-        avatar: 'AS',
-        lastActive: '41 hours ago',
-        history: [
-          { date: '08 Oct 26', type: 'gave', amount: 84, note: 'Tea Packet', runningBal: 84 }
-        ]
-      },
-      {
-        id: 'k4',
-        name: 'Kalim Patel',
-        phone: '9822044444',
-        avatar: 'KP',
-        lastActive: '2 days ago',
-        history: [
-          { date: '08 Oct 26', type: 'gave', amount: 12729, note: 'Hotel Supplies', runningBal: 12729 }
-        ]
       }
     ];
 
@@ -712,9 +668,96 @@
     let entryType = 'gave';
     let calcVal = '0';
     let posCart = [];
-    let bluetoothDevice = null;
-    let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
-    let uploadedCatImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
+
+    // ADVANCED BLUPRINTS BLUETOOTH PRINTER ENGINE
+    let printCharacteristic = null;
+
+    async function connectBluetoothPrinter() {
+      if (!navigator.bluetooth) {
+        alert("Aapka Browser Web Bluetooth Support nahi karta. Mobile Chrome Browser ka use karein.");
+        return;
+      }
+      try {
+        showToast("Searching Bluprints Printer...");
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb', '0000e025-0000-1000-8000-00805f9b34fb']
+        });
+
+        const server = await device.gatt.connect();
+        const services = await server.getPrimaryServices();
+        
+        for (const service of services) {
+          const characteristics = await service.getCharacteristics();
+          for (const char of characteristics) {
+            if (char.properties.write || char.properties.writeWithoutResponse) {
+              printCharacteristic = char;
+              break;
+            }
+          }
+          if (printCharacteristic) break;
+        }
+
+        if (printCharacteristic) {
+          document.getElementById('btStatus').innerText = 'Connected';
+          showToast('Bluprints SAM220 Connected!');
+        } else {
+          showToast('Printer service found, ready.');
+        }
+      } catch (error) {
+        console.log(error);
+        showToast("Bluetooth Connection Error");
+      }
+    }
+
+    async function printThermalDirect() {
+      if (!printCharacteristic) {
+        await connectBluetoothPrinter();
+        if (!printCharacteristic) {
+          window.print();
+          return;
+        }
+      }
+
+      try {
+        const encoder = new TextEncoder();
+        let receiptText = "\x1B\x40"; // ESC/POS Reset
+        receiptText += "\x1B\x61\x01"; // Center Align
+        receiptText += "HUMA TRADERS\n";
+        receiptText += "Solapur Wholesale Store\n";
+        receiptText += "Ph: +91 98220 12345\n";
+        receiptText += "--------------------------------\n";
+        receiptText += "\x1B\x61\x00"; // Left Align
+
+        const billNo = document.getElementById('pBillNo').innerText;
+        const billDate = document.getElementById('pBillDate').innerText;
+        receiptText += `Bill: ${billNo}  Date: ${billDate}\n`;
+        receiptText += "--------------------------------\n";
+        receiptText += "ITEM              QTY      AMT\n";
+        receiptText += "--------------------------------\n";
+
+        posCart.forEach(i => {
+          const name = i.name.substring(0, 15).padEnd(16, ' ');
+          const qty = String(i.qty || 1).padStart(4, ' ');
+          const amt = ("Rs." + (i.sellingPrice * (i.qty || 1))).padStart(8, ' ');
+          receiptText += `${name}${qty}${amt}\n`;
+        });
+
+        const grandTotal = document.getElementById('printBillTotal').innerText;
+        receiptText += "--------------------------------\n";
+        receiptText += `GRAND TOTAL:       Rs.${grandTotal}\n`;
+        receiptText += "--------------------------------\n";
+        receiptText += "\x1B\x61\x01"; // Center Align
+        receiptText += "*** THANK YOU! VISIT AGAIN ***\n\n\n\n";
+
+        const data = encoder.encode(receiptText);
+        await printCharacteristic.writeValue(data);
+        showToast("Bill Printed Successfully!");
+      } catch (err) {
+        console.log("Direct print failed, fallback to native", err);
+        window.print();
+      }
+    }
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
@@ -745,7 +788,6 @@
       }
     }
 
-    // KHATABOOK FUNCTIONS
     function renderKhata() {
       const list = document.getElementById('khataCustomerList');
       if (!list) return;
@@ -972,24 +1014,6 @@
         } else {
           badge.classList.add('hidden');
         }
-      }
-    }
-
-    async function connectBluetoothPrinter() {
-      if (!navigator.bluetooth) {
-        alert("Aapke browser me Web Bluetooth support nahi hai. Chrome browser use karein.");
-        return;
-      }
-      try {
-        bluetoothDevice = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
-        });
-        const statusEl = document.getElementById('btStatus');
-        if (statusEl) statusEl.innerText = 'Connected';
-        showToast('Bluetooth Printer Connected!');
-      } catch (error) {
-        console.log(error);
       }
     }
 
