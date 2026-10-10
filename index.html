@@ -92,8 +92,8 @@
             <span>Orders Today</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
           </p>
-          <p class="text-base font-black text-slate-900 mt-0.5"><span id="statOrders">2</span> Orders</p>
-          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">2</span> Pending Delivery</span>
+          <p class="text-base font-black text-slate-900 mt-0.5"><span id="statOrders">0</span> Orders</p>
+          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending Delivery</span>
         </div>
 
         <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400">
@@ -264,6 +264,21 @@
     </div>
   </div>
 
+  <!-- CUSTOMER VARIANT SELECTOR MODAL -->
+  <div id="variantSelectorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-2xl p-4 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h3 class="font-extrabold text-slate-900 text-sm" id="variantModalProductName">Product Name</h3>
+          <p class="text-[10px] text-slate-500">Select Options / Size</p>
+        </div>
+        <button onclick="closeVariantModal()" class="text-slate-400 text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div id="variantModalList" class="space-y-2.5"></div>
+    </div>
+  </div>
+
   <!-- KHATABOOK PASSBOOK STATEMENT SCREEN -->
   <div id="khatabookPassbookModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col">
     <div class="bg-blue-800 text-white px-4 py-3 flex items-center justify-between shadow-md">
@@ -375,7 +390,7 @@
     </div>
   </div>
 
-  <!-- PRODUCT MODAL -->
+  <!-- PRODUCT MODAL WITH ADVANCED VARIANTS BUILDER -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -414,10 +429,26 @@
               <option value="1 L">1 Litre</option>
               <option value="1 Pc">1 Piece</option>
               <option value="1 Pkt">1 Packet</option>
+              <option value="1 Box">1 Box</option>
+              <option value="1 Patti">1 Patti</option>
+              <option value="1 Roll">1 Roll</option>
+              <option value="1 Bori">1 Sack / Bori</option>
             </select>
           </div>
         </div>
 
+        <!-- TOGGLE PRODUCT VARIANTS SWITCH -->
+        <div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="font-black text-emerald-950 block">Enable Product Variants?</span>
+              <span class="text-[9px] text-emerald-700">Add multiple sizes, weights, packs or pattis</span>
+            </div>
+            <input type="checkbox" id="pHasVariants" onchange="toggleVariantSection(this.checked)" class="w-4 h-4 text-emerald-800 rounded cursor-pointer" />
+          </div>
+        </div>
+
+        <!-- SINGLE PRODUCT PRICE & STOCK (IF NO VARIANTS) -->
         <div id="singleProductSection" class="space-y-2">
           <div class="grid grid-cols-3 gap-2">
             <div>
@@ -446,6 +477,21 @@
           </div>
         </div>
 
+        <!-- VARIANTS BUILDER SECTION (IF HAS VARIANTS) -->
+        <div id="variantsBuilderSection" class="hidden space-y-2 border-t pt-2">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-slate-900 uppercase text-[11px]">Product Options / Variants</span>
+            <button type="button" onclick="addVariantRow()" class="bg-emerald-800 text-white font-bold text-[10px] px-2 py-1 rounded-lg">+ Add Option</button>
+          </div>
+
+          <div id="variantsContainer" class="space-y-2"></div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Barcode / SKU Number</label>
+          <input type="text" id="pBarcode" placeholder="8901058000101" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        </div>
+
         <div>
           <label class="font-bold text-slate-700 block mb-1">Product Photo</label>
           <input type="file" id="pImgFile" accept="image/*" onchange="handleImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
@@ -470,6 +516,63 @@
         <input type="file" accept="image/*" onchange="handleCatImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
         <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Category</button>
       </form>
+    </div>
+  </div>
+
+  <!-- ADVANCED 58MM THERMAL RECEIPT PRINT MODAL -->
+  <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div id="printArea" class="bg-white p-2 font-mono text-[11px] leading-tight space-y-2 text-black">
+        <div class="text-center space-y-0.5 border-b border-dashed border-black pb-2">
+          <h2 class="font-black text-sm tracking-wider">HUMA TRADERS</h2>
+          <p class="text-[9px] font-bold">Solapur Wholesale & Retail Store</p>
+          <p class="text-[8px]">Saat Rasta Chowk, Solapur, MS</p>
+          <p class="text-[8px]">Ph: +91 98220 12345</p>
+        </div>
+
+        <div class="text-[9px] border-b border-dashed border-black pb-1 space-y-0.5">
+          <div class="flex justify-between">
+            <span>Bill No: <b id="pBillNo">#HT-1042</b></span>
+            <span id="pBillDate">10/10/2026</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Time: <span id="pBillTime">02:45 PM</span></span>
+            <span>Mode: <b>Counter Cash</b></span>
+          </div>
+        </div>
+
+        <div class="border-b border-black pb-1 pt-1 font-bold text-[9px] flex justify-between">
+          <span class="w-1/2">ITEM NAME</span>
+          <span class="w-1/4 text-center">QTY</span>
+          <span class="w-1/4 text-right">AMT</span>
+        </div>
+
+        <div id="printBillItems" class="space-y-1 border-b border-dashed border-black pb-2 pt-1 text-[10px]"></div>
+
+        <div class="space-y-1 text-[10px] pt-1">
+          <div class="flex justify-between">
+            <span>Sub Total:</span>
+            <span>₹<span id="pSubTotal">0</span></span>
+          </div>
+          <div class="flex justify-between font-black text-xs border-t border-b border-black py-1 my-1">
+            <span>GRAND TOTAL:</span>
+            <span>₹<span id="printBillTotal">0</span></span>
+          </div>
+        </div>
+
+        <div class="text-center space-y-1.5 pt-1">
+          <p class="text-[9px] font-bold uppercase">*** Thank You! Visit Again ***</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-1 no-print">
+        <button onclick="printThermalDirect()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+          🖨️ Print 58mm Bill
+        </button>
+        <button onclick="document.getElementById('printModal').classList.add('hidden')" class="px-3 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">
+          Close
+        </button>
+      </div>
     </div>
   </div>
 
@@ -514,38 +617,82 @@
       {
         id: 'HT-P101',
         name: 'Aashirvaad Shuddh Chakki Atta',
+        hindiName: 'आशीर्वाद आटा',
+        brand: 'Aashirvaad',
         category: 'Atta & Flour',
         unit: '1 kg',
-        sellingPrice: 55,
-        stock: 20,
+        hasVariants: true,
+        variants: [
+          { name: '1 kg Packet', price: 55, mrp: 65, stock: 20, inStock: true },
+          { name: '5 kg Bag', price: 245, mrp: 280, stock: 12, inStock: true },
+          { name: '10 kg Sack', price: 319, mrp: 380, stock: 8, inStock: true }
+        ],
         image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400'
       },
       {
         id: 'HT-P102',
-        name: 'Solapur Loose Toor Dal',
+        name: 'Solapur Loose Toor Dal (Sutta)',
+        hindiName: 'तूर डाळ (सुट्टा)',
+        brand: 'Huma Direct',
         category: 'Rice & Grains',
         unit: '1 kg',
-        sellingPrice: 140,
-        stock: 50,
+        hasVariants: true,
+        variants: [
+          { name: '100 gm', price: 16, mrp: 20, stock: 100, inStock: true },
+          { name: '500 gm', price: 72, mrp: 85, stock: 80, inStock: true },
+          { name: '1 kg', price: 140, mrp: 165, stock: 50, inStock: true }
+        ],
         image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400'
       },
       {
         id: 'HT-P103',
         name: 'Fortune Refined Sunflower Oil',
+        hindiName: 'फॉर्च्यून तेल',
+        brand: 'Fortune',
         category: 'Oil & Ghee',
         unit: '1 L',
+        hasVariants: false,
+        mrp: 175,
         sellingPrice: 139,
+        costPrice: 125,
         stock: 3,
         threshold: 10,
         image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400'
       }
     ];
 
+    let defaultOrders = [
+      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', phone: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod', items: 'Atta 10kg x 1, Rice 5kg x 2' },
+      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', agent: 'Rahul Shinde', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
+    ];
+
+    let defaultKhata = [
+      {
+        id: 'k1',
+        name: 'Navid Bejali',
+        phone: '9822011111',
+        avatar: 'NB',
+        history: [
+          { date: '10 Oct 2026', type: 'gave', amount: 3072, note: 'Monthly Grocery Purchase' },
+          { date: '10 Sep 2026', type: 'got', amount: 1000, note: 'UPI Payment Received' }
+        ]
+      },
+      {
+        id: 'k2',
+        name: 'Suhail Shaikh',
+        phone: '9822012345',
+        avatar: 'SS',
+        history: [
+          { date: '05 Oct 2026', type: 'gave', amount: 1500, note: 'Ration Parchi Bill' }
+        ]
+      }
+    ];
+
     let categories = JSON.parse(localStorage.getItem('ht_categories')) || defaultCategories;
     let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
-    let orders = JSON.parse(localStorage.getItem('ht_orders')) || [];
-    let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || [];
-    let posCart = [];
+    let orders = JSON.parse(localStorage.getItem('ht_orders')) || defaultOrders;
+    let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || defaultKhata;
+    let posCart = JSON.parse(localStorage.getItem('ht_cart')) || [];
 
     let activeKbId = null;
     let entryType = 'gave';
@@ -559,6 +706,7 @@
       localStorage.setItem('ht_products', JSON.stringify(products));
       localStorage.setItem('ht_orders', JSON.stringify(orders));
       localStorage.setItem('ht_khata', JSON.stringify(khataCustomers));
+      localStorage.setItem('ht_cart', JSON.stringify(posCart));
     }
 
     function showToast(msg) {
@@ -633,18 +781,21 @@
       if (filtered.length === 0) {
         list.innerHTML = `<p class="text-center text-slate-400 py-4 font-bold">No products in this category.</p>`;
       } else {
-        list.innerHTML = filtered.map(p => `
-          <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border">
-            <div class="flex items-center gap-2">
-              <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover" />
-              <div>
-                <p class="font-bold text-slate-900">${p.name}</p>
-                <p class="text-[10px] text-emerald-800 font-black">₹${p.sellingPrice}</p>
+        list.innerHTML = filtered.map(p => {
+          let price = p.hasVariants && p.variants && p.variants.length > 0 ? `₹${p.variants[0].price}+` : `₹${p.sellingPrice}`;
+          return `
+            <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border">
+              <div class="flex items-center gap-2">
+                <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover" />
+                <div>
+                  <p class="font-bold text-slate-900">${p.name}</p>
+                  <p class="text-[10px] text-emerald-800 font-black">${price}</p>
+                </div>
               </div>
+              <button onclick="closeCategoryProductsModal(); switchTab('products');" class="text-[10px] bg-emerald-800 text-white font-bold px-2 py-1 rounded-lg">Manage</button>
             </div>
-            <button onclick="closeCategoryProductsModal(); switchTab('products');" class="text-[10px] bg-emerald-800 text-white font-bold px-2 py-1 rounded-lg">Manage</button>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       document.getElementById('categoryProductsModal').classList.remove('hidden');
@@ -680,35 +831,600 @@
       showToast('Category deleted');
     }
 
-    /* ---------------- OTHER FUNCTIONS ---------------- */
+    /* ---------------- ORDER MANAGEMENT FUNCTIONS ---------------- */
+    function renderOrders() {
+      const dbContainer = document.getElementById('dashboardOrdersList');
+      const fullContainer = document.getElementById('fullOrdersList');
+      const statOrders = document.getElementById('statOrders');
+      const statPending = document.getElementById('statPending');
+      const allOrdersTag = document.getElementById('allOrdersTag');
+
+      const pendingCount = orders.filter(o => o.status !== 'Delivered').length;
+
+      if (statOrders) statOrders.innerText = orders.length;
+      if (statPending) statPending.innerText = pendingCount;
+      if (allOrdersTag) allOrdersTag.innerText = orders.length + ' Orders';
+
+      if (dbContainer) {
+        dbContainer.innerHTML = orders.slice(0, 3).map(o => `
+          <div class="p-2.5 bg-slate-50 rounded-xl border flex justify-between items-center text-xs">
+            <div>
+              <p class="font-extrabold text-slate-900">${o.id} • ₹${o.amount}</p>
+              <p class="text-[10px] text-slate-500">${o.customerName}</p>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-1 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+          </div>
+        `).join('');
+      }
+
+      if (fullContainer) {
+        let filtered = orders;
+        if (activeFilter !== 'All') {
+          filtered = orders.filter(o => o.status === activeFilter);
+        }
+
+        if (filtered.length === 0) {
+          fullContainer.innerHTML = `<p class="text-center text-slate-400 font-bold py-6">No ${activeFilter} orders found.</p>`;
+          return;
+        }
+
+        fullContainer.innerHTML = filtered.map(o => `
+          <div class="p-3.5 bg-white rounded-2xl border border-slate-200 space-y-2.5 text-xs shadow-2xs">
+            <div class="flex justify-between items-start border-b pb-2">
+              <div>
+                <span class="font-black text-slate-900 text-sm">${o.id}</span>
+                <span class="text-emerald-800 font-black ml-2 text-sm">₹${o.amount}</span>
+                <p class="text-[11px] text-slate-700 font-bold mt-0.5">${o.customerName} (${o.phone})</p>
+                <p class="text-[10px] text-slate-400">${o.address}</p>
+              </div>
+              <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : o.status === 'Out for Delivery' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-900'}">
+                ${o.status}
+              </span>
+            </div>
+            
+            <div class="bg-slate-50 p-2 rounded-xl text-[11px] font-semibold text-slate-700">
+              🛒 Items: ${o.items}
+            </div>
+
+            <div class="flex gap-2 pt-1">
+              <button onclick="openOrderStatusModal('${o.id}')" class="flex-1 bg-emerald-800 text-white font-extrabold py-2 rounded-xl text-center text-xs shadow-xs">
+                Update Status
+              </button>
+              <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${encodeURIComponent(o.customerName)},%20Your%20Order%20${o.id}%20status%20is:%20${encodeURIComponent(o.status)}', '_blank')" class="bg-emerald-100 text-emerald-900 font-bold px-3 py-2 rounded-xl flex items-center gap-1">
+                💬 WhatsApp
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function filterOrders(status) {
+      activeFilter = status;
+      ['All', 'Placed', 'Out', 'Delivered'].forEach(btn => {
+        const el = document.getElementById(`btnFilter${btn}`);
+        if (el) el.className = 'bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0';
+      });
+      const current = document.getElementById(`btnFilter${status === 'Out for Delivery' ? 'Out' : status}`);
+      if (current) current.className = 'bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0';
+
+      renderOrders();
+    }
+
+    function openOrderStatusModal(orderId) {
+      document.getElementById('activeOrderId').value = orderId;
+      document.getElementById('orderStatusModal').classList.remove('hidden');
+    }
+
+    function closeOrderStatusModal() {
+      document.getElementById('orderStatusModal').classList.add('hidden');
+    }
+
+    function changeOrderStatus(newStatus) {
+      const orderId = document.getElementById('activeOrderId').value;
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveData();
+        renderOrders();
+        showToast(`Order status updated to ${newStatus}`);
+      }
+      closeOrderStatusModal();
+    }
+
+    /* ---------------- KHATABOOK SYSTEM FUNCTIONS ---------------- */
+    function renderKhata() {
+      const list = document.getElementById('khataCustomerList');
+      const giveEl = document.getElementById('khataTotalGive');
+      const getEl = document.getElementById('khataTotalGet');
+      const statKhata = document.getElementById('statKhata');
+      const custCountEl = document.getElementById('khataCustCount');
+
+      if (!list) return;
+
+      let totalGet = 0;
+      let totalGive = 0;
+
+      list.innerHTML = khataCustomers.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+        const net = gaveSum - gotSum;
+
+        if (net > 0) totalGet += net;
+        if (net < 0) totalGive += Math.abs(net);
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-900 font-black flex items-center justify-center text-xs shrink-0">
+                ${c.avatar || 'CU'}
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.phone}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs ${net >= 0 ? 'text-rose-600' : 'text-emerald-600'}">
+                ₹ ${Math.abs(net).toLocaleString('en-IN')}
+              </p>
+              <span class="text-[9px] ${net >= 0 ? 'text-rose-700' : 'text-emerald-700'} font-bold">
+                ${net >= 0 ? 'You will get' : 'You will give'} ›
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (giveEl) giveEl.innerText = totalGive.toLocaleString('en-IN');
+      if (getEl) getEl.innerText = totalGet.toLocaleString('en-IN');
+      if (statKhata) statKhata.innerText = totalGet.toLocaleString('en-IN');
+      if (custCountEl) custCountEl.innerText = khataCustomers.length + ' Persons';
+    }
+
+    function openKbPassbook(custId) {
+      activeKbId = custId;
+      const c = khataCustomers.find(item => item.id === custId);
+      if (!c) return;
+
+      document.getElementById('kbName').innerText = c.name;
+      document.getElementById('kbPhone').innerText = c.phone;
+      document.getElementById('kbAvatar').innerText = c.avatar || 'CU';
+
+      renderPassbookEntries(c);
+      document.getElementById('khatabookPassbookModal').classList.remove('hidden');
+    }
+
+    function closePassbook() {
+      document.getElementById('khatabookPassbookModal').classList.add('hidden');
+    }
+
+    function renderPassbookEntries(customer) {
+      const container = document.getElementById('kbEntriesList');
+      const balanceSpan = document.getElementById('kbBalance');
+
+      let totalGave = customer.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+      let totalGot = customer.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+      let netBalance = totalGave - totalGot;
+
+      if (balanceSpan) balanceSpan.innerText = netBalance.toLocaleString('en-IN');
+
+      if (container) {
+        if (customer.history.length === 0) {
+          container.innerHTML = `<p class="text-center text-slate-400 font-bold py-6 text-xs">No transaction history yet.</p>`;
+          return;
+        }
+
+        container.innerHTML = customer.history.map(h => `
+          <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
+            <div>
+              <p class="font-extrabold text-slate-800">${h.note || (h.type === 'gave' ? 'Udhar Entry' : 'Jama Entry')}</p>
+              <p class="text-[9px] text-slate-400">${h.date}</p>
+            </div>
+            <div class="text-right">
+              ${h.type === 'gave' 
+                ? `<span class="font-black text-rose-600 text-sm">₹ ${Number(h.amount).toLocaleString('en-IN')}</span>` 
+                : `<span class="font-black text-emerald-600 text-sm">₹ ${Number(h.amount).toLocaleString('en-IN')}</span>`
+              }
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function openEntryForm(type) {
+      entryType = type;
+      calcVal = '0';
+      document.getElementById('calcDisplay').innerText = '0';
+      document.getElementById('calcNote').value = '';
+      document.getElementById('entryTitle').innerText = type === 'gave' ? 'You Gave ₹ (Udhar)' : 'You Got ₹ (Jama)';
+      document.getElementById('entryCalculatorModal').classList.remove('hidden');
+    }
+
+    function closeEntryForm() {
+      document.getElementById('entryCalculatorModal').classList.add('hidden');
+    }
+
+    function pressCalc(v) {
+      if (v === 'C') {
+        calcVal = '0';
+      } else if (v === 'DEL') {
+        calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : '0';
+      } else if (v === '=') {
+        try { calcVal = String(eval(calcVal)); } catch { calcVal = 'Error'; }
+      } else {
+        calcVal = calcVal === '0' ? v : calcVal + v;
+      }
+      document.getElementById('calcDisplay').innerText = calcVal;
+    }
+
+    function saveCalcEntry() {
+      const amt = Number(eval(calcVal));
+      if (isNaN(amt) || amt <= 0) {
+        showToast('Please enter a valid amount');
+        return;
+      }
+
+      const note = document.getElementById('calcNote').value || (entryType === 'gave' ? 'Udhar Entry' : 'Payment Received');
+      const c = khataCustomers.find(item => item.id === activeKbId);
+
+      if (c) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        c.history.unshift({ date: dateStr, type: entryType, amount: amt, note: note });
+        saveData();
+        renderPassbookEntries(c);
+        renderKhata();
+        closeEntryForm();
+        showToast('Khata Entry Saved!');
+      }
+    }
+
+    function openAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('hidden');
+    }
+
+    function handleNewCustomerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCustName').value;
+      const phone = document.getElementById('newCustPhone').value;
+      const initial = Number(document.getElementById('newCustInitial').value) || 0;
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+      const newCust = {
+        id: 'k_' + Date.now(),
+        name, phone, avatar: initials || 'CU',
+        history: initial > 0 ? [{ date: new Date().toLocaleDateString('en-IN'), type: 'gave', amount: initial, note: 'Opening Udhar Balance' }] : []
+      };
+
+      khataCustomers.unshift(newCust);
+      saveData();
+      renderKhata();
+      document.getElementById('addCustomerModal').classList.add('hidden');
+      showToast('Customer Added!');
+    }
+
+    function sendKhataWhatsAppStatement() {
+      const c = khataCustomers.find(item => item.id === activeKbId);
+      if (!c) return;
+
+      let totalGave = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+      let totalGot = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+      let net = totalGave - totalGot;
+
+      const msg = `Hello ${c.name}, Your pending Udhar balance at HUMA TRADERS Solapur is Rs. ${net}. Please pay at your earliest convenience via PhonePe/GPay. Thank You!`;
+      window.open(`https://wa.me/91${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function filterKhataCustomers(query) {
+      const q = query.toLowerCase();
+      const filtered = khataCustomers.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+      const list = document.getElementById('khataCustomerList');
+      if (!list) return;
+
+      list.innerHTML = filtered.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + Number(b.amount), 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + Number(b.amount), 0);
+        const net = gaveSum - gotSum;
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-900 font-black flex items-center justify-center text-xs shrink-0">
+                ${c.avatar || 'CU'}
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.phone}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs ${net >= 0 ? 'text-rose-600' : 'text-emerald-600'}">₹ ${Math.abs(net).toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ---------------- OTHER PRODUCT & POS FUNCTIONS ---------------- */
+    function toggleVariantSection(hasVariants) {
+      document.getElementById('singleProductSection').classList.toggle('hidden', hasVariants);
+      document.getElementById('variantsBuilderSection').classList.toggle('hidden', !hasVariants);
+
+      if (hasVariants && document.getElementById('variantsContainer').children.length === 0) {
+        addVariantRow('1 kg', 100, 120, 50);
+      }
+    }
+
+    function addVariantRow(vName = '', vPrice = '', vMrp = '', vStock = '') {
+      const container = document.getElementById('variantsContainer');
+      const rowId = 'var_' + Date.now();
+
+      const div = document.createElement('div');
+      div.className = 'bg-slate-50 border p-2 rounded-xl space-y-1.5 relative variant-row';
+      div.id = rowId;
+
+      div.innerHTML = `
+        <div class="flex justify-between items-center">
+          <input type="text" placeholder="Option Name (e.g. 500 gm, 1 Box)" value="${vName}" class="v-name font-bold bg-white border p-1.5 rounded-lg text-xs w-3/4 outline-none" required />
+          <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 font-bold text-xs px-2">✕ Delete</button>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <input type="number" placeholder="Sell Price" value="${vPrice}" class="v-price bg-white border p-1 rounded-lg text-xs outline-none" required />
+          <input type="number" placeholder="MRP" value="${vMrp}" class="v-mrp bg-white border p-1 rounded-lg text-xs outline-none" />
+          <input type="number" placeholder="Stock" value="${vStock}" class="v-stock bg-white border p-1 rounded-lg text-xs outline-none" required />
+        </div>
+      `;
+
+      container.appendChild(div);
+    }
+
+    function handleProductAddClick(productId) {
+      const p = products.find(prod => prod.id === productId);
+      if (!p) return;
+
+      if (p.hasVariants && p.variants && p.variants.length > 0) {
+        openVariantModal(p);
+      } else {
+        addVariantToCart(p.id, null);
+      }
+    }
+
+    function openVariantModal(product) {
+      document.getElementById('variantModalProductName').innerText = product.name;
+      const listContainer = document.getElementById('variantModalList');
+
+      listContainer.innerHTML = product.variants.map((v, idx) => {
+        const cartKey = product.id + '_' + v.name;
+        const cartItem = posCart.find(item => item.cartKey === cartKey);
+        const qty = cartItem ? cartItem.qty : 0;
+
+        return `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+            <div>
+              <p class="font-extrabold text-slate-900 text-xs">${v.name}</p>
+              <p class="font-black text-emerald-800 text-xs">₹${v.price}</p>
+            </div>
+
+            <div>
+              ${qty === 0 ? `
+                <button onclick="addVariantToCart('${product.id}',${idx})" class="bg-emerald-800 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-xs">
+                  + Add
+                </button>
+              ` : `
+                <div class="flex items-center bg-emerald-800 text-white rounded-xl font-black text-xs overflow-hidden">
+                  <button onclick="updateCartQty('${cartKey}', -1)" class="px-2.5 py-1 hover:bg-emerald-900">-</button>
+                  <span class="px-2 bg-emerald-900 py-1 text-[11px]">${qty}</span>
+                  <button onclick="updateCartQty('${cartKey}', 1)" class="px-2.5 py-1 hover:bg-emerald-900">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('variantSelectorModal').classList.remove('hidden');
+    }
+
+    function closeVariantModal() {
+      document.getElementById('variantSelectorModal').classList.add('hidden');
+    }
+
+    function addVariantToCart(productId, variantIndex) {
+      const p = products.find(prod => prod.id === productId);
+      if (!p) return;
+
+      let itemToAdd = {};
+      if (variantIndex !== null && p.variants && p.variants[variantIndex]) {
+        const v = p.variants[variantIndex];
+        itemToAdd = { cartKey: p.id + '_' + v.name, productId: p.id, name: p.name + ' (' + v.name + ')', sellingPrice: Number(v.price), qty: 1 };
+      } else {
+        itemToAdd = { cartKey: p.id + '_standard', productId: p.id, name: p.name, sellingPrice: Number(p.sellingPrice), qty: 1 };
+      }
+
+      const existing = posCart.find(item => item.cartKey === itemToAdd.cartKey);
+      if (existing) { existing.qty += 1; } else { posCart.push(itemToAdd); }
+
+      saveData();
+      renderPosCart();
+      showToast(itemToAdd.name + ' added');
+
+      if (p.hasVariants) { openVariantModal(p); }
+    }
+
+    function updateCartQty(cartKey, delta) {
+      const item = posCart.find(i => i.cartKey === cartKey);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) posCart = posCart.filter(i => i.cartKey !== cartKey);
+      }
+      saveData();
+      renderPosCart();
+
+      const openModalName = document.getElementById('variantModalProductName').innerText;
+      const currentProd = products.find(p => p.name === openModalName);
+      if (currentProd) openVariantModal(currentProd);
+    }
+
+    function clearPosCart() {
+      posCart = [];
+      saveData();
+      renderPosCart();
+      showToast('Cart cleared');
+    }
+
+    function renderPosCart() {
+      const cartBox = document.getElementById('posCartBox');
+      const itemsContainer = document.getElementById('posCartItems');
+      const totalSpan = document.getElementById('posTotalAmount');
+
+      if (!cartBox) return;
+
+      if (posCart.length === 0) {
+        cartBox.classList.add('hidden');
+        return;
+      }
+
+      cartBox.classList.remove('hidden');
+      let total = 0;
+      itemsContainer.innerHTML = posCart.map(i => {
+        const itemTotal = i.sellingPrice * i.qty;
+        total += itemTotal;
+        return `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100">
+            <div>
+              <p class="font-bold text-slate-800 text-xs">${i.name}</p>
+              <p class="text-[9px] text-slate-500">₹${i.sellingPrice} x ${i.qty}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-emerald-800 text-xs">₹${itemTotal}</span>
+              <button onclick="updateCartQty('${i.cartKey}', -1)" class="text-rose-600 font-bold px-1 text-xs">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      totalSpan.innerText = total.toLocaleString('en-IN');
+    }
+
     function renderProducts() {
       const container = document.getElementById('productsList');
       const posGrid = document.getElementById('posProductsGrid');
 
       if (container) {
-        container.innerHTML = products.map(p => `
-          <div class="bg-white p-3 rounded-2xl border flex justify-between items-center text-xs">
-            <div class="flex items-center gap-2.5">
-              <img src="${p.image}" class="w-10 h-10 rounded-xl object-cover" />
-              <div>
-                <p class="font-bold text-slate-900">${p.name}</p>
-                <span class="text-[10px] text-slate-400">${p.category}</span>
+        container.innerHTML = products.map(p => {
+          let priceDisplay = p.hasVariants && p.variants && p.variants.length > 0 
+            ? `₹${Math.min(...p.variants.map(v => v.price))} - ₹${Math.max(...p.variants.map(v => v.price))}`
+            : `₹${p.sellingPrice}`;
+
+          return `
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
+              <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
+              <div class="flex-1 min-w-0">
+                <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
+                <p class="text-[10px] text-slate-500">${p.category}</p>
+                <span class="font-black text-emerald-800">${priceDisplay}</span>
+              </div>
+              <div class="flex gap-1 shrink-0">
+                <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
               </div>
             </div>
-            <span class="font-black text-emerald-800">₹${p.sellingPrice}</span>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       if (posGrid) {
-        posGrid.innerHTML = products.map(p => `
-          <div onclick="showToast('${p.name} added')" class="bg-white p-2.5 rounded-2xl border cursor-pointer">
-            <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1" />
-            <p class="font-bold text-xs truncate">${p.name}</p>
-            <span class="font-black text-xs text-emerald-800">₹${p.sellingPrice}</span>
-          </div>
-        `).join('');
+        posGrid.innerHTML = products.map(p => {
+          let badgeText = p.hasVariants && p.variants ? `${p.variants.length} options` : `₹${p.sellingPrice}`;
+
+          return `
+            <div onclick="handleProductAddClick('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
+              <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
+              <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+              <div class="flex justify-between items-center mt-1">
+                <span class="font-black text-[10px] text-emerald-800">${badgeText}</span>
+                <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
+    }
+
+    function openProductModal() {
+      document.getElementById('editProductId').value = '';
+      document.getElementById('pName').value = '';
+      document.getElementById('pHindiName').value = '';
+      document.getElementById('pBrand').value = '';
+      document.getElementById('pMrp').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pCost').value = '';
+      document.getElementById('pStock').value = '';
+      document.getElementById('pHasVariants').checked = false;
+      document.getElementById('variantsContainer').innerHTML = '';
+      toggleVariantSection(false);
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('pName').value;
+      const hindiName = document.getElementById('pHindiName').value;
+      const brand = document.getElementById('pBrand').value;
+      const category = document.getElementById('pCategory').value;
+      const unit = document.getElementById('pUnit').value;
+      const hasVariants = document.getElementById('pHasVariants').checked;
+
+      let productObj = {
+        id: 'HT-P' + Math.floor(100 + Math.random() * 900),
+        name, hindiName, brand, category, unit,
+        hasVariants,
+        image: uploadedImg
+      };
+
+      if (hasVariants) {
+        const rows = document.querySelectorAll('#variantsContainer .variant-row');
+        let variantsList = [];
+        rows.forEach(r => {
+          const vName = r.querySelector('.v-name').value;
+          const vPrice = Number(r.querySelector('.v-price').value);
+          const vMrp = Number(r.querySelector('.v-mrp').value) || vPrice;
+          const vStock = Number(r.querySelector('.v-stock').value) || 0;
+
+          if (vName && !isNaN(vPrice)) {
+            variantsList.push({ name: vName, price: vPrice, mrp: vMrp, stock: vStock, inStock: vStock > 0 });
+          }
+        });
+        productObj.variants = variantsList;
+      } else {
+        productObj.mrp = Number(document.getElementById('pMrp').value);
+        productObj.sellingPrice = Number(document.getElementById('pPrice').value);
+        productObj.costPrice = Number(document.getElementById('pCost').value);
+        productObj.stock = Number(document.getElementById('pStock').value);
+        productObj.threshold = Number(document.getElementById('pThreshold').value) || 10;
+      }
+
+      products.unshift(productObj);
+      saveData();
+      closeProductModal();
+      renderProducts();
+      renderCategories();
+      renderLowStock();
+      showToast('Product added!');
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      saveData();
+      renderProducts();
+      renderCategories();
+      renderLowStock();
+      showToast('Product deleted.');
     }
 
     function handleImgUpload(e) {
@@ -729,36 +1445,80 @@
       }
     }
 
-    function openProductModal() { document.getElementById('productModal').classList.remove('hidden'); }
-    function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
+    function renderLowStock() {
+      const container = document.getElementById('lowStockList');
+      const statEl = document.getElementById('statLowStock');
+      const lowItems = products.filter(p => !p.hasVariants && p.stock <= (p.threshold || 10));
+      if (statEl) statEl.innerText = lowItems.length;
 
-    function handleProductSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('pName').value;
-      const category = document.getElementById('pCategory').value;
-      const sellingPrice = Number(document.getElementById('pPrice').value);
+      if (!container) return;
 
-      products.unshift({
-        id: 'HT-P' + Date.now(),
-        name, category, sellingPrice,
-        image: uploadedImg
-      });
+      if (lowItems.length === 0) {
+        container.innerHTML = `<p class="text-slate-500 font-bold">All items have sufficient stock!</p>`;
+        return;
+      }
 
-      saveData();
-      closeProductModal();
-      renderProducts();
-      renderCategories();
-      showToast('Product added!');
+      container.innerHTML = lowItems.map(i => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
+          <span class="font-bold text-slate-800">${i.name}</span>
+          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} Left</span>
+        </div>
+      `).join('');
+    }
+
+    function printPOSBill() {
+      const itemsDiv = document.getElementById('printBillItems');
+      const grandTotalSpan = document.getElementById('printBillTotal');
+      const subTotalSpan = document.getElementById('pSubTotal');
+
+      const now = new Date();
+      document.getElementById('pBillNo').innerText = '#HT-' + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('pBillDate').innerText = now.toLocaleDateString('en-IN');
+      document.getElementById('pBillTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let grandTotal = 0;
+
+      if (itemsDiv) {
+        itemsDiv.innerHTML = posCart.map(i => {
+          const qty = i.qty || 1;
+          const lineTotal = i.sellingPrice * qty;
+          grandTotal += lineTotal;
+
+          return `
+            <div class="flex justify-between items-start py-0.5">
+              <span class="w-1/2 font-medium truncate">${i.name}</span>
+              <span class="w-1/4 text-center">${qty}</span>
+              <span class="w-1/4 text-right font-bold">₹${lineTotal}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (subTotalSpan) subTotalSpan.innerText = grandTotal;
+      if (grandTotalSpan) grandTotalSpan.innerText = grandTotal;
+
+      document.getElementById('printModal').classList.remove('hidden');
+    }
+
+    async function printThermalDirect() {
+      window.print();
     }
 
     window.onload = () => {
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
-        if (splash) splash.remove();
-      }, 500);
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 500);
+        }
+      }, 1000);
 
-      renderCategories();
+      renderLowStock();
+      renderOrders();
       renderProducts();
+      renderCategories();
+      renderKhata();
+      renderPosCart();
     };
   </script>
 </body>
