@@ -251,6 +251,21 @@
 
   </main>
 
+  <!-- CUSTOMER VARIANT SELECTOR MODAL -->
+  <div id="variantSelectorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-2xl p-4 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h3 class="font-extrabold text-slate-900 text-sm" id="variantModalProductName">Product Name</h3>
+          <p class="text-[10px] text-slate-500">Select Options / Size</p>
+        </div>
+        <button onclick="closeVariantModal()" class="text-slate-400 text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div id="variantModalList" class="space-y-2.5"></div>
+    </div>
+  </div>
+
   <!-- KHATABOOK PASSBOOK STATEMENT SCREEN (MODAL) -->
   <div id="khatabookPassbookModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col">
     <div class="bg-blue-800 text-white px-4 py-3 flex items-center justify-between shadow-md">
@@ -399,7 +414,7 @@
     </div>
   </div>
 
-  <!-- PRODUCT MODAL -->
+  <!-- PRODUCT MODAL WITH ADVANCED VARIANTS BUILDER -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -411,7 +426,7 @@
         
         <div>
           <label class="font-bold text-slate-700 block mb-1">Product Name *</label>
-          <input type="text" id="pName" required placeholder="e.g. Premium Toor Dal" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          <input type="text" id="pName" required placeholder="e.g. Loose Toor Dal / Biscuit Box" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -436,61 +451,69 @@
               <option value="1 kg">1 KG</option>
               <option value="500 g">500 Gram</option>
               <option value="1 L">1 Litre</option>
+
               <option value="1 Pc">1 Piece</option>
               <option value="1 Pkt">1 Packet</option>
               <option value="1 Box">1 Box</option>
-              <option value="1 Dozen">1 Dozen</option>
+              <option value="1 Patti">1 Patti</option>
+              <option value="1 Roll">1 Roll</option>
               <option value="1 Bori">1 Sack / Bori</option>
             </select>
           </div>
         </div>
 
-        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl space-y-2">
+        <!-- TOGGLE PRODUCT VARIANTS SWITCH -->
+        <div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-amber-950">Loose / Sutta Item?</span>
-            <input type="checkbox" id="pIsLoose" onchange="toggleLoosePresets(this.checked)" class="w-4 h-4 text-emerald-800 rounded" />
+            <div>
+              <span class="font-black text-emerald-950 block">Enable Product Variants?</span>
+              <span class="text-[9px] text-emerald-700">Add multiple sizes, weights, packs or pattis</span>
+            </div>
+            <input type="checkbox" id="pHasVariants" onchange="toggleVariantSection(this.checked)" class="w-4 h-4 text-emerald-800 rounded cursor-pointer" />
           </div>
-          <div id="loosePresetsBox" class="hidden space-y-1">
-            <p class="text-[9px] font-bold text-amber-800">Select Available Customer Presets:</p>
-            <div class="flex flex-wrap gap-1">
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="100g" class="preset-chk" checked> 100g</label>
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="250g" class="preset-chk" checked> 250g</label>
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="500g" class="preset-chk" checked> 500g</label>
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="1 kg" class="preset-chk" checked> 1 KG</label>
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="2 kg" class="preset-chk" checked> 2 KG</label>
-              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="5 kg" class="preset-chk"> 5 KG</label>
+        </div>
+
+        <!-- SINGLE PRODUCT PRICE & STOCK (IF NO VARIANTS) -->
+        <div id="singleProductSection" class="space-y-2">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Cost Price</label>
+              <input type="number" id="pCost" oninput="calcMargin()" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">MRP (₹)</label>
+              <input type="number" id="pMrp" placeholder="160" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+            </div>
+            <div>
+              <label class="font-bold text-emerald-900 block mb-1">Sell Price (₹)</label>
+              <input type="number" id="pPrice" oninput="calcMargin()" placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
+            </div>
+          </div>
+
+          <div id="marginBadge" class="hidden bg-emerald-100 text-emerald-800 p-2 rounded-xl font-bold text-center text-[10px]">
+            Estimated Profit Margin: <span id="marginVal">0%</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Stock Qty</label>
+              <input type="number" id="pStock" placeholder="50" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Low Stock Limit</label>
+              <input type="number" id="pThreshold" placeholder="10" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Cost Price</label>
-            <input type="number" id="pCost" oninput="calcMargin()" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <!-- VARIANTS BUILDER SECTION (IF HAS VARIANTS) -->
+        <div id="variantsBuilderSection" class="hidden space-y-2 border-t pt-2">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-slate-900 uppercase text-[11px]">Product Options / Variants</span>
+            <button type="button" onclick="addVariantRow()" class="bg-emerald-800 text-white font-bold text-[10px] px-2 py-1 rounded-lg">+ Add Option</button>
           </div>
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">MRP (₹)</label>
-            <input type="number" id="pMrp" required placeholder="160" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-          </div>
-          <div>
-            <label class="font-bold text-emerald-900 block mb-1">Sell Price (₹)</label>
-            <input type="number" id="pPrice" oninput="calcMargin()" required placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
-          </div>
-        </div>
 
-        <div id="marginBadge" class="hidden bg-emerald-100 text-emerald-800 p-2 rounded-xl font-bold text-center text-[10px]">
-          Estimated Profit Margin: <span id="marginVal">0%</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Stock Qty</label>
-            <input type="number" id="pStock" required placeholder="50" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-          </div>
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Low Stock Limit</label>
-            <input type="number" id="pThreshold" placeholder="10" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-          </div>
+          <div id="variantsContainer" class="space-y-2"></div>
         </div>
 
         <div>
@@ -581,7 +604,6 @@
       </div>
 
       <div class="flex gap-2 pt-1 no-print">
-        <!-- Direct Thermal Printer Commands via Web Bluetooth -->
         <button onclick="printThermalDirect()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
           🖨️ Print 58mm Bill
         </button>
@@ -623,11 +645,74 @@
   </div>
 
   <script>
-    let products = [
-      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', brand: 'Aashirvaad', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, costPrice: 290, stock: 8, threshold: 10, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', brand: 'Huma Direct', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, costPrice: 52, stock: 520, threshold: 50, unit: '1 kg', isLoose: true, presets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+    // INITIAL PRODUCTS WITH ADVANCED CONFIGURABLE VARIANTS
+    let defaultProducts = [
+      {
+        id: 'HT-P101',
+        name: 'Aashirvaad Shuddh Chakki Atta',
+        hindiName: 'आशीर्वाद आटा',
+        brand: 'Aashirvaad',
+        category: 'Atta & Flour',
+        unit: '1 kg',
+        hasVariants: true,
+        variants: [
+          { name: '1 kg Packet', price: 55, mrp: 65, stock: 20, inStock: true, sku: '' },
+          { name: '5 kg Bag', price: 245, mrp: 280, stock: 12, inStock: true, sku: '' },
+          { name: '10 kg Sack', price: 319, mrp: 380, stock: 8, inStock: true, sku: '' }
+        ],
+        image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400'
+      },
+      {
+        id: 'HT-P102',
+        name: 'Solapur Loose Toor Dal (Sutta)',
+        hindiName: 'तूर डाळ (सुट्टा)',
+        brand: 'Huma Direct',
+        category: 'Rice & Grains',
+        unit: '1 kg',
+        hasVariants: true,
+        variants: [
+          { name: '100 gm', price: 16, mrp: 20, stock: 100, inStock: true, sku: '' },
+          { name: '250 gm', price: 38, mrp: 45, stock: 100, inStock: true, sku: '' },
+          { name: '500 gm', price: 72, mrp: 85, stock: 80, inStock: true, sku: '' },
+          { name: '1 kg', price: 140, mrp: 165, stock: 50, inStock: true, sku: '' },
+          { name: '5 kg Bori', price: 680, mrp: 800, stock: 10, inStock: true, sku: '' }
+        ],
+        image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400'
+      },
+      {
+        id: 'HT-P103',
+        name: 'Fortune Refined Sunflower Oil',
+        hindiName: 'फॉर्च्यून तेल',
+        brand: 'Fortune',
+        category: 'Oil & Ghee',
+        unit: '1 L',
+        hasVariants: false,
+        mrp: 175,
+        sellingPrice: 139,
+        costPrice: 125,
+        stock: 3,
+        threshold: 10,
+        image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400'
+      },
+      {
+        id: 'HT-P104',
+        name: 'Parle-G Biscuit Box & Patti',
+        hindiName: 'पारले-जी बिस्किट',
+        brand: 'Parle',
+        category: 'Snacks & Biscuits',
+        unit: '1 Pc',
+        hasVariants: true,
+        variants: [
+          { name: '1 Packet (10 Rs)', price: 10, mrp: 10, stock: 150, inStock: true, sku: '' },
+          { name: '1 Patti (12 Packets)', price: 110, mrp: 120, stock: 25, inStock: true, sku: '' },
+          { name: '1 Carton / Box (120 Pkts)', price: 1050, mrp: 1200, stock: 5, inStock: true, sku: '' }
+        ],
+        image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=400'
+      }
     ];
+
+    let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
+    let posCart = JSON.parse(localStorage.getItem('ht_cart')) || [];
 
     let categories = [
       { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, subcategories: ['Wheat Atta', 'Maida', 'Besan'], image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
@@ -651,112 +736,19 @@
           { date: '10 Sep 26 • 01:00 PM', type: 'got', amount: 1074, note: 'Cash Received', runningBal: 12546 },
           { date: '03 Aug 26 • 12:06 PM', type: 'gave', amount: 5000, note: 'Monthly Bill', runningBal: 13620 }
         ]
-      },
-      {
-        id: 'k2',
-        name: 'Salim bhai',
-        phone: '9822022222',
-        avatar: 'SB',
-        lastActive: '40 hours ago',
-        history: [
-          { date: '08 Oct 26', type: 'gave', amount: 6400, note: 'Sack Atta & Oil', runningBal: 6400 }
-        ]
       }
     ];
 
     let activeKbId = null;
     let entryType = 'gave';
     let calcVal = '0';
-    let posCart = [];
-
-    // ADVANCED BLUPRINTS BLUETOOTH PRINTER ENGINE
     let printCharacteristic = null;
+    let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
+    let uploadedCatImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
 
-    async function connectBluetoothPrinter() {
-      if (!navigator.bluetooth) {
-        alert("Aapka Browser Web Bluetooth Support nahi karta. Mobile Chrome Browser ka use karein.");
-        return;
-      }
-      try {
-        showToast("Searching Bluprints Printer...");
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb', '0000e025-0000-1000-8000-00805f9b34fb']
-        });
-
-        const server = await device.gatt.connect();
-        const services = await server.getPrimaryServices();
-        
-        for (const service of services) {
-          const characteristics = await service.getCharacteristics();
-          for (const char of characteristics) {
-            if (char.properties.write || char.properties.writeWithoutResponse) {
-              printCharacteristic = char;
-              break;
-            }
-          }
-          if (printCharacteristic) break;
-        }
-
-        if (printCharacteristic) {
-          document.getElementById('btStatus').innerText = 'Connected';
-          showToast('Bluprints SAM220 Connected!');
-        } else {
-          showToast('Printer service found, ready.');
-        }
-      } catch (error) {
-        console.log(error);
-        showToast("Bluetooth Connection Error");
-      }
-    }
-
-    async function printThermalDirect() {
-      if (!printCharacteristic) {
-        await connectBluetoothPrinter();
-        if (!printCharacteristic) {
-          window.print();
-          return;
-        }
-      }
-
-      try {
-        const encoder = new TextEncoder();
-        let receiptText = "\x1B\x40"; // ESC/POS Reset
-        receiptText += "\x1B\x61\x01"; // Center Align
-        receiptText += "HUMA TRADERS\n";
-        receiptText += "Solapur Wholesale Store\n";
-        receiptText += "Ph: +91 98220 12345\n";
-        receiptText += "--------------------------------\n";
-        receiptText += "\x1B\x61\x00"; // Left Align
-
-        const billNo = document.getElementById('pBillNo').innerText;
-        const billDate = document.getElementById('pBillDate').innerText;
-        receiptText += `Bill: ${billNo}  Date: ${billDate}\n`;
-        receiptText += "--------------------------------\n";
-        receiptText += "ITEM              QTY      AMT\n";
-        receiptText += "--------------------------------\n";
-
-        posCart.forEach(i => {
-          const name = i.name.substring(0, 15).padEnd(16, ' ');
-          const qty = String(i.qty || 1).padStart(4, ' ');
-          const amt = ("Rs." + (i.sellingPrice * (i.qty || 1))).padStart(8, ' ');
-          receiptText += `${name}${qty}${amt}\n`;
-        });
-
-        const grandTotal = document.getElementById('printBillTotal').innerText;
-        receiptText += "--------------------------------\n";
-        receiptText += `GRAND TOTAL:       Rs.${grandTotal}\n`;
-        receiptText += "--------------------------------\n";
-        receiptText += "\x1B\x61\x01"; // Center Align
-        receiptText += "*** THANK YOU! VISIT AGAIN ***\n\n\n\n";
-
-        const data = encoder.encode(receiptText);
-        await printCharacteristic.writeValue(data);
-        showToast("Bill Printed Successfully!");
-      } catch (err) {
-        console.log("Direct print failed, fallback to native", err);
-        window.print();
-      }
+    function saveData() {
+      localStorage.setItem('ht_products', JSON.stringify(products));
+      localStorage.setItem('ht_cart', JSON.stringify(posCart));
     }
 
     function showToast(msg) {
@@ -788,317 +780,204 @@
       }
     }
 
-    function renderKhata() {
-      const list = document.getElementById('khataCustomerList');
-      if (!list) return;
+    // VARIANT TOGGLE IN ADMIN MODAL
+    function toggleVariantSection(hasVariants) {
+      document.getElementById('singleProductSection').classList.toggle('hidden', hasVariants);
+      document.getElementById('variantsBuilderSection').classList.toggle('hidden', !hasVariants);
 
-      let totalGet = 0;
-
-      list.innerHTML = khataCustomers.map(c => {
-        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-        const net = gaveSum - gotSum;
-        if (net > 0) totalGet += net;
-
-        return `
-          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
-                ${c.avatar}
-              </div>
-              <div>
-                <p class="font-black text-slate-900 text-xs">${c.name}</p>
-                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
-              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('khataTotalGet').innerText = totalGet.toLocaleString('en-IN');
-      document.getElementById('statKhata').innerText = totalGet.toLocaleString('en-IN');
+      if (hasVariants && document.getElementById('variantsContainer').children.length === 0) {
+        addVariantRow('1 kg', 100, 120, 50);
+        addVariantRow('5 kg Bag', 480, 550, 20);
+      }
     }
 
-    function filterKhataCustomers(q) {
-      const list = document.getElementById('khataCustomerList');
-      if (!list) return;
-      const filtered = khataCustomers.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
-      list.innerHTML = filtered.map(c => {
-        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-        const net = gaveSum - gotSum;
+    function addVariantRow(vName = '', vPrice = '', vMrp = '', vStock = '', vInStock = true) {
+      const container = document.getElementById('variantsContainer');
+      const rowId = 'var_' + Date.now() + Math.floor(Math.random() * 1000);
 
-        return `
-          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
-                ${c.avatar}
-              </div>
-              <div>
-                <p class="font-black text-slate-900 text-xs">${c.name}</p>
-                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
-              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+      const div = document.createElement('div');
+      div.className = 'bg-slate-50 border p-2 rounded-xl space-y-1.5 relative variant-row';
+      div.id = rowId;
 
-    function openKbPassbook(id) {
-      activeKbId = id;
-      const cust = khataCustomers.find(c => c.id === id);
-      if (!cust) return;
-
-      document.getElementById('kbName').innerText = cust.name;
-      document.getElementById('kbAvatar').innerText = cust.avatar;
-
-      const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-      const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-      const net = gaveSum - gotSum;
-
-      document.getElementById('kbBalance').innerText = net.toLocaleString('en-IN');
-
-      const entriesList = document.getElementById('kbEntriesList');
-      entriesList.innerHTML = cust.history.map(h => `
-        <div class="bg-white p-3 rounded-xl border flex justify-between items-center text-xs shadow-2xs">
+      div.innerHTML = `
+        <div class="flex justify-between items-center">
+          <input type="text" placeholder="Option Name (e.g. 500 gm, 1 Patti, 1 Box)" value="${vName}" class="v-name font-bold bg-white border p-1.5 rounded-lg text-xs w-3/4 outline-none" required />
+          <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 font-extrabold text-xs px-2 py-1">✕ Delete</button>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
           <div>
-            <p class="font-bold text-slate-800 text-[10px]">${h.date}</p>
-            <p class="text-[9px] text-rose-600 font-extrabold mt-0.5">Bal. ₹ ${h.runningBal.toLocaleString('en-IN')}</p>
-            ${h.note ? `<p class="text-[10px] text-slate-500 italic mt-0.5">${h.note}</p>` : ''}
+            <label class="text-[9px] text-slate-500 font-bold">Sell Price (₹)</label>
+            <input type="number" placeholder="Price" value="${vPrice}" class="v-price bg-white border p-1 rounded-lg text-xs outline-none" required />
           </div>
-          <div class="flex gap-10 font-black text-sm">
-            <span class="${h.type === 'gave' ? 'text-rose-600' : 'text-transparent'}">
-              ${h.type === 'gave' ? '₹ ' + h.amount.toLocaleString('en-IN') : '-'}
-            </span>
-            <span class="${h.type === 'got' ? 'text-emerald-700' : 'text-transparent'}">
-              ${h.type === 'got' ? '₹ ' + h.amount.toLocaleString('en-IN') : '-'}
-            </span>
+          <div>
+            <label class="text-[9px] text-slate-500 font-bold">MRP (₹)</label>
+            <input type="number" placeholder="MRP" value="${vMrp}" class="v-mrp bg-white border p-1 rounded-lg text-xs outline-none" />
+          </div>
+          <div>
+            <label class="text-[9px] text-slate-500 font-bold">Stock Qty</label>
+            <input type="number" placeholder="Stock" value="${vStock}" class="v-stock bg-white border p-1 rounded-lg text-xs outline-none" required />
           </div>
         </div>
-      `).join('');
+      `;
 
-      document.getElementById('khatabookPassbookModal').classList.remove('hidden');
+      container.appendChild(div);
     }
 
-    function closePassbook() {
-      document.getElementById('khatabookPassbookModal').classList.add('hidden');
-    }
+    // POS & CUSTOMER VARIANT MODAL SELECTION
+    function handleProductAddClick(productId) {
+      const p = products.find(prod => prod.id === productId);
+      if (!p) return;
 
-    function openEntryForm(type) {
-      entryType = type;
-      calcVal = '0';
-      const cust = khataCustomers.find(c => c.id === activeKbId);
-      document.getElementById('entryTitle').innerText = `${type === 'gave' ? 'You gave' : 'You got'} ₹ to ${cust ? cust.name : 'Customer'}`;
-      document.getElementById('calcDisplay').innerText = '0';
-      document.getElementById('calcNote').value = '';
-      document.getElementById('entryCalculatorModal').classList.remove('hidden');
-    }
-
-    function closeEntryForm() {
-      document.getElementById('entryCalculatorModal').classList.add('hidden');
-    }
-
-    function pressCalc(val) {
-      const disp = document.getElementById('calcDisplay');
-      if (val === 'C') {
-        calcVal = '0';
-      } else if (val === 'DEL') {
-        calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : '0';
-      } else if (val === '=') {
-        try {
-          calcVal = eval(calcVal).toString();
-        } catch {
-          calcVal = '0';
-        }
+      if (p.hasVariants && p.variants && p.variants.length > 0) {
+        openVariantModal(p);
       } else {
-        calcVal = calcVal === '0' ? val : calcVal + val;
+        addVariantToCart(p.id, null);
       }
-      disp.innerText = calcVal;
     }
 
-    function saveCalcEntry() {
-      let finalAmt = Number(document.getElementById('calcDisplay').innerText);
-      if (isNaN(finalAmt) || finalAmt <= 0) {
-        showToast('Valid amount daalein');
-        return;
+    function openVariantModal(product) {
+      document.getElementById('variantModalProductName').innerText = product.name;
+      const listContainer = document.getElementById('variantModalList');
+
+      listContainer.innerHTML = product.variants.map((v, idx) => {
+        const cartKey = product.id + '_' + v.name;
+        const cartItem = posCart.find(item => item.cartKey === cartKey);
+        const qty = cartItem ? cartItem.qty : 0;
+
+        return `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+            <div>
+              <p class="font-extrabold text-slate-900 text-xs">${v.name}</p>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="font-black text-emerald-800 text-xs">₹${v.price}</span>
+                ${v.mrp ? `<span class="line-through text-slate-400 text-[10px]">₹${v.mrp}</span>` : ''}
+              </div>
+            </div>
+
+            <div>
+              ${v.stock <= 0 ? `<span class="bg-rose-100 text-rose-700 font-bold text-[10px] px-2 py-1 rounded-lg">Out of Stock</span>` : 
+                qty === 0 ? `
+                  <button onclick="addVariantToCart('${product.id}',${idx})" class="bg-emerald-800 text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-xs active:scale-95">
+                    + Add
+                  </button>
+                ` : `
+                  <div class="flex items-center bg-emerald-800 text-white rounded-xl font-black text-xs overflow-hidden">
+                    <button onclick="updateCartQty('${cartKey}', -1)" class="px-2.5 py-1 hover:bg-emerald-900">-</button>
+                    <span class="px-2 bg-emerald-900 py-1 text-[11px]">${qty}</span>
+                    <button onclick="updateCartQty('${cartKey}', 1)" class="px-2.5 py-1 hover:bg-emerald-900">+</button>
+                  </div>
+                `
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('variantSelectorModal').classList.remove('hidden');
+    }
+
+    function closeVariantModal() {
+      document.getElementById('variantSelectorModal').classList.add('hidden');
+    }
+
+    function addVariantToCart(productId, variantIndex) {
+      const p = products.find(prod => prod.id === productId);
+      if (!p) return;
+
+      let itemToAdd = {};
+      if (variantIndex !== null && p.variants && p.variants[variantIndex]) {
+        const v = p.variants[variantIndex];
+        itemToAdd = {
+          cartKey: p.id + '_' + v.name,
+          productId: p.id,
+          name: p.name + ' (' + v.name + ')',
+          sellingPrice: Number(v.price),
+          mrp: Number(v.mrp || v.price),
+          qty: 1
+        };
+      } else {
+        itemToAdd = {
+          cartKey: p.id + '_standard',
+          productId: p.id,
+          name: p.name,
+          sellingPrice: Number(p.sellingPrice),
+          mrp: Number(p.mrp || p.sellingPrice),
+          qty: 1
+        };
       }
 
-      const note = document.getElementById('calcNote').value;
-      const cust = khataCustomers.find(c => c.id === activeKbId);
-
-      if (cust) {
-        const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-        const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-        const currentBal = gaveSum - gotSum;
-        const newBal = entryType === 'gave' ? currentBal + finalAmt : currentBal - finalAmt;
-
-        cust.history.unshift({
-          date: '10 Oct 26 • Just now',
-          type: entryType,
-          amount: finalAmt,
-          note: note || 'Counter Entry',
-          runningBal: newBal
-        });
-        cust.lastActive = 'Just now';
+      const existing = posCart.find(item => item.cartKey === itemToAdd.cartKey);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        posCart.push(itemToAdd);
       }
 
-      closeEntryForm();
-      openKbPassbook(activeKbId);
-      renderKhata();
-      showToast('Entry Saved!');
+      saveData();
+      renderPosCart();
+      showToast(itemToAdd.name + ' added to bill');
+
+      if (p.hasVariants) {
+        openVariantModal(p);
+      }
     }
 
-    function openAddCustomerModal() {
-      document.getElementById('addCustomerModal').classList.remove('hidden');
-    }
-
-    function handleNewCustomerSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('newCustName').value;
-      const phone = document.getElementById('newCustPhone').value;
-      const initial = Number(document.getElementById('newCustInitial').value) || 0;
-
-      const words = name.split(' ');
-      const avatar = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
-
-      khataCustomers.unshift({
-        id: 'k' + Date.now(),
-        name, phone, avatar,
-        lastActive: 'Just now',
-        history: initial > 0 ? [{ date: '10 Oct 26', type: 'gave', amount: initial, note: 'Opening Balance', runningBal: initial }] : []
-      });
-
-      document.getElementById('addCustomerModal').classList.add('hidden');
-      renderKhata();
-      showToast('New Customer Added!');
-      e.target.reset();
-    }
-
-    function sendKhataWhatsAppStatement() {
-      const cust = khataCustomers.find(c => c.id === activeKbId);
-      if (!cust) return;
-      const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
-      const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
-      const net = gaveSum - gotSum;
-
-      const msg = `Hello ${cust.name}, Huma Traders Khata Update:%0APending Balance: ₹ ${net.toLocaleString('en-IN')}.%0AThank you!`;
-      window.open(`https://wa.me/91${cust.phone}?text=${msg}`, '_blank');
-    }
-
-    function toggleLoosePresets(checked) {
-      const box = document.getElementById('loosePresetsBox');
-      if (box) box.classList.toggle('hidden', !checked);
-    }
-
-    function calcMargin() {
-      const costEl = document.getElementById('pCost');
-      const sellEl = document.getElementById('pPrice');
-      const badge = document.getElementById('marginBadge');
-      const val = document.getElementById('marginVal');
-
-      if (costEl && sellEl && badge && val) {
-        const cost = Number(costEl.value);
-        const sell = Number(sellEl.value);
-        if (cost > 0 && sell > 0) {
-          const margin = Math.round(((sell - cost) / cost) * 100);
-          val.innerText = `${margin}% (${margin >= 0 ? 'Profit' : 'Loss'})`;
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
+    function updateCartQty(cartKey, delta) {
+      const item = posCart.find(i => i.cartKey === cartKey);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          posCart = posCart.filter(i => i.cartKey !== cartKey);
         }
       }
+      saveData();
+      renderPosCart();
+
+      // Refresh variant modal if open
+      const openModalName = document.getElementById('variantModalProductName').innerText;
+      const currentProd = products.find(p => p.name === openModalName);
+      if (currentProd) openVariantModal(currentProd);
     }
 
-    function renderLowStock() {
-      const container = document.getElementById('lowStockList');
-      const statEl = document.getElementById('statLowStock');
-      const lowItems = products.filter(p => p.stock <= p.threshold);
-      if (statEl) statEl.innerText = lowItems.length;
+    function clearPosCart() {
+      posCart = [];
+      saveData();
+      renderPosCart();
+      showToast('Cart cleared');
+    }
 
-      if (!container) return;
+    function renderPosCart() {
+      const cartBox = document.getElementById('posCartBox');
+      const itemsContainer = document.getElementById('posCartItems');
+      const totalSpan = document.getElementById('posTotalAmount');
 
-      if (lowItems.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
+      if (!cartBox) return;
+
+      if (posCart.length === 0) {
+        cartBox.classList.add('hidden');
         return;
       }
 
-      container.innerHTML = lowItems.map(i => `
-        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
-          <span class="font-bold text-slate-800">${i.name}</span>
-          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} ${i.unit} Left</span>
-        </div>
-      `).join('');
-    }
-
-    function renderOrders() {
-      const dbContainer = document.getElementById('dashboardOrdersList');
-      const fullContainer = document.getElementById('fullOrdersList');
-
-      const statOrders = document.getElementById('statOrders');
-      const statPending = document.getElementById('statPending');
-      const allTag = document.getElementById('allOrdersTag');
-
-      if (statOrders) statOrders.innerText = orders.length;
-      const pending = orders.filter(o => o.status !== 'Delivered').length;
-      if (statPending) statPending.innerText = pending;
-      if (allTag) allTag.innerText = `${orders.length} Total`;
-
-      if (dbContainer) {
-        dbContainer.innerHTML = orders.slice(0, 2).map(o => `
-          <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
-            <div class="flex justify-between font-bold">
-              <span>${o.id} • ₹${o.amount}</span>
-              <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
+      cartBox.classList.remove('hidden');
+      let total = 0;
+      itemsContainer.innerHTML = posCart.map(i => {
+        const itemTotal = i.sellingPrice * i.qty;
+        total += itemTotal;
+        return `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100">
+            <div>
+              <p class="font-bold text-slate-800 text-xs">${i.name}</p>
+              <p class="text-[9px] text-slate-500">₹${i.sellingPrice} x ${i.qty}</p>
             </div>
-            <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
-          </div>
-        `).join('');
-      }
-
-      if (fullContainer) {
-        fullContainer.innerHTML = orders.map(o => `
-          <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
-            <div class="flex justify-between items-start border-b pb-2">
-              <div>
-                <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
-                <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
-                <p class="text-[10px] text-slate-400">${o.address}</p>
-              </div>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
-            </div>
-            <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
-            
-            <div class="flex items-center justify-between pt-1">
-              <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-100 text-slate-800 text-[10px] font-bold p-1 rounded-lg outline-none">
-                <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Status: Placed</option>
-                <option value="Packing" ${o.status === 'Packing' ? 'selected' : ''}>Status: Packing</option>
-                <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Status: Out for Delivery</option>
-                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
-              </select>
-
-              <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Update</button>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-emerald-800 text-xs">₹${itemTotal}</span>
+              <button onclick="updateCartQty('${i.cartKey}', -1)" class="text-rose-600 font-bold px-1 text-xs">✕</button>
             </div>
           </div>
-        `).join('');
-      }
-    }
+        `;
+      }).join('');
 
-    function updateOrderStatus(id, newStatus) {
-      orders = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
-      renderOrders();
-      showToast(`Order ${id} set to ${newStatus}`);
-    }
-
-    function filterOrders(status) {
-      showToast(`Filtering: ${status}`);
+      totalSpan.innerText = total.toLocaleString('en-IN');
     }
 
     function renderProducts() {
@@ -1106,58 +985,43 @@
       const posGrid = document.getElementById('posProductsGrid');
 
       if (container) {
-        container.innerHTML = products.map(p => `
-          <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
-            <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
-            <div class="flex-1 min-w-0">
-              <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
-              <p class="text-[10px] text-slate-500">${p.category} • Stock: ${p.stock} ${p.unit}</p>
-              <span class="font-black text-emerald-800">₹${p.sellingPrice}</span>
+        container.innerHTML = products.map(p => {
+          let priceDisplay = p.hasVariants && p.variants && p.variants.length > 0 
+            ? `₹${Math.min(...p.variants.map(v => v.price))} - ₹${Math.max(...p.variants.map(v => v.price))}`
+            : `₹${p.sellingPrice}`;
+
+          return `
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs text-xs">
+              <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border shrink-0" />
+              <div class="flex-1 min-w-0">
+                <h4 class="font-extrabold text-slate-900 truncate">${p.name}</h4>
+                <p class="text-[10px] text-slate-500">${p.category} • ${p.hasVariants ? p.variants.length + ' Options' : 'Single Item'}</p>
+                <span class="font-black text-emerald-800">${priceDisplay}</span>
+              </div>
+              <div class="flex gap-1 shrink-0">
+                <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
+                <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
+              </div>
             </div>
-            <div class="flex gap-1 shrink-0">
-              <button onclick="editProduct('${p.id}')" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded-xl">Edit</button>
-              <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-xl">Delete</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       if (posGrid) {
-        posGrid.innerHTML = products.map(p => `
-          <div onclick="addToPos('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
-            <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
-            <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
-            <div class="flex justify-between items-center mt-1">
-              <span class="font-black text-xs text-emerald-800">₹${p.sellingPrice}</span>
-              <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
-            </div>
-          </div>
-        `).join('');
-      }
-    }
+        posGrid.innerHTML = products.map(p => {
+          let badgeText = p.hasVariants && p.variants ? `${p.variants.length} options` : `₹${p.sellingPrice}`;
 
-    function renderCategories() {
-      const container = document.getElementById('categoriesGrid');
-      const select = document.getElementById('pCategory');
-
-      if (select) {
-        select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-      }
-
-      if (container) {
-        container.innerHTML = categories.map(c => `
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs p-3 space-y-2 text-xs">
-            <div class="h-20 w-full bg-slate-100 rounded-xl relative overflow-hidden">
-              <img src="${c.image}" class="w-full h-full object-cover" />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
-                <span class="font-bold text-xs">${c.icon} ${c.name}</span>
+          return `
+            <div onclick="handleProductAddClick('${p.id}')" class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform">
+              <img src="${p.image}" class="w-full h-16 object-cover rounded-xl mb-1.5" />
+              <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+              <div class="flex justify-between items-center mt-1">
+                <span class="font-black text-[10px] text-emerald-800">${badgeText}</span>
+                <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-lg">+ Add</span>
               </div>
             </div>
-            <div class="flex flex-wrap gap-1">
-              ${(c.subcategories || []).map(s => `<span class="bg-slate-100 text-slate-700 text-[9px] font-bold px-2 py-0.5 rounded">${s}</span>`).join('')}
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
     }
 
@@ -1173,8 +1037,9 @@
       document.getElementById('pStock').value = '';
       document.getElementById('pThreshold').value = '';
       document.getElementById('pBarcode').value = '';
-      document.getElementById('pIsLoose').checked = false;
-      toggleLoosePresets(false);
+      document.getElementById('pHasVariants').checked = false;
+      document.getElementById('variantsContainer').innerHTML = '';
+      toggleVariantSection(false);
       document.getElementById('productModal').classList.remove('hidden');
     }
 
@@ -1182,12 +1047,101 @@
       document.getElementById('productModal').classList.add('hidden');
     }
 
-    function openCategoryModal() {
-      document.getElementById('categoryModal').classList.remove('hidden');
+    function editProduct(id) {
+      const p = products.find(prod => prod.id === id);
+      if (!p) return;
+
+      document.getElementById('editProductId').value = p.id;
+      document.getElementById('modalTitle').innerText = 'Edit Product';
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pHindiName').value = p.hindiName || '';
+      document.getElementById('pBrand').value = p.brand || '';
+      document.getElementById('pCategory').value = p.category;
+      document.getElementById('pUnit').value = p.unit;
+      document.getElementById('pBarcode').value = p.barcode || '';
+      
+      const hasVar = !!p.hasVariants;
+      document.getElementById('pHasVariants').checked = hasVar;
+      toggleVariantSection(hasVar);
+
+      if (!hasVar) {
+        document.getElementById('pMrp').value = p.mrp || '';
+        document.getElementById('pPrice').value = p.sellingPrice || '';
+        document.getElementById('pCost').value = p.costPrice || '';
+        document.getElementById('pStock').value = p.stock || '';
+        document.getElementById('pThreshold').value = p.threshold || 10;
+      } else {
+        const container = document.getElementById('variantsContainer');
+        container.innerHTML = '';
+        (p.variants || []).forEach(v => {
+          addVariantRow(v.name, v.price, v.mrp, v.stock, v.inStock);
+        });
+      }
+
+      uploadedImg = p.image;
+      document.getElementById('productModal').classList.remove('hidden');
     }
 
-    function closeCategoryModal() {
-      document.getElementById('categoryModal').classList.add('hidden');
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editProductId').value;
+      const name = document.getElementById('pName').value;
+      const hindiName = document.getElementById('pHindiName').value;
+      const brand = document.getElementById('pBrand').value;
+      const category = document.getElementById('pCategory').value;
+      const unit = document.getElementById('pUnit').value;
+      const barcode = document.getElementById('pBarcode').value;
+      const hasVariants = document.getElementById('pHasVariants').checked;
+
+      let productObj = {
+        id: editId || ('HT-P' + Math.floor(100 + Math.random() * 900)),
+        name, hindiName, brand, category, unit, barcode,
+        hasVariants,
+        image: uploadedImg
+      };
+
+      if (hasVariants) {
+        const rows = document.querySelectorAll('#variantsContainer .variant-row');
+        let variantsList = [];
+        rows.forEach(r => {
+          const vName = r.querySelector('.v-name').value;
+          const vPrice = Number(r.querySelector('.v-price').value);
+          const vMrp = Number(r.querySelector('.v-mrp').value) || vPrice;
+          const vStock = Number(r.querySelector('.v-stock').value) || 0;
+
+          if (vName && !isNaN(vPrice)) {
+            variantsList.push({ name: vName, price: vPrice, mrp: vMrp, stock: vStock, inStock: vStock > 0 });
+          }
+        });
+        productObj.variants = variantsList;
+      } else {
+        productObj.mrp = Number(document.getElementById('pMrp').value);
+        productObj.sellingPrice = Number(document.getElementById('pPrice').value);
+        productObj.costPrice = Number(document.getElementById('pCost').value);
+        productObj.stock = Number(document.getElementById('pStock').value);
+        productObj.threshold = Number(document.getElementById('pThreshold').value) || 10;
+      }
+
+      if (editId) {
+        products = products.map(p => p.id === editId ? productObj : p);
+        showToast('Product updated!');
+      } else {
+        products.unshift(productObj);
+        showToast('New Product added!');
+      }
+
+      saveData();
+      closeProductModal();
+      renderProducts();
+      renderLowStock();
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      saveData();
+      renderProducts();
+      renderLowStock();
+      showToast('Product deleted.');
     }
 
     function handleImgUpload(e) {
@@ -1208,35 +1162,12 @@
       }
     }
 
-    function handleProductSubmit(e) {
-      e.preventDefault();
-      const editId = document.getElementById('editProductId').value;
-      const name = document.getElementById('pName').value;
-      const hindiName = document.getElementById('pHindiName').value;
-      const brand = document.getElementById('pBrand').value;
-      const category = document.getElementById('pCategory').value;
-      const unit = document.getElementById('pUnit').value;
-      const isLoose = document.getElementById('pIsLoose').checked;
-      const mrp = Number(document.getElementById('pMrp').value);
-      const sellingPrice = Number(document.getElementById('pPrice').value);
-      const costPrice = Number(document.getElementById('pCost').value);
-      const stock = Number(document.getElementById('pStock').value);
-      const threshold = Number(document.getElementById('pThreshold').value) || 10;
+    function openCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('hidden');
+    }
 
-      const chks = document.querySelectorAll('.preset-chk:checked');
-      const presets = Array.from(chks).map(c => c.value);
-
-      if (editId) {
-        products = products.map(p => p.id === editId ? { ...p, name, hindiName, brand, category, unit, isLoose, presets, mrp, sellingPrice, costPrice, stock, threshold, image: uploadedImg } : p);
-        showToast('Product updated!');
-      } else {
-        products.unshift({ id: 'HT-P' + Math.floor(100 + Math.random() * 900), name, hindiName, brand, category, unit, isLoose, presets, mrp, sellingPrice, costPrice, stock, threshold, image: uploadedImg });
-        showToast('New Product added!');
-      }
-
-      closeProductModal();
-      renderProducts();
-      renderLowStock();
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
     }
 
     function handleCategorySubmit(e) {
@@ -1250,58 +1181,6 @@
       closeCategoryModal();
       renderCategories();
       showToast('Category added!');
-    }
-
-    function addToPos(id) {
-      const prod = products.find(p => p.id === id);
-      if (!prod) return;
-      
-      const existing = posCart.find(item => item.id === id);
-      if (existing) {
-        existing.qty = (existing.qty || 1) + 1;
-      } else {
-        posCart.push({ ...prod, qty: 1 });
-      }
-
-      renderPosCart();
-      showToast(prod.name + ' added to bill');
-    }
-
-    function clearPosCart() {
-      posCart = [];
-      renderPosCart();
-      showToast('Cart cleared');
-    }
-
-    function renderPosCart() {
-      const cartBox = document.getElementById('posCartBox');
-      const itemsContainer = document.getElementById('posCartItems');
-      const totalSpan = document.getElementById('posTotalAmount');
-
-      if (!cartBox) return;
-
-      if (posCart.length === 0) {
-        cartBox.classList.add('hidden');
-        return;
-      }
-
-      cartBox.classList.remove('hidden');
-      let total = 0;
-      itemsContainer.innerHTML = posCart.map(i => {
-        const itemTotal = i.sellingPrice * (i.qty || 1);
-        total += itemTotal;
-        return `
-          <div class="flex justify-between items-center py-1 border-b border-slate-100">
-            <div>
-              <p class="font-bold text-slate-800">${i.name}</p>
-              <p class="text-[9px] text-slate-500">₹${i.sellingPrice} x ${i.qty || 1}</p>
-            </div>
-            <span class="font-black text-emerald-800">₹${itemTotal}</span>
-          </div>
-        `;
-      }).join('');
-
-      totalSpan.innerText = total;
     }
 
     function printPOSBill() {
@@ -1351,32 +1230,186 @@
       document.getElementById('printModal').classList.remove('hidden');
     }
 
-    function editProduct(id) {
-      const p = products.find(prod => prod.id === id);
-      if (!p) return;
-      document.getElementById('editProductId').value = p.id;
-      document.getElementById('modalTitle').innerText = 'Edit Product';
-      document.getElementById('pName').value = p.name;
-      document.getElementById('pHindiName').value = p.hindiName || '';
-      document.getElementById('pBrand').value = p.brand || '';
-      document.getElementById('pCategory').value = p.category;
-      document.getElementById('pUnit').value = p.unit;
-      document.getElementById('pMrp').value = p.mrp;
-      document.getElementById('pPrice').value = p.sellingPrice;
-      document.getElementById('pCost').value = p.costPrice || '';
-      document.getElementById('pStock').value = p.stock;
-      document.getElementById('pThreshold').value = p.threshold || 10;
-      document.getElementById('pIsLoose').checked = !!p.isLoose;
-      toggleLoosePresets(!!p.isLoose);
-      uploadedImg = p.image;
-      document.getElementById('productModal').classList.remove('hidden');
+    async function connectBluetoothPrinter() {
+      if (!navigator.bluetooth) {
+        alert("Aapka Browser Web Bluetooth Support nahi karta. Chrome Mobile use karein.");
+        return;
+      }
+      try {
+        showToast("Searching Printer...");
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb']
+        });
+
+        const server = await device.gatt.connect();
+        const services = await server.getPrimaryServices();
+        
+        for (const service of services) {
+          const characteristics = await service.getCharacteristics();
+          for (const char of characteristics) {
+            if (char.properties.write || char.properties.writeWithoutResponse) {
+              printCharacteristic = char;
+              break;
+            }
+          }
+          if (printCharacteristic) break;
+        }
+
+        if (printCharacteristic) {
+          document.getElementById('btStatus').innerText = 'Connected';
+          showToast('Printer Connected!');
+        }
+      } catch (error) {
+        console.log(error);
+        showToast("Bluetooth Connection Error");
+      }
     }
 
-    function deleteProduct(id) {
-      products = products.filter(p => p.id !== id);
-      renderProducts();
-      renderLowStock();
-      showToast('Product deleted.');
+    async function printThermalDirect() {
+      if (!printCharacteristic) {
+        await connectBluetoothPrinter();
+        if (!printCharacteristic) {
+          window.print();
+          return;
+        }
+      }
+
+      try {
+        const encoder = new TextEncoder();
+        let receiptText = "\x1B\x40\x1B\x61\x01HUMA TRADERS\nSolapur Wholesale Store\nPh: +91 98220 12345\n--------------------------------\n\x1B\x61\x00";
+
+        const billNo = document.getElementById('pBillNo').innerText;
+        const billDate = document.getElementById('pBillDate').innerText;
+        receiptText += `Bill: ${billNo}  Date: ${billDate}\n--------------------------------\nITEM              QTY      AMT\n--------------------------------\n`;
+
+        posCart.forEach(i => {
+          const name = i.name.substring(0, 15).padEnd(16, ' ');
+          const qty = String(i.qty).padStart(4, ' ');
+          const amt = ("Rs." + (i.sellingPrice * i.qty)).padStart(8, ' ');
+          receiptText += `${name}${qty}${amt}\n`;
+        });
+
+        const grandTotal = document.getElementById('printBillTotal').innerText;
+        receiptText += `--------------------------------\nGRAND TOTAL:       Rs.${grandTotal}\n--------------------------------\n\x1B\x61\x01*** THANK YOU! VISIT AGAIN ***\n\n\n\n`;
+
+        const data = encoder.encode(receiptText);
+        await printCharacteristic.writeValue(data);
+        showToast("Bill Printed Successfully!");
+      } catch (err) {
+        window.print();
+      }
+    }
+
+    function renderLowStock() {
+      const container = document.getElementById('lowStockList');
+      const statEl = document.getElementById('statLowStock');
+      const lowItems = products.filter(p => !p.hasVariants && p.stock <= p.threshold);
+      if (statEl) statEl.innerText = lowItems.length;
+
+      if (!container) return;
+
+      if (lowItems.length === 0) {
+        container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
+        return;
+      }
+
+      container.innerHTML = lowItems.map(i => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
+          <span class="font-bold text-slate-800">${i.name}</span>
+          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} Left</span>
+        </div>
+      `).join('');
+    }
+
+    function renderOrders() {
+      const dbContainer = document.getElementById('dashboardOrdersList');
+      const fullContainer = document.getElementById('fullOrdersList');
+
+      if (dbContainer) {
+        dbContainer.innerHTML = orders.slice(0, 2).map(o => `
+          <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
+            <div class="flex justify-between font-bold">
+              <span>${o.id} • ₹${o.amount}</span>
+              <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
+            </div>
+            <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
+          </div>
+        `).join('');
+      }
+
+      if (fullContainer) {
+        fullContainer.innerHTML = orders.map(o => `
+          <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+            <div class="flex justify-between items-start border-b pb-2">
+              <div>
+                <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
+                <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
+                <p class="text-[10px] text-slate-400">${o.address}</p>
+              </div>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+            </div>
+            <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoriesGrid');
+      const select = document.getElementById('pCategory');
+
+      if (select) {
+        select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      }
+
+      if (container) {
+        container.innerHTML = categories.map(c => `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs p-3 space-y-2 text-xs">
+            <div class="h-20 w-full bg-slate-100 rounded-xl relative overflow-hidden">
+              <img src="${c.image}" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-2 justify-between text-white">
+                <span class="font-bold text-xs">${c.icon} ${c.name}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderKhata() {
+      const list = document.getElementById('khataCustomerList');
+      if (!list) return;
+
+      let totalGet = 0;
+
+      list.innerHTML = khataCustomers.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+        const net = gaveSum - gotSum;
+        if (net > 0) totalGet += net;
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
+                ${c.avatar}
+              </div>
+              <div>
+                <p class="font-black text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
+              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('khataTotalGet').innerText = totalGet.toLocaleString('en-IN');
+      document.getElementById('statKhata').innerText = totalGet.toLocaleString('en-IN');
     }
 
     window.onload = () => {
@@ -1393,6 +1426,7 @@
       renderProducts();
       renderCategories();
       renderKhata();
+      renderPosCart();
     };
   </script>
 </body>
