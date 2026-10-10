@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center gap-1.5">
         <button onclick="connectBluetoothPrinter()" class="bg-emerald-800 hover:bg-emerald-700 text-amber-300 text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-emerald-700 flex items-center gap-1">
-          🖨️ <span id="btStatus">BT Print</span>
+          🖨️ <span id="btStatus">Connected</span>
         </button>
         <button onclick="openProductModal()" class="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl shadow-xs">
           + Add Item
@@ -51,28 +51,49 @@
     <!-- 1. DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
       
-      <!-- Analytics Cards -->
+      <!-- Interactive Clickable Analytics Cards -->
       <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
-          <p class="text-[10px] font-bold text-slate-400 uppercase">Today's Sales</p>
+        
+        <!-- 1. Today's Sales Card -->
+        <div onclick="switchTab('pos'); showToast('Opening POS Billing');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+          <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
+            <span>Today's Sales</span>
+            <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
+          </p>
           <p class="text-base font-black text-emerald-800 mt-0.5">₹<span id="statSales">14,250</span></p>
           <span class="text-[9px] text-emerald-600 font-bold">Online + Counter POS</span>
         </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
-          <p class="text-[10px] font-bold text-slate-400 uppercase">Orders Today</p>
-          <p class="text-base font-black text-slate-900 mt-0.5"><span id="statOrders">12</span> Orders</p>
-          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">3</span> Pending Delivery</span>
+
+        <!-- 2. Orders Today Card -->
+        <div onclick="switchTab('orders'); showToast('Opening Orders List');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+          <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
+            <span>Orders Today</span>
+            <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
+          </p>
+          <p class="text-base font-black text-slate-900 mt-0.5"><span id="statOrders">2</span> Orders</p>
+          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">2</span> Pending Delivery</span>
         </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
-          <p class="text-[10px] font-bold text-slate-400 uppercase">Total Khata Due</p>
+
+        <!-- 3. Total Khata Due Card -->
+        <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+          <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
+            <span>Total Khata Due</span>
+            <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
+          </p>
           <p class="text-base font-black text-rose-600 mt-0.5">₹<span id="statKhata">5,050</span></p>
           <span class="text-[9px] text-slate-500 font-bold">Pending Udhar Balance</span>
         </div>
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
-          <p class="text-[10px] font-bold text-slate-400 uppercase">Low Stock Alert</p>
+
+        <!-- 4. Low Stock Alert Card -->
+        <div onclick="switchTab('products'); showToast('Opening Low Stock Items');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+          <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
+            <span>Low Stock Alert</span>
+            <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
+          </p>
           <p class="text-base font-black text-amber-600 mt-0.5"><span id="statLowStock">2</span> Items</p>
           <span class="text-[9px] text-rose-500 font-bold">Action Needed</span>
         </div>
+
       </div>
 
       <!-- Ration Parchi Order Request Box -->
@@ -405,7 +426,6 @@
       document.getElementById(`nav-${tabId}`).classList.remove('text-slate-500');
     }
 
-    // 58mm Bluetooth Printer Connection
     async function connectBluetoothPrinter() {
       if (!navigator.bluetooth) {
         alert("Aapke browser me Web Bluetooth support nahi hai. Chrome browser use karein.");
@@ -448,7 +468,6 @@
       document.getElementById('statOrders').innerText = orders.length;
       const pending = orders.filter(o => o.status !== 'Delivered').length;
       document.getElementById('statPending').innerText = pending;
-      document.getElementById('orderCountTag').innerText = `${pending} Active`;
       document.getElementById('allOrdersTag').innerText = `${orders.length} Total`;
 
       dbContainer.innerHTML = orders.slice(0, 2).map(o => `
@@ -481,7 +500,7 @@
               <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
             </select>
 
-            <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Status Update</button>
+            <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Update</button>
           </div>
         </div>
       `).join('');
