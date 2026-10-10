@@ -46,12 +46,12 @@
         </div>
         <div>
           <h1 class="text-xs font-black tracking-tight text-white leading-none">HUMA TRADERS ADMIN</h1>
-          <p class="text-[10px] font-bold text-amber-300">Solapur Store Management</p>
+          <p class="text-[10px] font-bold text-amber-300">Solapur Store Command Center</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
         <button onclick="connectBluetoothPrinter()" class="bg-emerald-800 hover:bg-emerald-700 text-amber-300 text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-emerald-700 flex items-center gap-1">
-          🖨️ <span id="btStatus">BT Print</span>
+          🖨️ <span id="btStatus">Connected</span>
         </button>
         <button onclick="openProductModal()" class="bg-amber-400 hover:bg-amber-500 text-emerald-950 text-xs font-black px-3 py-1.5 rounded-xl shadow-xs">
           + Add Item
@@ -60,7 +60,7 @@
     </div>
   </header>
 
-  <!-- Toast Notification -->
+  <!-- Notification Toast -->
   <div id="toast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-xl border border-emerald-700">
     ✓ Toast Message
   </div>
@@ -71,7 +71,7 @@
     <!-- 1. DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
       
-      <!-- Interactive Clickable Analytics Cards -->
+      <!-- Interactive Analytics Cards -->
       <div class="grid grid-cols-2 gap-2 text-xs">
         
         <!-- Today's Sales Card -->
@@ -95,7 +95,7 @@
         </div>
 
         <!-- Total Khata Due Card -->
-        <div onclick="switchTab('khata'); showToast('Opening Khata Ledger');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+        <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Total Khata Due</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
@@ -116,7 +116,7 @@
 
       </div>
 
-      <!-- Live Ration Parchi Request Box -->
+      <!-- Ration Parchi Order Request Box -->
       <div class="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl space-y-2 shadow-2xs">
         <div class="flex justify-between items-center">
           <h3 class="font-black text-xs text-amber-950 flex items-center gap-1">
@@ -143,7 +143,7 @@
         <div class="space-y-1.5" id="lowStockList"></div>
       </div>
 
-      <!-- Recent Orders List -->
+      <!-- Recent Orders Quick List -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
         <div class="flex justify-between items-center">
           <h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders</h3>
@@ -154,7 +154,7 @@
 
     </div>
 
-    <!-- 2. ORDERS TAB -->
+    <!-- 2. ORDERS TAB (LIVE TRACKING & MANAGEMENT) -->
     <div id="view-orders" class="hidden space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-slate-900 uppercase">Order Management & Tracking</h3>
@@ -195,22 +195,22 @@
       <div class="grid grid-cols-1 gap-3" id="categoriesGrid"></div>
     </div>
 
-    <!-- 5. ADVANCE KHATA BOOK LEDGER VIEW -->
+    <!-- 5. ADVANCED KHATA BOOK VIEW -->
     <div id="view-khata" class="hidden space-y-4">
       
       <!-- Summary Bar -->
       <div class="bg-emerald-950 text-white p-3.5 rounded-2xl shadow-md grid grid-cols-3 gap-2 text-center text-xs">
         <div>
           <p class="text-[9px] text-emerald-300 font-bold uppercase">Total Udhar</p>
-          <p class="text-sm font-black text-amber-300">₹<span id="khataTotalUdhar">5,000</span></p>
+          <p class="text-sm font-black text-amber-300">₹<span id="khataTotalUdhar">0</span></p>
         </div>
         <div class="border-x border-emerald-800 px-1">
           <p class="text-[9px] text-emerald-300 font-bold uppercase">Total Jama</p>
-          <p class="text-sm font-black text-emerald-400">₹<span id="khataTotalJama">3,000</span></p>
+          <p class="text-sm font-black text-emerald-400">₹<span id="khataTotalJama">0</span></p>
         </div>
         <div>
           <p class="text-[9px] text-emerald-300 font-bold uppercase">Net Balance</p>
-          <p class="text-sm font-black text-rose-400">₹<span id="khataNetBalance">2,000</span></p>
+          <p class="text-sm font-black text-rose-400">₹<span id="khataNetBalance">0</span></p>
         </div>
       </div>
 
@@ -230,7 +230,7 @@
       <!-- Ledger Accounts List -->
       <div class="space-y-2 text-xs">
         <h3 class="font-extrabold text-slate-900 uppercase">Customer Khata Register</h3>
-        <div class="space-y-3" id="khataList"></div>
+        <div class="space-y-2" id="khataList"></div>
       </div>
     </div>
 
@@ -253,7 +253,6 @@
         <button onclick="document.getElementById('passbookModal').classList.add('hidden')" class="text-slate-400 font-bold text-base">✕</button>
       </div>
 
-      <!-- Balance Box -->
       <div class="bg-slate-50 p-3 rounded-xl border flex justify-between items-center">
         <div>
           <p class="text-[10px] text-slate-500 font-bold">CURRENT BALANCE DUE</p>
@@ -264,13 +263,11 @@
         </button>
       </div>
 
-      <!-- Quick Action Buttons -->
       <div class="grid grid-cols-2 gap-2">
         <button onclick="openTxnModal('jama')" class="bg-emerald-800 text-white font-bold py-2 rounded-xl text-center">+ Jama Karein (Credit)</button>
         <button onclick="openTxnModal('udhar')" class="bg-rose-600 text-white font-bold py-2 rounded-xl text-center">+ Aur Udhar Judein (Debit)</button>
       </div>
 
-      <!-- History Ledger -->
       <div class="space-y-2 pt-2">
         <h4 class="font-extrabold text-slate-900 uppercase border-b pb-1">Transaction History</h4>
         <div class="space-y-1.5" id="pbHistoryList"></div>
@@ -294,7 +291,7 @@
     </div>
   </div>
 
-  <!-- Product Modal -->
+  <!-- Advance Product Modal -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -303,10 +300,12 @@
       </div>
       <form onsubmit="handleProductSubmit(event)" class="space-y-2.5">
         <input type="hidden" id="editProductId" />
+        
         <div>
           <label class="font-bold text-slate-700 block mb-1">Product Name *</label>
           <input type="text" id="pName" required placeholder="e.g. Premium Toor Dal" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1">Hindi Name</label>
@@ -317,6 +316,7 @@
             <input type="text" id="pBrand" placeholder="e.g. Tata Sampann" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
           </div>
         </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1">Category</label>
@@ -330,19 +330,50 @@
               <option value="1 L">1 Litre</option>
               <option value="1 Pc">1 Piece</option>
               <option value="1 Pkt">1 Packet</option>
+              <option value="1 Box">1 Box</option>
+              <option value="1 Dozen">1 Dozen</option>
+              <option value="1 Bori">1 Sack / Bori</option>
             </select>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+
+        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-amber-950">Loose / Sutta Item?</span>
+            <input type="checkbox" id="pIsLoose" onchange="toggleLoosePresets(this.checked)" class="w-4 h-4 text-emerald-800 rounded" />
+          </div>
+          <div id="loosePresetsBox" class="hidden space-y-1">
+            <p class="text-[9px] font-bold text-amber-800">Select Available Customer Presets:</p>
+            <div class="flex flex-wrap gap-1">
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="100g" class="preset-chk" checked> 100g</label>
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="250g" class="preset-chk" checked> 250g</label>
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="500g" class="preset-chk" checked> 500g</label>
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="1 kg" class="preset-chk" checked> 1 KG</label>
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="2 kg" class="preset-chk" checked> 2 KG</label>
+              <label class="bg-white px-2 py-1 border rounded text-[10px] font-bold"><input type="checkbox" value="5 kg" class="preset-chk"> 5 KG</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Purchase Cost</label>
+            <input type="number" id="pCost" oninput="calcMargin()" placeholder="110" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+          </div>
           <div>
             <label class="font-bold text-slate-700 block mb-1">MRP (₹)</label>
             <input type="number" id="pMrp" required placeholder="160" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
           </div>
           <div>
             <label class="font-bold text-emerald-900 block mb-1">Sell Price (₹)</label>
-            <input type="number" id="pPrice" required placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
+            <input type="number" id="pPrice" oninput="calcMargin()" required placeholder="135" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
           </div>
         </div>
+
+        <div id="marginBadge" class="hidden bg-emerald-100 text-emerald-800 p-2 rounded-xl font-bold text-center text-[10px]">
+          Estimated Profit Margin: <span id="marginVal">0%</span>
+        </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1">Stock Qty</label>
@@ -353,6 +384,17 @@
             <input type="number" id="pThreshold" placeholder="10" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
           </div>
         </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Barcode / SKU Number</label>
+          <input type="text" id="pBarcode" placeholder="8901058000101" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Product Photo</label>
+          <input type="file" id="pImgFile" accept="image/*" onchange="handleImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
+        </div>
+
         <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Product</button>
       </form>
     </div>
@@ -365,9 +407,12 @@
         <h3 class="font-extrabold text-slate-900">Add Advance Category</h3>
         <button onclick="closeCategoryModal()" class="text-slate-400 text-base font-bold">✕</button>
       </div>
+
       <form onsubmit="handleCategorySubmit(event)" class="space-y-2.5">
-        <input type="text" id="cName" required placeholder="Category Name" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="text" id="cName" required placeholder="Category Name (e.g. Snacks & Biscuits)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         <input type="text" id="cIcon" placeholder="Emoji Icon (e.g. 🍪)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="text" id="cSub" placeholder="Sub-categories (e.g. Cookies, Chips, Namkeen)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="file" accept="image/*" onchange="handleCatImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
         <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2.5 rounded-xl shadow-md">Save Category</button>
       </form>
     </div>
@@ -423,24 +468,22 @@
   </div>
 
   <script>
-    // State Store
     let products = [
-      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', brand: 'Aashirvaad', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, stock: 8, threshold: 10, unit: '10 kg', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', brand: 'Huma Direct', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, stock: 520, threshold: 50, unit: '1 kg', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, stock: 3, threshold: 10, unit: '1 L', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+      { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', brand: 'Aashirvaad', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, costPrice: 290, stock: 8, threshold: 10, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', brand: 'Huma Direct', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, costPrice: 52, stock: 520, threshold: 50, unit: '1 kg', isLoose: true, presets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
     ];
 
     let categories = [
-      { id: 'c1', name: 'Atta & Flour', icon: '🌾', subcategories: ['Wheat Atta', 'Maida', 'Besan'], image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'c2', name: 'Rice & Grains', icon: '🍚', subcategories: ['Basmati', 'Kolam', 'Loose Rice'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' }
+      { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, subcategories: ['Wheat Atta', 'Maida', 'Besan'], image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c2', name: 'Rice & Grains', icon: '🍚', active: true, subcategories: ['Basmati', 'Kolam', 'Loose Rice'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' }
     ];
 
     let orders = [
-      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', phone: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', items: 'Atta 10kg x 1, Rice 5kg x 2' },
-      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
+      { id: 'HT-ORD-9041', customerName: 'Suhail Shaikh', phone: '9822012345', address: 'Saat Rasta, Solapur', amount: 1240, status: 'Out for Delivery', agent: 'Ramesh Rathod', items: 'Atta 10kg x 1, Rice 5kg x 2' },
+      { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', agent: 'Rahul Shinde', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
     ];
 
-    // Advanced Khata Ledger with History
     let khataAccounts = [
       {
         id: 'k1',
@@ -463,6 +506,9 @@
 
     let activeKhataId = null;
     let posCart = [];
+    let bluetoothDevice = null;
+    let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
+    let uploadedCatImg = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
@@ -483,7 +529,115 @@
       document.getElementById(`nav-${tabId}`).classList.remove('text-slate-500');
     }
 
-    // Render Khata Book
+    function toggleLoosePresets(checked) {
+      document.getElementById('loosePresetsBox').classList.toggle('hidden', !checked);
+    }
+
+    function calcMargin() {
+      const cost = Number(document.getElementById('pCost').value);
+      const sell = Number(document.getElementById('pPrice').value);
+      const badge = document.getElementById('marginBadge');
+      const val = document.getElementById('marginVal');
+
+      if (cost > 0 && sell > 0) {
+        const margin = Math.round(((sell - cost) / cost) * 100);
+        val.innerText = `${margin}% (${margin >= 0 ? 'Profit' : 'Loss'})`;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    async function connectBluetoothPrinter() {
+      if (!navigator.bluetooth) {
+        alert("Aapke browser me Web Bluetooth support nahi hai. Chrome browser use karein.");
+        return;
+      }
+      try {
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+        document.getElementById('btStatus').innerText = 'Connected';
+        showToast('Bluetooth Printer Connected!');
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    function renderLowStock() {
+      const container = document.getElementById('lowStockList');
+      const lowItems = products.filter(p => p.stock <= p.threshold);
+      document.getElementById('statLowStock').innerText = lowItems.length;
+
+      if (lowItems.length === 0) {
+        container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
+        return;
+      }
+
+      container.innerHTML = lowItems.map(i => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
+          <span class="font-bold text-slate-800">${i.name}</span>
+          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} ${i.unit} Left</span>
+        </div>
+      `).join('');
+    }
+
+    function renderOrders() {
+      const dbContainer = document.getElementById('dashboardOrdersList');
+      const fullContainer = document.getElementById('fullOrdersList');
+
+      document.getElementById('statOrders').innerText = orders.length;
+      const pending = orders.filter(o => o.status !== 'Delivered').length;
+      document.getElementById('statPending').innerText = pending;
+      document.getElementById('allOrdersTag').innerText = `${orders.length} Total`;
+
+      dbContainer.innerHTML = orders.slice(0, 2).map(o => `
+        <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
+          <div class="flex justify-between font-bold">
+            <span>${o.id} • ₹${o.amount}</span>
+            <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
+          </div>
+          <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
+        </div>
+      `).join('');
+
+      fullContainer.innerHTML = orders.map(o => `
+        <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+          <div class="flex justify-between items-start border-b pb-2">
+            <div>
+              <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
+              <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
+              <p class="text-[10px] text-slate-400">${o.address}</p>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
+          </div>
+          <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
+          
+          <div class="flex items-center justify-between pt-1">
+            <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-100 text-slate-800 text-[10px] font-bold p-1 rounded-lg outline-none">
+              <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Status: Placed</option>
+              <option value="Packing" ${o.status === 'Packing' ? 'selected' : ''}>Status: Packing</option>
+              <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Status: Out for Delivery</option>
+              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
+            </select>
+
+            <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20your%20Huma%20Traders%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg">WhatsApp Update</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateOrderStatus(id, newStatus) {
+      orders = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
+      renderOrders();
+      showToast(`Order ${id} set to ${newStatus}`);
+    }
+
+    function filterOrders(status) {
+      showToast(`Filtering: ${status}`);
+    }
+
     function renderKhata() {
       const container = document.getElementById('khataList');
       let grandTotalUdhar = 0;
@@ -602,74 +756,6 @@
       e.target.reset();
     }
 
-    function renderLowStock() {
-      const container = document.getElementById('lowStockList');
-      const lowItems = products.filter(p => p.stock <= p.threshold);
-      document.getElementById('statLowStock').innerText = lowItems.length;
-
-      if (lowItems.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 font-bold">Saare items ka stock sufficient hai!</p>`;
-        return;
-      }
-
-      container.innerHTML = lowItems.map(i => `
-        <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-200">
-          <span class="font-bold text-slate-800">${i.name}</span>
-          <span class="bg-rose-100 text-rose-700 font-black px-2 py-0.5 rounded text-[10px]">Only ${i.stock} ${i.unit} Left</span>
-        </div>
-      `).join('');
-    }
-
-    function renderOrders() {
-      const dbContainer = document.getElementById('dashboardOrdersList');
-      const fullContainer = document.getElementById('fullOrdersList');
-
-      document.getElementById('statOrders').innerText = orders.length;
-      const pending = orders.filter(o => o.status !== 'Delivered').length;
-      document.getElementById('statPending').innerText = pending;
-      document.getElementById('allOrdersTag').innerText = `${orders.length} Total`;
-
-      dbContainer.innerHTML = orders.slice(0, 2).map(o => `
-        <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1 text-xs">
-          <div class="flex justify-between font-bold">
-            <span>${o.id} • ₹${o.amount}</span>
-            <span class="text-amber-800 font-extrabold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">${o.status}</span>
-          </div>
-          <p class="text-[10px] text-slate-500">${o.customerName} (${o.address})</p>
-        </div>
-      `).join('');
-
-      fullContainer.innerHTML = orders.map(o => `
-        <div class="p-3 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs shadow-2xs">
-          <div class="flex justify-between items-start border-b pb-2">
-            <div>
-              <p class="font-black text-slate-900">${o.id} • ₹${o.amount}</p>
-              <p class="text-[10px] text-slate-500 font-bold">${o.customerName} (${o.phone})</p>
-              <p class="text-[10px] text-slate-400">${o.address}</p>
-            </div>
-            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${o.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${o.status}</span>
-          </div>
-          <p class="text-[10px] text-slate-600 font-semibold bg-slate-50 p-2 rounded-lg">${o.items}</p>
-          <div class="flex items-center justify-between pt-1">
-            <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-100 text-slate-800 text-[10px] font-bold p-1 rounded-lg outline-none">
-              <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Status: Placed</option>
-              <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Status: Out for Delivery</option>
-              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Status: Delivered</option>
-            </select>
-            <button onclick="window.open('https://wa.me/91${o.phone}?text=Hello%20${o.customerName},%20Order%20${o.id}%20status%20is%20now%20${o.status}.', '_blank')" class="bg-emerald-700 text-white font-bold text-[10px] px-2 py-1 rounded-lg">WhatsApp Update</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function updateOrderStatus(id, newStatus) {
-      orders = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
-      renderOrders();
-      showToast(`Order ${id} set to ${newStatus}`);
-    }
-
-    function filterOrders(s) { showToast('Filtered: ' + s); }
-
     function renderProducts() {
       const container = document.getElementById('productsList');
       const posGrid = document.getElementById('posProductsGrid');
@@ -704,6 +790,7 @@
     function renderCategories() {
       const container = document.getElementById('categoriesGrid');
       const select = document.getElementById('pCategory');
+
       select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
 
       container.innerHTML = categories.map(c => `
@@ -714,14 +801,103 @@
               <span class="font-bold text-xs">${c.icon} ${c.name}</span>
             </div>
           </div>
+          <div class="flex flex-wrap gap-1">
+            ${(c.subcategories || []).map(s => `<span class="bg-slate-100 text-slate-700 text-[9px] font-bold px-2 py-0.5 rounded">${s}</span>`).join('')}
+          </div>
         </div>
       `).join('');
     }
 
-    function openProductModal() { document.getElementById('productModal').classList.remove('hidden'); }
-    function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
-    function openCategoryModal() { document.getElementById('categoryModal').classList.remove('hidden'); }
-    function closeCategoryModal() { document.getElementById('categoryModal').classList.add('hidden'); }
+    function openProductModal() {
+      document.getElementById('editProductId').value = '';
+      document.getElementById('modalTitle').innerText = 'Add New Product';
+      document.getElementById('pName').value = '';
+      document.getElementById('pHindiName').value = '';
+      document.getElementById('pBrand').value = '';
+      document.getElementById('pMrp').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pCost').value = '';
+      document.getElementById('pStock').value = '';
+      document.getElementById('pThreshold').value = '';
+      document.getElementById('pBarcode').value = '';
+      document.getElementById('pIsLoose').checked = false;
+      toggleLoosePresets(false);
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function openCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    function handleImgUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => { uploadedImg = reader.result; };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleCatImgUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => { uploadedCatImg = reader.result; };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editProductId').value;
+      const name = document.getElementById('pName').value;
+      const hindiName = document.getElementById('pHindiName').value;
+      const brand = document.getElementById('pBrand').value;
+      const category = document.getElementById('pCategory').value;
+      const unit = document.getElementById('pUnit').value;
+      const isLoose = document.getElementById('pIsLoose').checked;
+      const mrp = Number(document.getElementById('pMrp').value);
+      const sellingPrice = Number(document.getElementById('pPrice').value);
+      const costPrice = Number(document.getElementById('pCost').value);
+      const stock = Number(document.getElementById('pStock').value);
+      const threshold = Number(document.getElementById('pThreshold').value) || 10;
+
+      const chks = document.querySelectorAll('.preset-chk:checked');
+      const presets = Array.from(chks).map(c => c.value);
+
+      if (editId) {
+        products = products.map(p => p.id === editId ? { ...p, name, hindiName, brand, category, unit, isLoose, presets, mrp, sellingPrice, costPrice, stock, threshold, image: uploadedImg } : p);
+        showToast('Product updated!');
+      } else {
+        products.unshift({ id: 'HT-P' + Math.floor(100 + Math.random() * 900), name, hindiName, brand, category, unit, isLoose, presets, mrp, sellingPrice, costPrice, stock, threshold, image: uploadedImg });
+        showToast('New Product added!');
+      }
+
+      closeProductModal();
+      renderProducts();
+      renderLowStock();
+    }
+
+    function handleCategorySubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('cName').value;
+      const icon = document.getElementById('cIcon').value || '📦';
+      const subStr = document.getElementById('cSub').value;
+      const subcategories = subStr ? subStr.split(',').map(s => s.trim()) : [];
+
+      categories.push({ id: 'c' + Date.now(), name, icon, subcategories, active: true, image: uploadedCatImg });
+      closeCategoryModal();
+      renderCategories();
+      showToast('Category added!');
+    }
 
     function addToPos(id) {
       const prod = products.find(p => p.id === id);
@@ -735,34 +911,69 @@
       const itemsContainer = document.getElementById('posCartItems');
       const totalSpan = document.getElementById('posTotalAmount');
 
-      if (posCart.length === 0) { cartBox.classList.add('hidden'); return; }
+      if (posCart.length === 0) {
+        cartBox.classList.add('hidden');
+        return;
+      }
+
       cartBox.classList.remove('hidden');
       let total = 0;
       itemsContainer.innerHTML = posCart.map(i => {
         total += i.sellingPrice;
         return `<div class="flex justify-between items-center py-1"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
       }).join('');
+
       totalSpan.innerText = total;
     }
 
     function printPOSBill() {
       const itemsDiv = document.getElementById('printBillItems');
       const totalSpan = document.getElementById('printBillTotal');
+
       let total = 0;
       itemsDiv.innerHTML = posCart.map(i => {
         total += i.sellingPrice;
         return `<div class="py-1 flex justify-between text-[10px]"><span>${i.name}</span><span class="font-bold">₹${i.sellingPrice}</span></div>`;
       }).join('');
+
       totalSpan.innerText = total;
       document.getElementById('printModal').classList.remove('hidden');
     }
 
-    // Hide Splash Screen After 1.2 Seconds
+    function editProduct(id) {
+      const p = products.find(prod => prod.id === id);
+      document.getElementById('editProductId').value = p.id;
+      document.getElementById('modalTitle').innerText = 'Edit Product';
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pHindiName').value = p.hindiName || '';
+      document.getElementById('pBrand').value = p.brand || '';
+      document.getElementById('pCategory').value = p.category;
+      document.getElementById('pUnit').value = p.unit;
+      document.getElementById('pMrp').value = p.mrp;
+      document.getElementById('pPrice').value = p.sellingPrice;
+      document.getElementById('pCost').value = p.costPrice || '';
+      document.getElementById('pStock').value = p.stock;
+      document.getElementById('pThreshold').value = p.threshold || 10;
+      document.getElementById('pIsLoose').checked = !!p.isLoose;
+      toggleLoosePresets(!!p.isLoose);
+      uploadedImg = p.image;
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      renderProducts();
+      renderLowStock();
+      showToast('Product deleted.');
+    }
+
     window.onload = () => {
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.remove(), 500);
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 500);
+        }
       }, 1200);
 
       renderLowStock();
