@@ -14,7 +14,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Thermal Print Styling */
     @media print {
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
@@ -78,10 +77,8 @@
     
     <!-- 1. DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
-      
-      <!-- Analytics Cards -->
       <div class="grid grid-cols-2 gap-2 text-xs">
-        <div onclick="switchTab('pos'); showToast('Opening POS Billing');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+        <div onclick="switchTab('pos'); showToast('Opening POS Billing');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Today's Sales</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
@@ -90,7 +87,7 @@
           <span class="text-[9px] text-emerald-600 font-bold">Online + Counter POS</span>
         </div>
 
-        <div onclick="switchTab('orders'); showToast('Opening Orders List');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+        <div onclick="switchTab('orders'); showToast('Opening Orders List');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Orders Today</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
@@ -99,16 +96,16 @@
           <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">2</span> Pending Delivery</span>
         </div>
 
-        <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+        <div onclick="switchTab('khata'); showToast('Opening Khata Register');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Total Khata Due</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
           </p>
-          <p class="text-base font-black text-rose-600 mt-0.5">₹<span id="statKhata">2,000</span></p>
+          <p class="text-base font-black text-rose-600 mt-0.5">₹<span id="statKhata">2,70,386</span></p>
           <span class="text-[9px] text-slate-500 font-bold">Pending Udhar Balance</span>
         </div>
 
-        <div onclick="switchTab('products'); showToast('Opening Low Stock Items');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-transform hover:border-emerald-400">
+        <div onclick="switchTab('products'); showToast('Opening Low Stock Items');" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400">
           <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between">
             <span>Low Stock Alert</span>
             <span class="text-[8px] bg-slate-100 text-slate-600 px-1 rounded">Click →</span>
@@ -118,7 +115,6 @@
         </div>
       </div>
 
-      <!-- Ration Parchi Box -->
       <div class="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl space-y-2 shadow-2xs">
         <div class="flex justify-between items-center">
           <h3 class="font-black text-xs text-amber-950 flex items-center gap-1">📜 Live Customer Ration Parchi Alert</h3>
@@ -137,13 +133,11 @@
         </div>
       </div>
 
-      <!-- Low Stock Alert Box -->
       <div class="bg-rose-50 border border-rose-200 p-3 rounded-2xl space-y-2 text-xs">
         <h3 class="font-extrabold text-rose-950">⚠️ Low Stock Warning Items</h3>
         <div class="space-y-1.5" id="lowStockList"></div>
       </div>
 
-      <!-- Recent Orders List -->
       <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
         <div class="flex justify-between items-center">
           <h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders</h3>
@@ -151,7 +145,6 @@
         </div>
         <div class="space-y-2" id="dashboardOrdersList"></div>
       </div>
-
     </div>
 
     <!-- 2. ORDERS TAB -->
@@ -196,39 +189,65 @@
       <div class="grid grid-cols-1 gap-3" id="categoriesGrid"></div>
     </div>
 
-    <!-- 5. ADVANCED KHATA BOOK VIEW -->
-    <div id="view-khata" class="hidden space-y-4">
-      <div class="bg-emerald-950 text-white p-3.5 rounded-2xl shadow-md grid grid-cols-3 gap-2 text-center text-xs">
-        <div>
-          <p class="text-[9px] text-emerald-300 font-bold uppercase">Total Udhar</p>
-          <p class="text-sm font-black text-amber-300">₹<span id="khataTotalUdhar">0</span></p>
-        </div>
-        <div class="border-x border-emerald-800 px-1">
-          <p class="text-[9px] text-emerald-300 font-bold uppercase">Total Jama</p>
-          <p class="text-sm font-black text-emerald-400">₹<span id="khataTotalJama">0</span></p>
-        </div>
-        <div>
-          <p class="text-[9px] text-emerald-300 font-bold uppercase">Net Balance</p>
-          <p class="text-sm font-black text-rose-400">₹<span id="khataNetBalance">0</span></p>
-        </div>
-      </div>
-
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-2xs text-xs">
-        <h3 class="font-extrabold text-slate-900 uppercase">Create New Khata Account</h3>
-        <form onsubmit="handleKhataSubmit(event)" class="space-y-2">
-          <input type="text" id="khataName" required placeholder="Customer / Hotel Name *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-          <div class="grid grid-cols-2 gap-2">
-            <input type="tel" id="khataPhone" required placeholder="Mobile Number *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-            <input type="number" id="khataInitialAmount" required placeholder="Opening Udhar (₹) *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+    <!-- 5. KHATABOOK STYLE KHATA VIEW -->
+    <div id="view-khata" class="hidden space-y-3 -mx-4 -mt-3">
+      
+      <!-- Blue Header Bar -->
+      <div class="bg-blue-800 text-white px-4 py-3 shadow-md space-y-2">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg">📖</span>
+            <span class="font-extrabold text-sm">Huma Trader's</span>
+            <span class="text-xs">▼</span>
           </div>
-          <button type="submit" class="w-full bg-emerald-800 text-white font-bold py-2 rounded-xl">Create Customer Ledger</button>
-        </form>
+          <div class="bg-blue-900 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border border-blue-700">
+            🟡 <span>0</span>
+          </div>
+        </div>
+
+        <div class="flex justify-around border-b border-blue-700 pb-1 text-xs font-bold">
+          <span class="border-b-2 border-amber-400 pb-1 text-white">CUSTOMERS</span>
+          <span class="text-blue-300">SUPPLIERS</span>
+          <span class="text-blue-300">STAFF ›</span>
+        </div>
+
+        <!-- Summary Cards (You will give / You will get) -->
+        <div class="bg-white rounded-xl text-slate-800 p-3 shadow-sm grid grid-cols-2 gap-2 text-center text-xs">
+          <div class="border-r pr-2">
+            <p class="text-[10px] font-bold text-slate-500">You will give</p>
+            <p class="text-base font-black text-emerald-600">₹ <span id="khataTotalGive">10,785</span></p>
+          </div>
+          <div class="pl-2">
+            <p class="text-[10px] font-bold text-slate-500">You will get</p>
+            <p class="text-base font-black text-rose-600">₹ <span id="khataTotalGet">2,70,386</span></p>
+          </div>
+        </div>
       </div>
 
-      <div class="space-y-2 text-xs">
-        <h3 class="font-extrabold text-slate-900 uppercase">Customer Khata Register</h3>
-        <div class="space-y-2" id="khataList"></div>
+      <div class="px-4 space-y-3">
+        <!-- Search Bar -->
+        <div class="flex gap-2 items-center">
+          <div class="flex-1 bg-white border rounded-xl p-2.5 flex items-center gap-2 shadow-2xs">
+            <span class="text-slate-400">🔍</span>
+            <input type="text" id="khataSearch" oninput="filterKhataCustomers(this.value)" placeholder="Search Customer" class="w-full text-xs outline-none bg-transparent" />
+          </div>
+          <button onclick="openAddCustomerModal()" class="bg-blue-800 text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1 shadow-xs">
+            📑 Cashbook
+          </button>
+        </div>
+
+        <!-- Customer Register List -->
+        <div class="bg-white rounded-xl border border-slate-200 divide-y text-xs shadow-2xs" id="khataCustomerList"></div>
       </div>
+
+      <!-- Add Customer Floating Button -->
+      <div class="fixed bottom-16 right-4 z-40">
+        <button onclick="openAddCustomerModal()" class="bg-rose-700 text-white font-extrabold text-xs px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white">
+          <span>👤+</span>
+          <span>ADD CUSTOMER</span>
+        </button>
+      </div>
+
     </div>
 
     <!-- 6. PRODUCTS VIEW -->
@@ -239,50 +258,166 @@
 
   </main>
 
-  <!-- Customer Passbook Modal -->
-  <div id="passbookModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl p-4 max-w-sm w-full space-y-3 text-xs max-h-[90vh] overflow-y-auto shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <div>
-          <h3 class="font-black text-slate-900 text-sm" id="pbCustomerName">Customer Passbook</h3>
-          <p class="text-[10px] text-slate-500" id="pbCustomerPhone"></p>
+  <!-- KHATABOOK PASSBOOK STATEMENT SCREEN (MODAL) -->
+  <div id="khatabookPassbookModal" class="hidden fixed inset-0 z-50 bg-slate-100 flex flex-col">
+    
+    <!-- Top Customer Nav -->
+    <div class="bg-blue-800 text-white px-4 py-3 flex items-center justify-between shadow-md">
+      <div class="flex items-center gap-3">
+        <button onclick="closePassbook()" class="text-lg font-bold">←</button>
+        <div class="w-9 h-9 rounded-full bg-slate-200 text-blue-900 font-extrabold flex items-center justify-center text-xs" id="kbAvatar">
+          NB
         </div>
-        <button onclick="document.getElementById('passbookModal').classList.add('hidden')" class="text-slate-400 font-bold text-base">✕</button>
+        <div>
+          <h3 class="font-extrabold text-sm leading-tight" id="kbName">Navid Bejali</h3>
+          <p class="text-[10px] text-blue-200">Customer • View settings</p>
+        </div>
+      </div>
+      <button onclick="sendKhataWhatsAppStatement()" class="text-lg">📞</button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-3 space-y-3">
+      
+      <!-- You Will Get Card -->
+      <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-2xs space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-600">You will get</span>
+          <span class="text-xl font-black text-rose-600">₹ <span id="kbBalance">15,618</span></span>
+        </div>
+        <div class="bg-blue-50 p-2 rounded-lg flex justify-between items-center text-xs border border-blue-100">
+          <span class="text-blue-900 font-semibold">📅 Set collection reminder</span>
+          <button onclick="showToast('Reminder Date Set')" class="text-blue-800 font-extrabold text-[10px]">SET DATE</button>
+        </div>
       </div>
 
-      <div class="bg-slate-50 p-3 rounded-xl border flex justify-between items-center">
-        <div>
-          <p class="text-[10px] text-slate-500 font-bold">CURRENT BALANCE DUE</p>
-          <p class="text-lg font-black text-rose-600">₹<span id="pbBalanceDue">0</span></p>
-        </div>
-        <button onclick="sendKhataWhatsAppStatement()" class="bg-emerald-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg flex items-center gap-1">
-          💬 Send Statement
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+        <button onclick="showToast('Downloading PDF Report...')" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
+          <span>📄</span>
+          <span class="text-[10px] text-slate-700">Report</span>
+        </button>
+        <button onclick="sendKhataWhatsAppStatement()" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
+          <span>💬</span>
+          <span class="text-[10px] text-slate-700">Reminder</span>
+        </button>
+        <button onclick="showToast('SMS Sent')" class="bg-white p-2 rounded-xl border flex flex-col items-center gap-1 shadow-2xs">
+          <span>📱</span>
+          <span class="text-[10px] text-slate-700">SMS</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <button onclick="openTxnModal('jama')" class="bg-emerald-800 text-white font-bold py-2 rounded-xl text-center">+ Jama Karein (Credit)</button>
-        <button onclick="openTxnModal('udhar')" class="bg-rose-600 text-white font-bold py-2 rounded-xl text-center">+ Aur Udhar Judein (Debit)</button>
+      <!-- Entries History Table -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-[10px] font-extrabold text-slate-400 px-1 uppercase">
+          <span>Entries</span>
+          <div class="flex gap-12">
+            <span class="text-rose-600">YOU GAVE</span>
+            <span class="text-emerald-700">YOU GOT</span>
+          </div>
+        </div>
+
+        <div id="kbEntriesList" class="space-y-2"></div>
       </div>
 
-      <div class="space-y-2 pt-2">
-        <h4 class="font-extrabold text-slate-900 uppercase border-b pb-1">Transaction History</h4>
-        <div class="space-y-1.5" id="pbHistoryList"></div>
+    </div>
+
+    <!-- Bottom Red / Green Transaction Buttons -->
+    <div class="bg-white border-t p-3 grid grid-cols-2 gap-3">
+      <button onclick="openEntryForm('gave')" class="bg-rose-700 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
+        YOU GAVE ₹
+      </button>
+      <button onclick="openEntryForm('got')" class="bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-center text-xs shadow-md">
+        YOU GOT ₹
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ENTRY INPUT SCREEN WITH CALCULATOR (KHATABOOK STYLE) -->
+  <div id="entryCalculatorModal" class="hidden fixed inset-0 z-50 bg-slate-50 flex flex-col">
+    <div class="bg-white px-4 py-3 border-b flex items-center justify-between">
+      <button onclick="closeEntryForm()" class="text-rose-700 text-lg font-bold">←</button>
+      <h3 class="font-extrabold text-xs text-rose-800" id="entryTitle">You gave ₹ 0 to Customer</h3>
+      <div></div>
+    </div>
+
+    <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+      
+      <!-- Amount Display Bar -->
+      <div class="bg-white p-3 rounded-xl border-2 border-slate-200 shadow-xs flex items-center justify-between">
+        <span class="text-xl font-black text-rose-700">₹ <span id="calcDisplay">0</span></span>
       </div>
+
+      <!-- Details & Note -->
+      <input type="text" id="calcNote" placeholder="Enter details (Items, bill no., quantity, etc.)" class="w-full bg-white border p-3 rounded-xl text-xs outline-none" />
+
+      <!-- Date Button -->
+      <div class="flex gap-2">
+        <button class="bg-white border text-slate-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-2xs">
+          📅 <span id="calcDateText">10 Oct 26</span> ▼
+        </button>
+      </div>
+
+      <!-- Attachments -->
+      <div class="space-y-1.5">
+        <p class="text-[10px] text-slate-500 font-bold">📎 Attach bills (max 4)</p>
+        <div class="flex gap-2">
+          <button onclick="showToast('Photo Attached')" class="flex-1 bg-white border border-slate-300 py-2 rounded-xl text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1">
+            🖼️ Add photo
+          </button>
+          <button onclick="showToast('PDF Attached')" class="flex-1 bg-white border border-slate-300 py-2 rounded-xl text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1">
+            📄 Add PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- SAVE Button -->
+      <button onclick="saveCalcEntry()" class="w-full bg-rose-800 text-white font-black py-3 rounded-xl text-xs shadow-md">
+        SAVE
+      </button>
+
+      <!-- CALCULATOR KEYPAD -->
+      <div class="grid grid-cols-4 gap-1.5 pt-2 text-sm font-bold">
+        <button onclick="pressCalc('C')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">C</button>
+        <button onclick="pressCalc('M+')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">M+</button>
+        <button onclick="pressCalc('M-')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">M-</button>
+        <button onclick="pressCalc('DEL')" class="bg-blue-100 p-3 rounded-xl text-slate-800 text-center">⌫</button>
+
+        <button onclick="pressCalc('7')" class="bg-white border p-3 rounded-xl text-center">7</button>
+        <button onclick="pressCalc('8')" class="bg-white border p-3 rounded-xl text-center">8</button>
+        <button onclick="pressCalc('9')" class="bg-white border p-3 rounded-xl text-center">9</button>
+        <button onclick="pressCalc('/')" class="bg-blue-100 p-3 rounded-xl text-center">÷</button>
+
+        <button onclick="pressCalc('4')" class="bg-white border p-3 rounded-xl text-center">4</button>
+        <button onclick="pressCalc('5')" class="bg-white border p-3 rounded-xl text-center">5</button>
+        <button onclick="pressCalc('6')" class="bg-white border p-3 rounded-xl text-center">6</button>
+        <button onclick="pressCalc('*')" class="bg-blue-100 p-3 rounded-xl text-center">×</button>
+
+        <button onclick="pressCalc('1')" class="bg-white border p-3 rounded-xl text-center">1</button>
+        <button onclick="pressCalc('2')" class="bg-white border p-3 rounded-xl text-center">2</button>
+        <button onclick="pressCalc('3')" class="bg-white border p-3 rounded-xl text-center">3</button>
+        <button onclick="pressCalc('-')" class="bg-blue-800 text-white p-3 rounded-xl text-center">-</button>
+
+        <button onclick="pressCalc('0')" class="bg-white border p-3 rounded-xl text-center">0</button>
+        <button onclick="pressCalc('.')" class="bg-white border p-3 rounded-xl text-center">.</button>
+        <button onclick="pressCalc('=')" class="bg-white border p-3 rounded-xl text-center">=</button>
+        <button onclick="pressCalc('+')" class="bg-blue-800 text-white p-3 rounded-xl text-center">+</button>
+      </div>
+
     </div>
   </div>
 
-  <!-- Transaction Add Modal -->
-  <div id="txnModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
+  <!-- Add New Customer Modal -->
+  <div id="addCustomerModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-xs shadow-2xl">
-      <h3 class="font-black text-slate-900 uppercase" id="txnModalTitle">Add Transaction</h3>
-      <form onsubmit="handleTxnSubmit(event)" class="space-y-2">
-        <input type="hidden" id="txnType" />
-        <input type="number" id="txnAmount" required placeholder="Amount (₹) *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
-        <input type="text" id="txnNote" placeholder="Note (e.g. Cash / PhonePe / Bill #)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+      <h3 class="font-black text-slate-900 uppercase">Add New Customer</h3>
+      <form onsubmit="handleNewCustomerSubmit(event)" class="space-y-2">
+        <input type="text" id="newCustName" required placeholder="Customer Full Name *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="tel" id="newCustPhone" required placeholder="Mobile Number *" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
+        <input type="number" id="newCustInitial" placeholder="Opening Balance (₹)" class="w-full bg-slate-50 border p-2 rounded-xl outline-none" />
         <div class="flex gap-2 pt-1">
-          <button type="submit" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl">Save</button>
-          <button type="button" onclick="document.getElementById('txnModal').classList.add('hidden')" class="px-3 bg-slate-100 font-bold py-2 rounded-xl">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-800 text-white font-bold py-2 rounded-xl">Save Customer</button>
+          <button type="button" onclick="document.getElementById('addCustomerModal').classList.add('hidden')" class="px-3 bg-slate-100 font-bold py-2 rounded-xl">Cancel</button>
         </div>
       </form>
     </div>
@@ -418,11 +553,7 @@
   <!-- ADVANCED 58MM THERMAL RECEIPT PRINT MODAL -->
   <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
-      
-      <!-- RECEIPT CONTENT -->
       <div id="printArea" class="bg-white p-2 font-mono text-[11px] leading-tight space-y-2 text-black">
-        
-        <!-- Header -->
         <div class="text-center space-y-0.5 border-b border-dashed border-black pb-2">
           <h2 class="font-black text-sm tracking-wider">HUMA TRADERS</h2>
           <p class="text-[9px] font-bold">Solapur Wholesale & Retail Store</p>
@@ -430,7 +561,6 @@
           <p class="text-[8px]">Ph: +91 98220 12345</p>
         </div>
 
-        <!-- Bill Meta -->
         <div class="text-[9px] border-b border-dashed border-black pb-1 space-y-0.5">
           <div class="flex justify-between">
             <span>Bill No: <b id="pBillNo">#HT-1042</b></span>
@@ -442,17 +572,14 @@
           </div>
         </div>
 
-        <!-- Table Header -->
         <div class="border-b border-black pb-1 pt-1 font-bold text-[9px] flex justify-between">
           <span class="w-1/2">ITEM NAME</span>
           <span class="w-1/4 text-center">QTY</span>
           <span class="w-1/4 text-right">AMT</span>
         </div>
 
-        <!-- Items Container -->
         <div id="printBillItems" class="space-y-1 border-b border-dashed border-black pb-2 pt-1 text-[10px]"></div>
 
-        <!-- Calculations -->
         <div class="space-y-1 text-[10px] pt-1">
           <div class="flex justify-between">
             <span>Sub Total:</span>
@@ -468,7 +595,6 @@
           </div>
         </div>
 
-        <!-- Footer & QR -->
         <div class="text-center space-y-1.5 pt-1">
           <p class="text-[9px] font-bold uppercase">*** Thank You! Visit Again ***</p>
           <div class="flex flex-col items-center justify-center">
@@ -476,10 +602,8 @@
             <span class="text-[7px] font-bold mt-0.5">Scan to Pay via PhonePe / GPay</span>
           </div>
         </div>
-
       </div>
 
-      <!-- Action Buttons -->
       <div class="flex gap-2 pt-1 no-print">
         <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
           🖨️ Print 58mm Bill
@@ -488,7 +612,6 @@
           Close
         </button>
       </div>
-
     </div>
   </div>
 
@@ -526,8 +649,7 @@
     let products = [
       { id: 'HT-P101', name: 'Aashirvaad Shuddh Chakki Atta', hindiName: 'आशीर्वाद आटा', brand: 'Aashirvaad', category: 'Atta & Flour', mrp: 380, sellingPrice: 319, costPrice: 290, stock: 8, threshold: 10, unit: '10 kg', isLoose: false, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
       { id: 'HT-P102', name: 'Solapur Kolam Rice (Sutta)', hindiName: 'कोलम तांदूळ (सुट्टा)', brand: 'Huma Direct', category: 'Rice & Grains', mrp: 75, sellingPrice: 62, costPrice: 52, stock: 520, threshold: 50, unit: '1 kg', isLoose: true, presets: ['250g', '500g', '1 kg', '2 kg', '5 kg'], image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' },
-      { id: 'HT-P104', name: 'Toor Dal', hindiName: 'तूर डाळ', brand: 'Huma', category: 'Pulses', mrp: 180, sellingPrice: 150, costPrice: 130, stock: 45, threshold: 10, unit: '1 kg', isLoose: true, image: 'https://images.unsplash.com/photo-1585992227540-3b6f8490a2a4?auto=format&fit=crop&q=80&w=400' }
+      { id: 'HT-P103', name: 'Fortune Refined Sunflower Oil', hindiName: 'फॉर्च्यून तेल', brand: 'Fortune', category: 'Oil & Ghee', mrp: 175, sellingPrice: 139, costPrice: 125, stock: 3, threshold: 10, unit: '1 L', isLoose: false, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
     ];
 
     let categories = [
@@ -540,27 +662,55 @@
       { id: 'HT-ORD-9040', customerName: 'Prakash Patil', phone: '9423156789', address: 'Old Employment Chowk', amount: 680, status: 'Placed', agent: 'Rahul Shinde', items: 'Toor Dal 2kg, Sunflower Oil 2L' }
     ];
 
-    let khataAccounts = [
+    // KHATABOOK CUSTOMERS DATA STRUCTURE
+    let khataCustomers = [
       {
         id: 'k1',
-        name: 'Ramesh Hotel',
-        phone: '9822099999',
+        name: 'Navid Bejali',
+        phone: '9822011111',
+        avatar: 'NB',
+        lastActive: '6 seconds ago',
         history: [
-          { date: 'Today, 10:30 AM', type: 'udhar', amount: 5000, note: 'Grocery Supplies Bill #901' },
-          { date: 'Today, 01:15 PM', type: 'jama', amount: 3000, note: 'Cash Payment' }
+          { date: '10 Oct 26 • 02:59 PM', type: 'gave', amount: 3072, note: 'Grocery Items', runningBal: 15618 },
+          { date: '10 Sep 26 • 01:00 PM', type: 'got', amount: 1074, note: 'Cash Received', runningBal: 12546 },
+          { date: '03 Aug 26 • 12:06 PM', type: 'gave', amount: 5000, note: 'Monthly Bill', runningBal: 13620 }
         ]
       },
       {
         id: 'k2',
-        name: 'Suhail Shaikh',
-        phone: '9822012345',
+        name: 'Salim bhai',
+        phone: '9822022222',
+        avatar: 'SB',
+        lastActive: '40 hours ago',
         history: [
-          { date: 'Yesterday', type: 'udhar', amount: 850, note: 'Monthly Ration' }
+          { date: '08 Oct 26', type: 'gave', amount: 6400, note: 'Sack Atta & Oil', runningBal: 6400 }
+        ]
+      },
+      {
+        id: 'k3',
+        name: 'Abubakar mazar bhai ke sadu',
+        phone: '9822033333',
+        avatar: 'AS',
+        lastActive: '41 hours ago',
+        history: [
+          { date: '08 Oct 26', type: 'gave', amount: 84, note: 'Tea Packet', runningBal: 84 }
+        ]
+      },
+      {
+        id: 'k4',
+        name: 'Kalim Patel',
+        phone: '9822044444',
+        avatar: 'KP',
+        lastActive: '2 days ago',
+        history: [
+          { date: '08 Oct 26', type: 'gave', amount: 12729, note: 'Hotel Supplies', runningBal: 12729 }
         ]
       }
     ];
 
-    let activeKhataId = null;
+    let activeKbId = null;
+    let entryType = 'gave';
+    let calcVal = '0';
     let posCart = [];
     let bluetoothDevice = null;
     let uploadedImg = 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&q=80&w=400';
@@ -593,6 +743,212 @@
         activeNav.classList.add('text-emerald-800', 'font-black');
         activeNav.classList.remove('text-slate-500');
       }
+    }
+
+    // KHATABOOK FUNCTIONS
+    function renderKhata() {
+      const list = document.getElementById('khataCustomerList');
+      if (!list) return;
+
+      let totalGet = 0;
+
+      list.innerHTML = khataCustomers.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+        const net = gaveSum - gotSum;
+        if (net > 0) totalGet += net;
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
+                ${c.avatar}
+              </div>
+              <div>
+                <p class="font-black text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
+              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('khataTotalGet').innerText = totalGet.toLocaleString('en-IN');
+      document.getElementById('statKhata').innerText = totalGet.toLocaleString('en-IN');
+    }
+
+    function filterKhataCustomers(q) {
+      const list = document.getElementById('khataCustomerList');
+      if (!list) return;
+      const filtered = khataCustomers.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
+      list.innerHTML = filtered.map(c => {
+        const gaveSum = c.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+        const gotSum = c.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+        const net = gaveSum - gotSum;
+
+        return `
+          <div onclick="openKbPassbook('${c.id}')" class="p-3 flex justify-between items-center cursor-pointer active:bg-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-100 font-extrabold text-blue-900 flex items-center justify-center text-xs">
+                ${c.avatar}
+              </div>
+              <div>
+                <p class="font-black text-slate-900 text-xs">${c.name}</p>
+                <p class="text-[10px] text-slate-400">${c.lastActive}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-xs text-rose-600">₹ ${net.toLocaleString('en-IN')}</p>
+              <span class="text-[9px] text-blue-800 font-bold">REMIND ></span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openKbPassbook(id) {
+      activeKbId = id;
+      const cust = khataCustomers.find(c => c.id === id);
+      if (!cust) return;
+
+      document.getElementById('kbName').innerText = cust.name;
+      document.getElementById('kbAvatar').innerText = cust.avatar;
+
+      const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+      const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+      const net = gaveSum - gotSum;
+
+      document.getElementById('kbBalance').innerText = net.toLocaleString('en-IN');
+
+      const entriesList = document.getElementById('kbEntriesList');
+      entriesList.innerHTML = cust.history.map(h => `
+        <div class="bg-white p-3 rounded-xl border flex justify-between items-center text-xs shadow-2xs">
+          <div>
+            <p class="font-bold text-slate-800 text-[10px]">${h.date}</p>
+            <p class="text-[9px] text-rose-600 font-extrabold mt-0.5">Bal. ₹ ${h.runningBal.toLocaleString('en-IN')}</p>
+            ${h.note ? `<p class="text-[10px] text-slate-500 italic mt-0.5">${h.note}</p>` : ''}
+          </div>
+          <div class="flex gap-10 font-black text-sm">
+            <span class="${h.type === 'gave' ? 'text-rose-600' : 'text-transparent'}">
+              ${h.type === 'gave' ? '₹ ' + h.amount.toLocaleString('en-IN') : '-'}
+            </span>
+            <span class="${h.type === 'got' ? 'text-emerald-700' : 'text-transparent'}">
+              ${h.type === 'got' ? '₹ ' + h.amount.toLocaleString('en-IN') : '-'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('khatabookPassbookModal').classList.remove('hidden');
+    }
+
+    function closePassbook() {
+      document.getElementById('khatabookPassbookModal').classList.add('hidden');
+    }
+
+    function openEntryForm(type) {
+      entryType = type;
+      calcVal = '0';
+      const cust = khataCustomers.find(c => c.id === activeKbId);
+      document.getElementById('entryTitle').innerText = `${type === 'gave' ? 'You gave' : 'You got'} ₹ to ${cust ? cust.name : 'Customer'}`;
+      document.getElementById('calcDisplay').innerText = '0';
+      document.getElementById('calcNote').value = '';
+      document.getElementById('entryCalculatorModal').classList.remove('hidden');
+    }
+
+    function closeEntryForm() {
+      document.getElementById('entryCalculatorModal').classList.add('hidden');
+    }
+
+    function pressCalc(val) {
+      const disp = document.getElementById('calcDisplay');
+      if (val === 'C') {
+        calcVal = '0';
+      } else if (val === 'DEL') {
+        calcVal = calcVal.length > 1 ? calcVal.slice(0, -1) : '0';
+      } else if (val === '=') {
+        try {
+          calcVal = eval(calcVal).toString();
+        } catch {
+          calcVal = '0';
+        }
+      } else {
+        calcVal = calcVal === '0' ? val : calcVal + val;
+      }
+      disp.innerText = calcVal;
+    }
+
+    function saveCalcEntry() {
+      let finalAmt = Number(document.getElementById('calcDisplay').innerText);
+      if (isNaN(finalAmt) || finalAmt <= 0) {
+        showToast('Valid amount daalein');
+        return;
+      }
+
+      const note = document.getElementById('calcNote').value;
+      const cust = khataCustomers.find(c => c.id === activeKbId);
+
+      if (cust) {
+        const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+        const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+        const currentBal = gaveSum - gotSum;
+        const newBal = entryType === 'gave' ? currentBal + finalAmt : currentBal - finalAmt;
+
+        cust.history.unshift({
+          date: '10 Oct 26 • Just now',
+          type: entryType,
+          amount: finalAmt,
+          note: note || 'Counter Entry',
+          runningBal: newBal
+        });
+        cust.lastActive = 'Just now';
+      }
+
+      closeEntryForm();
+      openKbPassbook(activeKbId);
+      renderKhata();
+      showToast('Entry Saved!');
+    }
+
+    function openAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('hidden');
+    }
+
+    function handleNewCustomerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCustName').value;
+      const phone = document.getElementById('newCustPhone').value;
+      const initial = Number(document.getElementById('newCustInitial').value) || 0;
+
+      const words = name.split(' ');
+      const avatar = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+
+      khataCustomers.unshift({
+        id: 'k' + Date.now(),
+        name, phone, avatar,
+        lastActive: 'Just now',
+        history: initial > 0 ? [{ date: '10 Oct 26', type: 'gave', amount: initial, note: 'Opening Balance', runningBal: initial }] : []
+      });
+
+      document.getElementById('addCustomerModal').classList.add('hidden');
+      renderKhata();
+      showToast('New Customer Added!');
+      e.target.reset();
+    }
+
+    function sendKhataWhatsAppStatement() {
+      const cust = khataCustomers.find(c => c.id === activeKbId);
+      if (!cust) return;
+      const gaveSum = cust.history.filter(h => h.type === 'gave').reduce((a, b) => a + b.amount, 0);
+      const gotSum = cust.history.filter(h => h.type === 'got').reduce((a, b) => a + b.amount, 0);
+      const net = gaveSum - gotSum;
+
+      const msg = `Hello ${cust.name}, Huma Traders Khata Update:%0APending Balance: ₹ ${net.toLocaleString('en-IN')}.%0AThank you!`;
+      window.open(`https://wa.me/91${cust.phone}?text=${msg}`, '_blank');
     }
 
     function toggleLoosePresets(checked) {
@@ -719,138 +1075,6 @@
 
     function filterOrders(status) {
       showToast(`Filtering: ${status}`);
-    }
-
-    function renderKhata() {
-      const container = document.getElementById('khataList');
-      let grandTotalUdhar = 0;
-      let grandTotalJama = 0;
-
-      if (container) {
-        container.innerHTML = khataAccounts.map(acc => {
-          const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
-          const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
-          const netBalance = totalUdhar - totalJama;
-
-          grandTotalUdhar += totalUdhar;
-          grandTotalJama += totalJama;
-
-          return `
-            <div onclick="openPassbook('${acc.id}')" class="bg-white p-3 rounded-2xl border border-slate-200 flex justify-between items-center shadow-2xs cursor-pointer active:scale-98 transition-transform">
-              <div>
-                <p class="font-bold text-slate-900 text-xs">${acc.name}</p>
-                <p class="text-[10px] text-slate-500">Ph: ${acc.phone} • ${acc.history.length} Txns</p>
-                <p class="text-[9px] text-slate-400">Total Udhar: ₹${totalUdhar} | Jama: ₹${totalJama}</p>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-xs ${netBalance > 0 ? 'text-rose-600' : 'text-emerald-700'} block">
-                  ₹${netBalance} ${netBalance > 0 ? 'Due' : 'Clear'}
-                </span>
-                <span class="text-[9px] bg-emerald-50 text-emerald-800 font-extrabold px-2 py-0.5 rounded mt-1 inline-block">View Passbook →</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      const uEl = document.getElementById('khataTotalUdhar');
-      const jEl = document.getElementById('khataTotalJama');
-      const nEl = document.getElementById('khataNetBalance');
-      const sEl = document.getElementById('statKhata');
-
-      if (uEl) uEl.innerText = grandTotalUdhar;
-      if (jEl) jEl.innerText = grandTotalJama;
-      const net = grandTotalUdhar - grandTotalJama;
-      if (nEl) nEl.innerText = net;
-      if (sEl) sEl.innerText = net;
-    }
-
-    function openPassbook(accId) {
-      activeKhataId = accId;
-      const acc = khataAccounts.find(a => a.id === accId);
-      if (!acc) return;
-
-      document.getElementById('pbCustomerName').innerText = acc.name;
-      document.getElementById('pbCustomerPhone').innerText = 'Mobile: ' + acc.phone;
-
-      const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
-      const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
-      const balance = totalUdhar - totalJama;
-
-      document.getElementById('pbBalanceDue').innerText = balance;
-
-      const histDiv = document.getElementById('pbHistoryList');
-      if (histDiv) {
-        histDiv.innerHTML = acc.history.map(h => `
-          <div class="flex justify-between items-center p-2 rounded-xl ${h.type === 'jama' ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} text-xs">
-            <div>
-              <p class="font-bold text-slate-800">${h.type === 'jama' ? '🟢 Jama (Payment Received)' : '🔴 Udhar (Debit Item)'}</p>
-              <p class="text-[9px] text-slate-500">${h.date} • ${h.note || ''}</p>
-            </div>
-            <span class="font-black text-xs ${h.type === 'jama' ? 'text-emerald-700' : 'text-rose-600'}">
-              ${h.type === 'jama' ? '-' : '+'} ₹${h.amount}
-            </span>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('passbookModal').classList.remove('hidden');
-    }
-
-    function openTxnModal(type) {
-      document.getElementById('txnType').value = type;
-      document.getElementById('txnModalTitle').innerText = type === 'jama' ? 'Jama Karein (Credit Payment)' : 'Naya Udhar Add Karein';
-      document.getElementById('txnAmount').value = '';
-      document.getElementById('txnNote').value = '';
-      document.getElementById('txnModal').classList.remove('hidden');
-    }
-
-    function handleTxnSubmit(e) {
-      e.preventDefault();
-      const type = document.getElementById('txnType').value;
-      const amount = Number(document.getElementById('txnAmount').value);
-      const note = document.getElementById('txnNote').value;
-
-      const acc = khataAccounts.find(a => a.id === activeKhataId);
-      if (acc) {
-        acc.history.unshift({
-          date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          type, amount, note
-        });
-      }
-
-      document.getElementById('txnModal').classList.add('hidden');
-      openPassbook(activeKhataId);
-      renderKhata();
-      showToast('Khata updated!');
-    }
-
-    function sendKhataWhatsAppStatement() {
-      const acc = khataAccounts.find(a => a.id === activeKhataId);
-      if (!acc) return;
-      const totalUdhar = acc.history.filter(h => h.type === 'udhar').reduce((a, b) => a + b.amount, 0);
-      const totalJama = acc.history.filter(h => h.type === 'jama').reduce((a, b) => a + b.amount, 0);
-      const balance = totalUdhar - totalJama;
-
-      const msg = `Hello ${acc.name}, Huma Traders Khata Update:%0ATotal Udhar: ₹${totalUdhar}%0AJama Kiya: ₹${totalJama}%0APending Balance: ₹${balance}.%0AThank you!`;
-      window.open(`https://wa.me/91${acc.phone}?text=${msg}`, '_blank');
-    }
-
-    function handleKhataSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('khataName').value;
-      const phone = document.getElementById('khataPhone').value;
-      const initial = Number(document.getElementById('khataInitialAmount').value);
-
-      khataAccounts.unshift({
-        id: 'k' + Date.now(),
-        name, phone,
-        history: [{ date: 'Today', type: 'udhar', amount: initial, note: 'Opening Balance' }]
-      });
-
-      renderKhata();
-      showToast('New Khata Created!');
-      e.target.reset();
     }
 
     function renderProducts() {
