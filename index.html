@@ -14,7 +14,7 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Print specific styles for 58mm thermal receipts */
+    /* Thermal Print Styling */
     @media print {
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
@@ -175,7 +175,7 @@
       <div class="grid grid-cols-2 gap-2" id="posProductsGrid"></div>
 
       <div id="posCartBox" class="hidden bg-white p-3.5 rounded-2xl border shadow-md space-y-2 text-xs">
-        <h4 class="font-extrabold border-b pb-2 flex justify-between">
+        <h4 class="font-extrabold border-b pb-2 flex justify-between items-center">
           <span>Current Bill Summary</span>
           <button onclick="clearPosCart()" class="text-[10px] text-rose-600 font-bold">Clear All</button>
         </h4>
@@ -419,7 +419,7 @@
   <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-4 max-w-xs w-full space-y-3 text-slate-900 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
       
-      <!-- PRINT RECEIPT CONTAINER -->
+      <!-- RECEIPT CONTENT -->
       <div id="printArea" class="bg-white p-2 font-mono text-[11px] leading-tight space-y-2 text-black">
         
         <!-- Header -->
@@ -442,7 +442,7 @@
           </div>
         </div>
 
-        <!-- Itemized Table Header -->
+        <!-- Table Header -->
         <div class="border-b border-black pb-1 pt-1 font-bold text-[9px] flex justify-between">
           <span class="w-1/2">ITEM NAME</span>
           <span class="w-1/4 text-center">QTY</span>
