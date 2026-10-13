@@ -1,15 +1,21 @@
 {
-  "name": "Huma Traders Admin",
-  "short_name": "Huma Traders",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#047857",
-  "theme_color": "#047857",
+  "short_name": "Huma ERP",
+  "name": "HUMA TRADERS SOLAPUR ERP",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3144/3144456.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": "/index.html",
+  "background_color": "#022c22",
+  "theme_color": "#022c22",
+  "display": "standalone",
+  "orientation": "portrait"
 }
