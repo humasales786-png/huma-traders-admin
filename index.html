@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Huma Traders - Speed ERP Pro</title>
-  <link rel="manifest" href="/manifest.json">
+  
+  <!-- PWA & Mobile App Icons / Splash Integration -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="apple-touch-startup-image" href="splash.png">
   <meta name="theme-color" content="#022c22">
 
   <!-- Tailwind CSS & Libraries CDN -->
@@ -34,8 +39,9 @@
   <div id="splashScreen" class="fixed inset-0 z-50 bg-emerald-950 flex flex-col items-center justify-between py-12 px-6 text-white text-center transition-opacity duration-500">
     <div></div>
     <div class="space-y-4 flex flex-col items-center">
-      <div class="w-24 h-24 rounded-3xl bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-5xl shadow-2xl border-4 border-amber-300 animate-bounce">
-        H
+      <!-- High Resolution Splash Graphic Frame -->
+      <div class="w-32 h-32 rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-300 animate-bounce bg-emerald-900">
+        <img src="splash.png" alt="Huma Traders Splash" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-5xl\'>H</div>';"/>
       </div>
       <div class="space-y-1">
         <h1 class="text-2xl font-black tracking-wider text-white">HUMA TRADERS</h1>
@@ -54,8 +60,8 @@
   <header class="sticky top-0 z-40 glass-header text-white shadow-lg border-b border-emerald-800/50 no-print">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-300 text-emerald-950 font-black text-xl flex items-center justify-center shadow-md">
-          H
+        <div class="w-10 h-10 rounded-2xl bg-emerald-900 text-amber-300 font-black text-xl flex items-center justify-center shadow-md overflow-hidden border border-amber-400/50">
+          <img src="icon.png" alt="App Icon" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='H';"/>
         </div>
         <div>
           <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS ADMIN</h1>
