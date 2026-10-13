@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Huma Traders - Advance Pro ERP Admin Panel</title>
+  <title>Huma Traders - Speed ERP Pro</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#022c22">
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS & Libraries CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -22,7 +24,7 @@
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
       #printArea { position: absolute; left: 0; top: 0; width: 100%; font-size: 11px; }
-      #printModal, .no-print { display: none !important; }
+      #printModal, #barcodePrintModal, .no-print { display: none !important; }
     }
   </style>
 </head>
@@ -37,14 +39,14 @@
       </div>
       <div class="space-y-1">
         <h1 class="text-2xl font-black tracking-wider text-white">HUMA TRADERS</h1>
-        <p class="text-xs font-bold text-amber-300 uppercase tracking-widest">Solapur Pro Command ERP</p>
+        <p class="text-xs font-bold text-amber-300 uppercase tracking-widest">Solapur Speed ERP Pro</p>
       </div>
     </div>
     <div class="space-y-3 w-full max-w-xs">
       <div class="w-full bg-emerald-900 rounded-full h-1.5 overflow-hidden border border-emerald-800">
         <div class="bg-amber-400 h-full w-3/4 rounded-full animate-pulse"></div>
       </div>
-      <p class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase">Initializing Order Tracking & Ledger...</p>
+      <p class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase">Initializing Barcode, QR Code & ERP...</p>
     </div>
   </div>
 
@@ -57,12 +59,12 @@
         </div>
         <div>
           <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS ADMIN</h1>
-          <p class="text-[10px] font-extrabold text-amber-300">Solapur Store ERP Pro</p>
+          <p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="window.print()" class="bg-emerald-900/80 hover:bg-emerald-800 text-amber-300 text-[10px] font-black px-3 py-2 rounded-xl border border-emerald-700/60 flex items-center gap-1 shadow-xs active:scale-95 transition-transform">
-          🖨️ BT Print
+        <button onclick="openSettingsModal()" class="bg-emerald-900/80 hover:bg-emerald-800 text-amber-300 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-700/60 flex items-center gap-1 shadow-xs">
+          ⚙️ UPI Setup
         </button>
         <button onclick="openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-emerald-950 text-xs font-black px-3.5 py-2 rounded-xl shadow-md active:scale-95 transition-transform">
           + Add Item
@@ -88,7 +90,7 @@
             <span class="text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-md font-black">POS →</span>
           </p>
           <p class="text-lg font-black text-emerald-800 mt-1">₹<span id="statSales">14,250</span></p>
-          <span class="text-[9px] text-emerald-600 font-bold">Counter & Online Bills</span>
+          <span class="text-[9px] text-emerald-600 font-bold">Estimated Profit: ₹<span id="statProfit">2,140</span></span>
         </div>
 
         <div onclick="switchTab('orders')" class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs cursor-pointer hover:border-emerald-500 active:scale-98 transition-all">
@@ -106,7 +108,7 @@
             <span class="text-[9px] bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded-md font-black">Ledger →</span>
           </p>
           <p class="text-lg font-black text-rose-600 mt-1">₹<span id="statKhata">0</span></p>
-          <span class="text-[9px] text-slate-500 font-bold">Pending Udhar Balance</span>
+          <span class="text-[9px] text-slate-500 font-bold">Pending Customer Udhar</span>
         </div>
 
         <div onclick="switchTab('products')" class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs cursor-pointer hover:border-emerald-500 active:scale-98 transition-all">
@@ -145,7 +147,7 @@
     <!-- 2. ADVANCED ORDERS TAB & TRACKING -->
     <div id="view-orders" class="hidden space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Order Management & Tracking Pipeline</h3>
+        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Order Management Pipeline</h3>
         <button onclick="openCreateOrderModal()" class="text-[10px] bg-emerald-800 text-white font-extrabold px-2.5 py-1 rounded-xl shadow-xs">+ New Order</button>
       </div>
 
@@ -160,7 +162,7 @@
       <div class="space-y-3" id="fullOrdersList"></div>
     </div>
 
-    <!-- 3. POS BILLING VIEW -->
+    <!-- 3. POS BILLING VIEW & LIVE UPI QR -->
     <div id="view-pos" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Counter POS Billing</h3>
@@ -177,14 +179,29 @@
           <button onclick="clearPosCart()" class="text-[10px] bg-rose-50 text-rose-600 font-extrabold px-2 py-1 rounded-lg">Clear Cart</button>
         </div>
         <div id="posCartItems" class="space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
+
+        <!-- DYNAMIC UPI QR CONTAINER -->
+        <div class="bg-amber-50/80 border border-amber-200 p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <span class="font-black text-amber-950 text-[11px] block">Dynamic Scan & Pay QR Code</span>
+            <span class="text-[9px] text-amber-800 font-extrabold">Instant PhonePe / GPay QR Payment</span>
+          </div>
+          <button onclick="toggleUpiQrModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[10px] px-2.5 py-1.5 rounded-xl shadow-2xs">Show QR</button>
+        </div>
+
         <div class="pt-2 border-t flex justify-between items-center font-black">
           <div>
             <span class="text-[10px] text-slate-400 block font-bold">NET BILL TOTAL</span>
             <span class="text-base font-black text-emerald-900">₹<span id="posTotalAmount">0</span></span>
           </div>
-          <button onclick="printPOSBill()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md active:scale-95 transition-transform flex items-center gap-1.5">
-            🖨️ Generate 58mm Bill
-          </button>
+          <div class="flex gap-1.5">
+            <button onclick="openPrintModal('58mm')" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-2 rounded-xl text-xs font-black shadow-md flex items-center gap-1">
+              🖨️ 58mm
+            </button>
+            <button onclick="openPrintModal('a4')" class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-xl text-xs font-black shadow-md flex items-center gap-1">
+              📄 A4 Invoice
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -238,10 +255,10 @@
       </div>
     </div>
 
-    <!-- 6. PRODUCTS VIEW & BULK IMPORT -->
+    <!-- 6. PRODUCTS VIEW & BARCODES -->
     <div id="view-products" class="hidden space-y-3">
       <div class="flex justify-between items-center">
-        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Inventory & Stock Controls</h3>
+        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Inventory & Barcodes</h3>
         <div class="flex gap-1.5">
           <button onclick="openBulkImportModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black px-2.5 py-1.5 rounded-xl shadow-xs">🚀 Bulk Import</button>
           <button onclick="openProductModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs">+ Add Product</button>
@@ -258,6 +275,63 @@
     </div>
 
   </main>
+
+  <!-- DYNAMIC LIVE UPI QR MODAL -->
+  <div id="upiQrModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3.5 text-center text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-black text-slate-900 text-sm">Scan & Pay UPI QR Code</h3>
+        <button onclick="toggleUpiQrModal()" class="text-slate-400 font-bold text-base">✕</button>
+      </div>
+
+      <p class="text-[11px] font-bold text-slate-600">Scan using PhonePe / Google Pay / Paytm</p>
+      
+      <div class="bg-slate-50 p-3 rounded-2xl border flex items-center justify-center min-h-48">
+        <div id="qrcodeCanvas"></div>
+      </div>
+
+      <div class="bg-emerald-50 border border-emerald-200 p-2 rounded-xl">
+        <span class="text-[10px] text-emerald-900 font-black block">Bill Amount: ₹<span id="qrBillAmount">0</span></span>
+        <span class="text-[9px] text-emerald-700 font-bold">UPI ID: <span id="qrUpiIdDisplay">merchant@upi</span></span>
+      </div>
+
+      <button onclick="toggleUpiQrModal()" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl shadow-md">Done Payment</button>
+    </div>
+  </div>
+
+  <!-- BARCODE PREVIEW & PRINT STICKER MODAL -->
+  <div id="barcodePrintModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3.5 text-center text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-black text-slate-900 text-sm">Product Barcode Label</h3>
+        <button onclick="closeBarcodeModal()" class="text-slate-400 font-bold text-base">✕</button>
+      </div>
+
+      <div id="barcodeStickerArea" class="bg-white border-2 border-slate-900 p-3 rounded-xl space-y-1 text-slate-900">
+        <p class="font-black text-xs uppercase" id="bcProdName">WHEAT FLOUR (ATTA)</p>
+        <p class="font-extrabold text-[11px] text-emerald-800">MRP: ₹<span id="bcProdMrp">25.00</span></p>
+        <svg id="barcodeCanvas" class="mx-auto my-1 max-w-full"></svg>
+        <p class="text-[9px] font-bold font-mono">CODE: <span id="bcProdCode">8901234567890</span></p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-black py-2.5 rounded-xl shadow-md">Print Label Sticker</button>
+        <button onclick="closeBarcodeModal()" class="px-3 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS / UPI ID MODAL -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3.5 text-xs shadow-2xl">
+      <h3 class="font-black text-slate-900 uppercase">UPI Setup Settings</h3>
+      <div>
+        <label class="font-bold text-slate-700 block mb-1">Enter PhonePe / GPay UPI ID</label>
+        <input type="text" id="upiIdInput" placeholder="e.g. 98220xxxx@ybl" class="w-full bg-slate-50 border p-2.5 rounded-xl font-bold outline-none" />
+      </div>
+      <button onclick="saveUpiSettings()" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl shadow-md">Save UPI ID</button>
+    </div>
+  </div>
 
   <!-- BULK PRODUCTS IMPORT MODAL -->
   <div id="bulkImportModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -570,19 +644,21 @@
     </div>
   </div>
 
-  <!-- THERMAL RECEIPT PRINT MODAL -->
+  <!-- MULTI-FORMAT PRINT RECEIPT MODAL -->
   <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3.5 text-slate-900 text-xs shadow-2xl">
+    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3.5 text-slate-900 text-xs shadow-2xl">
       <div id="printArea" class="bg-white p-2 font-mono text-[11px] leading-tight space-y-2 text-black">
         <div class="text-center border-b border-dashed border-black pb-2">
           <h2 class="font-black text-sm tracking-wider">HUMA TRADERS</h2>
           <p class="text-[8px]">Solapur Wholesale Store Command Center</p>
+          <p class="text-[8px] font-bold mt-0.5" id="printModeHeader">TAX INVOICE</p>
         </div>
         <div id="printBillItems" class="space-y-1 border-b border-dashed border-black pb-2 pt-1 text-[10px]"></div>
         <div class="flex justify-between font-black text-xs pt-1 border-t border-black">
           <span>GRAND TOTAL:</span>
           <span>₹<span id="printBillTotal">0</span></span>
         </div>
+        <p class="text-[8px] text-center italic mt-1" id="printAmountInWords">Thank You! Visit Again.</p>
       </div>
       <div class="flex gap-2 pt-1">
         <button onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-bold py-2.5 rounded-xl text-xs">Print Bill</button>
@@ -636,6 +712,7 @@
         brand: 'Aashirvaad',
         category: 'Atta & Flour',
         unit: '1 kg',
+        code: '8901234567890',
         hasVariants: true,
         variants: [
           { name: '1 kg Packet', price: 55, mrp: 65, stock: 4, threshold: 10, inStock: true },
@@ -651,6 +728,7 @@
         brand: 'Huma Direct',
         category: 'Rice & Grains',
         unit: '1 kg',
+        code: '8901234567891',
         hasVariants: true,
         variants: [
           { name: '100 gm', price: 16, mrp: 20, stock: 100, threshold: 20, inStock: true },
@@ -666,6 +744,7 @@
         brand: 'Fortune',
         category: 'Oil & Ghee',
         unit: '1 L',
+        code: '8901234567892',
         hasVariants: false,
         mrp: 175,
         sellingPrice: 139,
@@ -689,9 +768,10 @@
     let orders = JSON.parse(localStorage.getItem('ht_orders')) || defaultOrders;
     let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || defaultKhata;
     let posCart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+    let upiId = localStorage.getItem('ht_upi') || 'merchant@speedplus';
+
     let activeInventoryFilter = 'all';
     let activeOrderFilter = 'All';
-
     let activeKbId = null;
     let entryType = 'gave';
     let calcVal = '0';
@@ -704,6 +784,7 @@
       localStorage.setItem('ht_orders', JSON.stringify(orders));
       localStorage.setItem('ht_khata', JSON.stringify(khataCustomers));
       localStorage.setItem('ht_cart', JSON.stringify(posCart));
+      localStorage.setItem('ht_upi', upiId);
     }
 
     function showToast(msg) {
@@ -735,16 +816,67 @@
       }
     }
 
+    /* ---------------- DYNAMIC LIVE UPI QR ENGINE ---------------- */
+    function toggleUpiQrModal() {
+      const modal = document.getElementById('upiQrModal');
+      const canvasDiv = document.getElementById('qrcodeCanvas');
+      const billTotal = getCartTotal();
+
+      if (modal.classList.contains('hidden')) {
+        canvasDiv.innerHTML = '';
+        document.getElementById('qrBillAmount').innerText = billTotal;
+        document.getElementById('qrUpiIdDisplay').innerText = upiId;
+
+        const upiPayString = `upi://pay?pa=${upiId}&pn=HumaTraders&am=${billTotal}&cu=INR`;
+        new QRCode(canvasDiv, { text: upiPayString, width: 160, height: 160 });
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function openSettingsModal() {
+      document.getElementById('upiIdInput').value = upiId;
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function saveUpiSettings() {
+      upiId = document.getElementById('upiIdInput').value || 'merchant@speedplus';
+      saveData();
+      document.getElementById('settingsModal').classList.add('hidden');
+      showToast('UPI ID updated!');
+    }
+
+    /* ---------------- SMART BARCODE GENERATOR ---------------- */
+    function showBarcodeModal(pName, pMrp, pCode) {
+      document.getElementById('bcProdName').innerText = pName;
+      document.getElementById('bcProdMrp').innerText = Number(pMrp).toFixed(2);
+      document.getElementById('bcProdCode').innerText = pCode || '8901234567890';
+
+      JsBarcode('#barcodeCanvas', pCode || '8901234567890', {
+        format: 'CODE128',
+        width: 1.5,
+        height: 40,
+        displayValue: false
+      });
+
+      document.getElementById('barcodePrintModal').classList.remove('hidden');
+    }
+
+    function closeBarcodeModal() {
+      document.getElementById('barcodePrintModal').classList.add('hidden');
+    }
+
     /* ---------------- BULK IMPORT LOGIC ---------------- */
     function openBulkImportModal() { document.getElementById('bulkImportModal').classList.remove('hidden'); }
     function closeBulkImportModal() { document.getElementById('bulkImportModal').classList.add('hidden'); }
 
     function loadDemoBulkProducts() {
       const demoItems = [
-        { id: 'HT-P201', name: 'Madhur Refined Sugar 1 kg', category: 'Atta & Flour', sellingPrice: 48, stock: 100, threshold: 20, image: 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&q=80&w=400' },
-        { id: 'HT-P202', name: 'Tata Salt Vacuum Evaporated 1 kg', category: 'Atta & Flour', sellingPrice: 28, stock: 150, threshold: 30, image: 'https://images.unsplash.com/photo-1518110168401-f2877ee2c8ab?auto=format&fit=crop&q=80&w=400' },
-        { id: 'HT-P203', name: 'Solapur Special Kolam Rice', category: 'Rice & Grains', sellingPrice: 65, stock: 200, threshold: 25, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-        { id: 'HT-P204', name: 'Everest Garam Masala 100g', category: 'Atta & Flour', sellingPrice: 92, stock: 40, threshold: 10, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400' }
+        { id: 'HT-P201', name: 'Madhur Refined Sugar 1 kg', category: 'Atta & Flour', code: '8901234567893', sellingPrice: 48, stock: 100, threshold: 20, image: 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&q=80&w=400' },
+        { id: 'HT-P202', name: 'Tata Salt Vacuum Evaporated 1 kg', category: 'Atta & Flour', code: '8901234567894', sellingPrice: 28, stock: 150, threshold: 30, image: 'https://images.unsplash.com/photo-1518110168401-f2877ee2c8ab?auto=format&fit=crop&q=80&w=400' },
+        { id: 'HT-P203', name: 'Solapur Special Kolam Rice', category: 'Rice & Grains', code: '8901234567895', sellingPrice: 65, stock: 200, threshold: 25, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+        { id: 'HT-P204', name: 'Everest Garam Masala 100g', category: 'Atta & Flour', code: '8901234567896', sellingPrice: 92, stock: 40, threshold: 10, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400' }
       ];
 
       products = [...demoItems, ...products];
@@ -770,6 +902,7 @@
             id: 'HT-P' + Date.now() + index,
             name: parts[0].trim(),
             category: parts[1] ? parts[1].trim() : 'Atta & Flour',
+            code: '890' + Math.floor(1000000000 + Math.random() * 9000000000),
             sellingPrice: Number(parts[2].trim()) || 50,
             stock: parts[3] ? Number(parts[3].trim()) : 50,
             threshold: 10,
@@ -843,11 +976,9 @@
     function renderOrders() {
       const fullList = document.getElementById('fullOrdersList');
       const dashboardList = document.getElementById('dashboardOrdersList');
-      const tag = document.getElementById('allOrdersTag');
       const statOrders = document.getElementById('statOrders');
       const statPending = document.getElementById('statPending');
 
-      if (tag) tag.innerText = `${orders.length} Orders`;
       if (statOrders) statOrders.innerText = orders.length;
 
       const pendingCount = orders.filter(o => o.status !== 'Delivered').length;
@@ -1142,6 +1273,12 @@
       showToast('Cart cleared');
     }
 
+    function getCartTotal() {
+      let total = 0;
+      posCart.forEach(i => { total += i.sellingPrice * i.qty; });
+      return total;
+    }
+
     function renderPosCart() {
       const cartBox = document.getElementById('posCartBox');
       const itemsContainer = document.getElementById('posCartItems');
@@ -1155,10 +1292,9 @@
       }
 
       cartBox.classList.remove('hidden');
-      let total = 0;
+      let total = getCartTotal();
       itemsContainer.innerHTML = posCart.map(i => {
         const itemTotal = i.sellingPrice * i.qty;
-        total += itemTotal;
         return `
           <div class="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
             <div>
@@ -1176,16 +1312,18 @@
       totalSpan.innerText = total.toLocaleString('en-IN');
     }
 
-    function printPOSBill() {
+    function openPrintModal(mode) {
       const itemsDiv = document.getElementById('printBillItems');
       const grandTotalSpan = document.getElementById('printBillTotal');
-      let grandTotal = 0;
+      const headerSpan = document.getElementById('printModeHeader');
+      let grandTotal = getCartTotal();
+
+      if (headerSpan) headerSpan.innerText = mode === 'a4' ? 'WHOLESALE A4 INVOICE' : '58mm THERMAL RECEIPT';
 
       if (itemsDiv) {
         itemsDiv.innerHTML = posCart.map(i => {
           const qty = i.qty || 1;
           const lineTotal = i.sellingPrice * qty;
-          grandTotal += lineTotal;
           return `
             <div class="flex justify-between items-start py-0.5">
               <span class="w-1/2 font-medium truncate">${i.name}</span>
@@ -1300,7 +1438,10 @@
             <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border" />
             <div>
               <p class="font-black text-slate-900">${p.name}</p>
-              <span class="text-[10px] text-slate-400 font-bold">${p.category}</span>
+              <p class="text-[10px] text-slate-400 font-bold">${p.category}</p>
+              <button onclick="showBarcodeModal('${p.name}', ${p.sellingPrice || (p.variants ? p.variants[0].price : 25)}, '${p.code || '8901234567890'}')" class="mt-1 text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold px-2 py-0.5 rounded border flex items-center gap-1">
+                🏷️ Barcode Label
+              </button>
             </div>
           </div>
           <button onclick="deleteProduct('${p.id}')" class="px-3 py-1.5 bg-rose-50 text-rose-600 text-[10px] font-extrabold rounded-xl">Delete</button>
@@ -1355,6 +1496,7 @@
       let productObj = {
         id: 'HT-P' + Date.now(),
         name, hindiName, brand, category, unit,
+        code: '890' + Math.floor(1000000000 + Math.random() * 9000000000),
         hasVariants,
         image: uploadedImg
       };
