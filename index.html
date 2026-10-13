@@ -46,7 +46,7 @@
       <div class="w-full bg-emerald-900 rounded-full h-1.5 overflow-hidden border border-emerald-800">
         <div class="bg-amber-400 h-full w-3/4 rounded-full animate-pulse"></div>
       </div>
-      <p class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase">Loading Pro Inventory Engine...</p>
+      <p class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase">Loading ERP & Vendor Engine...</p>
     </div>
   </div>
 
@@ -62,11 +62,14 @@
           <p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openSettingsModal()" class="bg-emerald-900/80 hover:bg-emerald-800 text-amber-300 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-700/60 flex items-center gap-1 shadow-xs">
-          ⚙️ UPI Setup
+      <div class="flex items-center gap-1.5">
+        <button onclick="openVendorModal()" class="bg-emerald-900/80 hover:bg-emerald-800 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700/60 flex items-center gap-1 shadow-xs">
+          🏭 Vendors
         </button>
-        <button onclick="openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-emerald-950 text-xs font-black px-3.5 py-2 rounded-xl shadow-md active:scale-95 transition-transform">
+        <button onclick="openSettingsModal()" class="bg-emerald-900/80 hover:bg-emerald-800 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700/60 flex items-center gap-1 shadow-xs">
+          ⚙️ UPI
+        </button>
+        <button onclick="openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-emerald-950 text-xs font-black px-3 py-2 rounded-xl shadow-md active:scale-95 transition-transform">
           + Add Item
         </button>
       </div>
@@ -209,7 +212,7 @@
     <!-- 4. CATEGORIES VIEW -->
     <div id="view-categories" class="hidden space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Categories Manager</h3>
+        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Categories Manager Pro</h3>
         <button onclick="openCategoryModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs">+ Add Category</button>
       </div>
       <div class="grid grid-cols-1 gap-3" id="categoriesGrid"></div>
@@ -276,6 +279,57 @@
 
   </main>
 
+  <!-- ADVANCE CATEGORY MODAL -->
+  <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3.5 shadow-2xl text-xs">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="font-black text-slate-900 text-sm">Add Advance Category</h3>
+        <button onclick="closeCategoryModal()" class="text-slate-400 text-base font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleCategorySubmit(event)" class="space-y-2.5">
+        <input type="text" id="cName" required placeholder="Category Name (e.g. Snacks & Biscuits)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none font-bold" />
+        
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="cSub" placeholder="Sub-Categories (e.g. Besan, Sooji)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none" />
+          <input type="number" id="cMargin" placeholder="Default Margin % (e.g. 15)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none" />
+        </div>
+
+        <input type="text" id="cIcon" placeholder="Emoji Icon (e.g. 🍪)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none" />
+        <input type="file" accept="image/*" onchange="handleCatImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
+        
+        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl shadow-md active:scale-95 transition-transform">Save Category Pro</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- VENDOR MANAGER MODAL WINDOW -->
+  <div id="vendorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h3 class="font-black text-slate-900 text-sm">Vendor & Supplier Manager</h3>
+          <p class="text-[10px] text-slate-500 font-bold">Manage Solapur Wholesalers & Distributors</p>
+        </div>
+        <button onclick="closeVendorModal()" class="text-slate-400 font-bold text-base">✕</button>
+      </div>
+
+      <form onsubmit="handleVendorSubmit(event)" class="space-y-2 bg-slate-50 p-3 rounded-2xl border">
+        <input type="text" id="vName" required placeholder="Supplier Business Name *" class="w-full bg-white border p-2 rounded-xl outline-none" />
+        <div class="grid grid-cols-2 gap-2">
+          <input type="tel" id="vPhone" required placeholder="Mobile / WhatsApp *" class="w-full bg-white border p-2 rounded-xl outline-none" />
+          <input type="number" id="vDue" placeholder="Baki Udhar (₹)" class="w-full bg-white border p-2 rounded-xl outline-none" />
+        </div>
+        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl shadow-xs">+ Add New Vendor</button>
+      </form>
+
+      <div class="space-y-2 pt-1">
+        <h4 class="font-black text-slate-900 text-[11px] uppercase">Saved Suppliers List</h4>
+        <div id="vendorListContainer" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- PRO ADD PRODUCT MODAL WINDOW -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
@@ -315,7 +369,7 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1">Category</label>
-            <select id="pCategory" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none"></select>
+            <select id="pCategory" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none font-bold text-slate-800"></select>
           </div>
           <div>
             <label class="font-bold text-slate-700 block mb-1">Unit Packaging</label>
@@ -389,13 +443,8 @@
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1">Wholesaler / Vendor</label>
-          <select id="pVendor" class="w-full bg-slate-50 border p-2 rounded-xl outline-none text-[11px]">
-            <option value="Direct Purchase">Solapur Local Market</option>
-            <option value="Tata Sampann Wholesaler">Tata Sampann Vendor</option>
-            <option value="Fortune Oil Distributer">Fortune Oil Supplier</option>
-            <option value="Aashirvaad Mill Direct">Aashirvaad Mill Vendor</option>
-          </select>
+          <label class="font-bold text-slate-700 block mb-1">Select Wholesaler / Vendor</label>
+          <select id="pVendor" class="w-full bg-slate-50 border p-2 rounded-xl outline-none text-[11px] font-bold text-emerald-900"></select>
         </div>
 
         <div id="variantsBuilderSection" class="hidden space-y-2 border-t pt-2.5">
@@ -666,23 +715,6 @@
     </div>
   </div>
 
-  <!-- CATEGORY MODAL -->
-  <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3.5 shadow-2xl text-xs">
-      <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="font-extrabold text-slate-900">Add Advance Category</h3>
-        <button onclick="closeCategoryModal()" class="text-slate-400 text-base font-bold">✕</button>
-      </div>
-
-      <form onsubmit="handleCategorySubmit(event)" class="space-y-2.5">
-        <input type="text" id="cName" required placeholder="Category Name (e.g. Snacks & Biscuits)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none" />
-        <input type="text" id="cIcon" placeholder="Emoji Icon (e.g. 🍪)" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none" />
-        <input type="file" accept="image/*" onchange="handleCatImgUpload(event)" class="w-full bg-slate-50 border p-1 rounded-xl text-[10px]" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl shadow-md">Save Category</button>
-      </form>
-    </div>
-  </div>
-
   <!-- MULTI-FORMAT PRINT RECEIPT MODAL -->
   <div id="printModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3.5 text-slate-900 text-xs shadow-2xl">
@@ -738,9 +770,15 @@
 
   <script>
     let defaultCategories = [
-      { id: 'c1', name: 'Atta & Flour', icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'c2', name: 'Rice & Grains', icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'c3', name: 'Oil & Ghee', icon: '🛢️', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+      { id: 'c1', name: 'Atta & Flour', subCategories: 'Besan, Sooji, Maida', defaultMargin: 12, icon: '🌾', active: true, image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c2', name: 'Rice & Grains', subCategories: 'Basmati, Kolam, Dal', defaultMargin: 15, icon: '🍚', active: true, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' },
+      { id: 'c3', name: 'Oil & Ghee', subCategories: 'Sunflower, Mustard', defaultMargin: 10, icon: '🛢️', active: true, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400' }
+    ];
+
+    let defaultVendors = [
+      { id: 'v1', name: 'Solapur Local Wholesale Market', phone: '9822012345', due: 0 },
+      { id: 'v2', name: 'Aashirvaad Mill Distributor', phone: '9822099999', due: 5000 },
+      { id: 'v3', name: 'Fortune Oil Wholesale Agency', phone: '9822088888', due: 12000 }
     ];
 
     let defaultProducts = [
@@ -750,6 +788,7 @@
         hindiName: 'आशीर्वाद आटा',
         brand: 'Aashirvaad',
         category: 'Atta & Flour',
+        vendor: 'Aashirvaad Mill Distributor',
         unit: '1 kg',
         code: '8901234567890',
         hasVariants: true,
@@ -766,6 +805,7 @@
         hindiName: 'तूर डाळ (सुट्टा)',
         brand: 'Huma Direct',
         category: 'Rice & Grains',
+        vendor: 'Solapur Local Wholesale Market',
         unit: '1 kg',
         code: '8901234567891',
         hasVariants: true,
@@ -782,6 +822,7 @@
         hindiName: 'फॉर्च्यून तेल',
         brand: 'Fortune',
         category: 'Oil & Ghee',
+        vendor: 'Fortune Oil Wholesale Agency',
         unit: '1 L',
         code: '8901234567892',
         hasVariants: false,
@@ -803,6 +844,7 @@
     ];
 
     let categories = JSON.parse(localStorage.getItem('ht_categories')) || defaultCategories;
+    let vendors = JSON.parse(localStorage.getItem('ht_vendors')) || defaultVendors;
     let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
     let orders = JSON.parse(localStorage.getItem('ht_orders')) || defaultOrders;
     let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || defaultKhata;
@@ -819,6 +861,7 @@
 
     function saveData() {
       localStorage.setItem('ht_categories', JSON.stringify(categories));
+      localStorage.setItem('ht_vendors', JSON.stringify(vendors));
       localStorage.setItem('ht_products', JSON.stringify(products));
       localStorage.setItem('ht_orders', JSON.stringify(orders));
       localStorage.setItem('ht_khata', JSON.stringify(khataCustomers));
@@ -852,6 +895,67 @@
       if (activeNav) {
         activeNav.classList.add('text-emerald-800', 'font-black');
         activeNav.classList.remove('text-slate-400');
+      }
+    }
+
+    /* ---------------- VENDOR / SUPPLIER MANAGER ---------------- */
+    function openVendorModal() {
+      renderVendorList();
+      document.getElementById('vendorModal').classList.remove('hidden');
+    }
+
+    function closeVendorModal() {
+      document.getElementById('vendorModal').classList.add('hidden');
+    }
+
+    function handleVendorSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('vName').value;
+      const phone = document.getElementById('vPhone').value;
+      const due = Number(document.getElementById('vDue').value) || 0;
+
+      vendors.unshift({ id: 'v_' + Date.now(), name, phone, due });
+      saveData();
+      renderVendorList();
+      populateVendorDropdown();
+      document.getElementById('vName').value = '';
+      document.getElementById('vPhone').value = '';
+      document.getElementById('vDue').value = '';
+      showToast('New Wholesaler/Vendor Saved!');
+    }
+
+    function deleteVendor(vId) {
+      vendors = vendors.filter(v => v.id !== vId);
+      saveData();
+      renderVendorList();
+      populateVendorDropdown();
+      showToast('Vendor deleted');
+    }
+
+    function renderVendorList() {
+      const container = document.getElementById('vendorListContainer');
+      if (!container) return;
+
+      if (vendors.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 py-3 font-bold">No suppliers saved yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = vendors.map(v => `
+        <div class="p-2.5 bg-slate-50 rounded-xl border flex justify-between items-center text-xs">
+          <div>
+            <p class="font-extrabold text-slate-900">${v.name}</p>
+            <p class="text-[10px] text-slate-500 font-bold">📞 ${v.phone} | Due: ₹${v.due}</p>
+          </div>
+          <button onclick="deleteVendor('${v.id}')" class="text-rose-600 font-black px-2 py-1 bg-rose-50 rounded-lg text-[10px]">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function populateVendorDropdown() {
+      const select = document.getElementById('pVendor');
+      if (select) {
+        select.innerHTML = vendors.map(v => `<option value="${v.name}">${v.name} (${v.phone})</option>`).join('');
       }
     }
 
@@ -1421,7 +1525,8 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent flex items-end p-3 justify-between text-white">
                   <div>
                     <span class="font-black text-sm block tracking-wide">${c.icon} ${c.name}</span>
-                    <span class="text-[10px] text-emerald-300 font-bold">${itemCount} Items Available</span>
+                    <span class="text-[10px] text-emerald-300 font-bold">${itemCount} Items | Margin: ${c.defaultMargin || 15}%</span>
+                    ${c.subCategories ? `<p class="text-[9px] text-slate-300 truncate font-semibold">Sub: ${c.subCategories}</p>` : ''}
                   </div>
                   <span class="text-[10px] bg-emerald-700/90 px-2.5 py-1 rounded-lg font-black">View Items →</span>
                 </div>
@@ -1468,12 +1573,15 @@
     function handleCategorySubmit(e) {
       e.preventDefault();
       const name = document.getElementById('cName').value;
+      const subCategories = document.getElementById('cSub').value || '';
+      const defaultMargin = Number(document.getElementById('cMargin').value) || 15;
       const icon = document.getElementById('cIcon').value || '📦';
-      categories.push({ id: 'c' + Date.now(), name, icon, image: uploadedCatImg });
+
+      categories.push({ id: 'c' + Date.now(), name, subCategories, defaultMargin, icon, image: uploadedCatImg });
       saveData();
       closeCategoryModal();
       renderCategories();
-      showToast('Category added!');
+      showToast('Advance Category added!');
     }
 
     function deleteCategory(id) {
@@ -1501,7 +1609,7 @@
             <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover border" />
             <div>
               <p class="font-black text-slate-900">${p.name}</p>
-              <p class="text-[10px] text-slate-400 font-bold">${p.category}</p>
+              <p class="text-[10px] text-slate-400 font-bold">${p.category} | ${p.vendor || 'Local Vendor'}</p>
               <button onclick="showBarcodeModal('${p.name}', ${p.sellingPrice || (p.variants ? p.variants[0].price : 25)}, '${p.code || '8901234567890'}')" class="mt-1 text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold px-2 py-0.5 rounded border flex items-center gap-1">
                 🏷️ Barcode Label
               </button>
@@ -1756,6 +1864,7 @@
         if (splash) splash.remove();
       }, 500);
 
+      populateVendorDropdown();
       renderLowStock();
       renderPosGrid();
       renderCategories();
