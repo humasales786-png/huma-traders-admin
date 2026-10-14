@@ -1,21 +1,27 @@
 {
   "short_name": "Huma ERP",
-  "name": "HUMA TRADERS SOLAPUR ERP",
+  "name": "Huma Traders - Speed ERP Pro",
+  "description": "Solapur Speed ERP and POS Pro Admin Management System",
   "icons": [
     {
       "src": "icon.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "icon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "/index.html",
+  "start_url": "/",
   "background_color": "#022c22",
   "theme_color": "#022c22",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "id": "com.humatraders.speederp",
+  "scope": "/",
+  "categories": ["business", "finance", "productivity"]
 }
