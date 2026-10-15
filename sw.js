@@ -1,10 +1,10 @@
-const CACHE_NAME = 'huma-admin-v2';
+const CACHE_NAME = 'huma-admin-v3';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.png',
-  './splash.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon.png',
+  '/splash.png'
 ];
 
 self.addEventListener('install', (event) => {
