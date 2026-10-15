@@ -1,32 +1,21 @@
 {
-  "short_name": "Huma Admin",
   "name": "Huma Admin",
-  "description": "Solapur Speed ERP and POS Pro Admin Management System",
+  "short_name": "Huma Admin",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#022c22",
+  "theme_color": "#022c22",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/icon.png",
-      "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "/icon.png",
-      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "maskable"
+      "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "background_color": "#022c22",
-  "theme_color": "#022c22",
-  "display": "standalone",
-  "orientation": "portrait",
-  "id": "com.humatraders.admin",
-  "scope": "/"
+  ]
 }
