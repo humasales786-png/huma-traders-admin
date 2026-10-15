@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Huma Traders - Speed ERP Pro</title>
+  <title>Huma Admin - Speed ERP Pro</title>
   
   <!-- PWA & Mobile App Icons / Splash Integration -->
   <link rel="manifest" href="manifest.json">
@@ -41,10 +41,10 @@
     <div class="space-y-4 flex flex-col items-center">
       <!-- High Resolution Splash Graphic Frame -->
       <div class="w-32 h-32 rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-300 animate-bounce bg-emerald-900">
-        <img src="splash.png" alt="Huma Traders Splash" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-5xl\'>H</div>';"/>
+        <img src="splash.png" alt="Huma Admin Splash" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-5xl\'>H</div>';"/>
       </div>
       <div class="space-y-1">
-        <h1 class="text-2xl font-black tracking-wider text-white">HUMA TRADERS</h1>
+        <h1 class="text-2xl font-black tracking-wider text-white">HUMA ADMIN</h1>
         <p class="text-xs font-bold text-amber-300 uppercase tracking-widest">Solapur Speed ERP Pro</p>
       </div>
     </div>
@@ -64,7 +64,7 @@
           <img src="icon.png" alt="App Icon" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='H';"/>
         </div>
         <div>
-          <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS ADMIN</h1>
+          <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA ADMIN</h1>
           <p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p>
         </div>
       </div>
@@ -1879,6 +1879,15 @@
       renderPosCart();
       renderOrders();
     };
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
   </script>
 </body>
 </html>
