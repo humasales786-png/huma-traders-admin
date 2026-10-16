@@ -1,4 +1,4 @@
-const CACHE_NAME = 'huma-admin-v3';
+const CACHE_NAME = 'huma-admin-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
