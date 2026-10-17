@@ -6,24 +6,30 @@
   "scope": "https://huma-traders-admin.vercel.app/",
   "display": "standalone",
   "background_color": "#022c22",
-  "theme_color": "#022c22",
+  "theme_color": "#c4a000",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://huma-traders-admin.vercel.app/icon.png",
+      "src": "/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://huma-traders-admin.vercel.app/icon.png",
+      "src": "/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://huma-traders-admin.vercel.app/icon.png",
-      "sizes": "512x512",
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     }
