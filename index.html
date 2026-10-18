@@ -6,7 +6,7 @@
   <title>Huma Admin - Speed ERP Pro</title>
   <meta name="theme-color" content="#022c22">
 
-  <!-- Tailwind CSS & CDN Libraries -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -15,6 +15,10 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .glass-header { background: rgba(2, 44, 34, 0.95); backdrop-filter: blur(12px); }
+    
+    /* Emergency Force-Hide Splash Rule */
+    .hide-splash { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+
     @media print {
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
@@ -22,17 +26,33 @@
       #printModal, #barcodePrintModal, .no-print { display: none !important; }
     }
   </style>
+
+  <!-- FAILSAFE EMERGENCY SPLASH REMOVER SCRIPT -->
+  <script>
+    function forceKillSplash() {
+      var s = document.getElementById('splashScreen');
+      if (s) {
+        s.classList.add('hide-splash');
+        s.style.display = 'none';
+      }
+    }
+    // Hard Timers to Kill Splash Guarantee
+    setTimeout(forceKillSplash, 300);
+    setTimeout(forceKillSplash, 800);
+    setTimeout(forceKillSplash, 2000);
+  </script>
 </head>
 <body class="bg-slate-100 antialiased min-h-screen pb-24 font-sans text-slate-800">
 
   <!-- Instant Auto-Hide Splash Screen -->
-  <div id="splashScreen" class="fixed inset-0 z-50 bg-emerald-950 flex flex-col items-center justify-center p-6 text-white text-center transition-opacity duration-300">
+  <div id="splashScreen" class="fixed inset-0 z-50 bg-emerald-950 flex flex-col items-center justify-center p-6 text-white text-center transition-opacity duration-200">
     <div class="w-24 h-24 rounded-3xl border-2 border-amber-300 bg-emerald-900 flex items-center justify-center font-black text-4xl text-amber-300 mb-4 shadow-2xl">
       H
     </div>
     <h1 class="text-2xl font-black text-white">HUMA ADMIN PRO</h1>
     <p class="text-xs font-bold text-amber-300 uppercase tracking-widest mt-1">Solapur Speed ERP Engine</p>
-    <p class="text-[11px] text-emerald-300 font-bold uppercase mt-6 animate-pulse">Loading Advanced ERP Engine...</p>
+    <p class="text-[11px] text-emerald-300 font-bold uppercase mt-6 animate-pulse">Opening Dashboard...</p>
+    <button onclick="forceKillSplash()" class="mt-6 bg-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl">Tap to Open Immediately</button>
   </div>
 
   <!-- Header -->
@@ -233,7 +253,7 @@
 
   </main>
 
-  <!-- ADVANCED MODALS -->
+  <!-- MODALS -->
   <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -281,7 +301,7 @@
     </div>
   </div>
 
-  <!-- ADVANCED PRODUCT MODAL WITH MARGIN CALCULATOR -->
+  <!-- ADVANCED PRODUCT MODAL -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -765,7 +785,7 @@
     }
     function openSettingsModal() { $('upiIdInput').value = upiId; $('settingsModal').classList.remove('hidden'); }
     function closeSettingsModal() { $('settingsModal').classList.add('hidden'); }
-    function saveUpiSettings() { upiId = $('upiIdInput').value || 'merchant@ybl'; saveData(); closeSettingsModal(); showToast('UPI Saved'); }
+    function saveUpiSettings() { upiId = $('upiIdInput').value || 'merchant@speedplus'; saveData(); closeSettingsModal(); showToast('UPI Saved'); }
 
     function showBarcodeModal(name, mrp, code) {
       $('bcProdName').innerText = name; $('bcProdMrp').innerText = Number(mrp).toFixed(2);$('bcProdCode').innerText = code;
@@ -779,20 +799,23 @@
       saveData(); refreshAll(); showToast('Wholesale Demo Items Imported!');
     }
 
+    // Guarantees immediate removal of splash screen
     function removeSplash() {
-      const splash = $('splashScreen');
+      var splash = document.getElementById('splashScreen');
       if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => { if (splash && splash.parentNode) splash.parentNode.removeChild(splash); }, 300);
+        splash.classList.add('hide-splash');
+        splash.style.display = 'none';
       }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       try { refreshAll(); } catch(e) {}
-      setTimeout(removeSplash, 200);
+      removeSplash();
     });
 
-    setTimeout(removeSplash, 1000);
+    // Hard fallback executions
+    setTimeout(removeSplash, 100);
+    setTimeout(removeSplash, 500);
   </script>
 </body>
 </html>
