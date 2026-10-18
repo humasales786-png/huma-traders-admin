@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Huma Admin - Speed ERP Pro</title>
-  
   <meta name="theme-color" content="#022c22">
 
-  <!-- Tailwind CSS & Libraries -->
+  <!-- Tailwind CSS & Libraries CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -24,26 +23,19 @@
     }
   </style>
 </head>
-<body class="bg-slate-100/90 antialiased min-h-screen pb-24 font-sans text-slate-800">
+<body class="bg-slate-100 antialiased min-h-screen pb-24 font-sans text-slate-800">
 
-  <!-- Splash Screen (Auto Fades Instantly) -->
-  <div id="splashScreen" class="fixed inset-0 z-50 bg-emerald-950 flex flex-col items-center justify-between py-12 px-6 text-white text-center transition-opacity duration-300">
-    <div></div>
-    <div class="space-y-4 flex flex-col items-center">
-      <div class="w-28 h-28 rounded-3xl border-2 border-amber-300 bg-emerald-900 flex items-center justify-center font-black text-4xl text-amber-300">
-        H
-      </div>
-      <div class="space-y-1">
-        <h1 class="text-2xl font-black tracking-wider text-white">HUMA ADMIN</h1>
-        <p class="text-xs font-bold text-amber-300 uppercase tracking-widest">Solapur Speed ERP Pro</p>
-      </div>
+  <!-- Instant Auto-Hide Splash Screen -->
+  <div id="splashScreen" class="fixed inset-0 z-50 bg-emerald-950 flex flex-col items-center justify-center p-6 text-white text-center transition-opacity duration-300">
+    <div class="w-24 h-24 rounded-3xl border-2 border-amber-300 bg-emerald-900 flex items-center justify-center font-black text-4xl text-amber-300 mb-4">
+      H
     </div>
-    <div class="space-y-3 w-full max-w-xs">
-      <p class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase">Opening ERP Dashboard...</p>
-    </div>
+    <h1 class="text-2xl font-black text-white">HUMA ADMIN</h1>
+    <p class="text-xs font-bold text-amber-300 uppercase tracking-widest mt-1">Solapur Speed ERP Pro</p>
+    <p class="text-[11px] text-emerald-300 font-bold uppercase mt-6 animate-pulse">Dashboard Khul Raha Hai...</p>
   </div>
 
-  <!-- Header -->
+  <!-- Main App Header -->
   <header class="sticky top-0 z-40 glass-header text-white shadow-lg border-b border-emerald-800/50 no-print">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
@@ -51,37 +43,37 @@
           H
         </div>
         <div>
-          <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA ADMIN</h1>
+          <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS</h1>
           <p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
-        <button onclick="openVendorModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700/60">🏭 Vendors</button>
-        <button onclick="openSettingsModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700/60">⚙️ UPI</button>
-        <button onclick="openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-950 text-xs font-black px-3 py-2 rounded-xl shadow-md">+ Add Item</button>
+        <button onclick="openVendorModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700">🏭 Vendors</button>
+        <button onclick="openSettingsModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700">⚙️ UPI</button>
+        <button onclick="openProductModal()" class="bg-amber-400 text-emerald-950 text-xs font-black px-3 py-2 rounded-xl shadow-md">+ Item</button>
       </div>
     </div>
   </header>
 
-  <!-- Toast -->
+  <!-- Toast Notification -->
   <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-5 py-2.5 rounded-2xl shadow-2xl border border-emerald-700 no-print">✓ Saved</div>
 
-  <!-- Main App View -->
-  <main class="px-4 py-4 max-w-md mx-auto no-print" id="mainContainer">
+  <!-- Dashboard Container -->
+  <main class="px-4 py-4 max-w-md mx-auto no-print">
     
-    <!-- 1. DASHBOARD -->
+    <!-- DASHBOARD VIEW -->
     <div id="view-dashboard" class="space-y-4">
       <div class="grid grid-cols-2 gap-2.5 text-xs">
-        <div onclick="switchTab('pos')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer">
+        <div onclick="switchTab('pos')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer">
           <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between">
-            <span>Today's Sales</span>
+            <span>Sales Today</span>
             <span class="text-emerald-700 font-black">POS →</span>
           </p>
           <p class="text-lg font-black text-emerald-800 mt-1">₹<span id="statSales">0</span></p>
           <span class="text-[9px] text-emerald-600 font-bold">Profit: ₹<span id="statProfit">0</span></span>
         </div>
 
-        <div onclick="switchTab('orders')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer">
+        <div onclick="switchTab('orders')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer">
           <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between">
             <span>Orders Today</span>
             <span class="text-slate-600 font-black">Track →</span>
@@ -90,16 +82,16 @@
           <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending</span>
         </div>
 
-        <div onclick="switchTab('khata')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer">
+        <div onclick="switchTab('khata')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer">
           <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between">
-            <span>Total Khata</span>
+            <span>Khata Due</span>
             <span class="text-rose-700 font-black">Ledger →</span>
           </p>
           <p class="text-lg font-black text-rose-600 mt-1">₹<span id="statKhata">0</span></p>
           <span class="text-[9px] text-slate-500 font-bold">Pending Udhar</span>
         </div>
 
-        <div onclick="switchTab('products')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer">
+        <div onclick="switchTab('products')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer">
           <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between">
             <span>Low Stock</span>
             <span class="text-amber-800 font-black">Stock →</span>
@@ -109,15 +101,15 @@
         </div>
       </div>
 
-      <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-3 text-xs">
+      <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2 text-xs">
         <div class="flex justify-between items-center border-b border-rose-200 pb-2">
-          <h3 class="font-black text-rose-950 uppercase">🚨 Low Stock Control</h3>
-          <button onclick="sendVendorStockOrder()" class="bg-rose-700 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-xl">💬 WhatsApp Reorder</button>
+          <h3 class="font-black text-rose-950 uppercase">🚨 Low Stock Items</h3>
+          <button onclick="sendVendorStockOrder()" class="bg-rose-700 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-xl">💬 Reorder</button>
         </div>
-        <div class="space-y-2" id="lowStockList"></div>
+        <div class="space-y-1.5" id="lowStockList"></div>
       </div>
 
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+      <div class="bg-white p-4 rounded-2xl border space-y-2">
         <div class="flex justify-between items-center border-b pb-2">
           <h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders</h3>
           <button onclick="switchTab('orders')" class="text-xs font-bold text-emerald-800">View All →</button>
@@ -126,27 +118,18 @@
       </div>
     </div>
 
-    <!-- 2. ORDERS TAB -->
+    <!-- ORDERS VIEW -->
     <div id="view-orders" class="hidden space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Orders Pipeline</h3>
-        <button onclick="openCreateOrderModal()" class="text-[10px] bg-emerald-800 text-white font-extrabold px-2.5 py-1 rounded-xl">+ New Order</button>
+        <h3 class="text-xs font-black text-slate-900 uppercase">Orders List</h3>
+        <button onclick="openCreateOrderModal()" class="text-[10px] bg-emerald-800 text-white font-extrabold px-2.5 py-1 rounded-xl">+ Order</button>
       </div>
-      <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar">
-        <button onclick="filterOrders('All')" id="btnFilterAll" class="bg-emerald-800 text-white px-3.5 py-2 rounded-xl shrink-0">All</button>
-        <button onclick="filterOrders('Placed')" id="btnFilterPlaced" class="bg-white border text-slate-700 px-3.5 py-2 rounded-xl shrink-0">Placed</button>
-        <button onclick="filterOrders('Packing')" id="btnFilterPacking" class="bg-white border text-slate-700 px-3.5 py-2 rounded-xl shrink-0">Packing</button>
-        <button onclick="filterOrders('Out for Delivery')" id="btnFilterOut" class="bg-white border text-slate-700 px-3.5 py-2 rounded-xl shrink-0">Out</button>
-        <button onclick="filterOrders('Delivered')" id="btnFilterDelivered" class="bg-white border text-slate-700 px-3.5 py-2 rounded-xl shrink-0">Delivered</button>
-      </div>
-      <div class="space-y-3" id="fullOrdersList"></div>
+      <div class="space-y-2" id="fullOrdersList"></div>
     </div>
 
-    <!-- 3. POS BILLING -->
+    <!-- POS BILLING VIEW -->
     <div id="view-pos" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase">POS Counter Billing</h3>
-      </div>
+      <h3 class="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3>
       <div class="grid grid-cols-2 gap-2.5" id="posProductsGrid"></div>
 
       <div id="posCartBox" class="hidden bg-white p-4 rounded-2xl border-2 border-emerald-500 shadow-xl space-y-3 text-xs sticky bottom-16 z-30">
@@ -156,67 +139,53 @@
         </div>
         <div id="posCartItems" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
 
-        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex items-center justify-between">
-          <div>
-            <span class="font-black text-amber-950 text-[11px] block">Scan & Pay QR</span>
-          </div>
-          <button onclick="toggleUpiQrModal()" class="bg-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-xl">Show QR</button>
-        </div>
-
         <div class="pt-2 border-t flex justify-between items-center font-black">
           <div>
             <span class="text-[10px] text-slate-400 block">TOTAL</span>
             <span class="text-base font-black text-emerald-900">₹<span id="posTotalAmount">0</span></span>
           </div>
-          <div class="flex gap-1.5">
-            <button onclick="openPrintModal('58mm')" class="bg-emerald-800 text-white px-3 py-2 rounded-xl text-xs font-black">🖨️ Print 58mm</button>
-          </div>
+          <button onclick="openPrintModal('58mm')" class="bg-emerald-800 text-white px-4 py-2 rounded-xl text-xs font-black">🖨️ Bill Print</button>
         </div>
       </div>
     </div>
 
-    <!-- 4. CATEGORIES -->
+    <!-- CATEGORIES VIEW -->
     <div id="view-categories" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-slate-900 uppercase">Categories</h3>
-        <button onclick="openCategoryModal()" class="bg-emerald-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl">+ Category</button>
+        <button onclick="openCategoryModal()" class="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">+ Category</button>
       </div>
-      <div class="grid grid-cols-1 gap-3" id="categoriesGrid"></div>
+      <div class="grid grid-cols-1 gap-2" id="categoriesGrid"></div>
     </div>
 
-    <!-- 5. KHATABOOK -->
+    <!-- KHATABOOK VIEW -->
     <div id="view-khata" class="hidden space-y-3 -mx-4 -mt-4">
       <div class="bg-blue-900 text-white px-4 py-4 space-y-3">
         <div class="flex justify-between items-center">
           <span class="font-black text-sm">📖 Huma Khatabook</span>
-          <span class="text-[10px] bg-blue-950 px-2.5 py-1 rounded-full font-bold" id="khataCustCount">0 Cust</span>
         </div>
         <div class="bg-white rounded-2xl text-slate-800 p-3 grid grid-cols-2 text-center text-xs">
           <div>
-            <p class="text-[10px] text-slate-400 uppercase font-bold">You Give</p>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">You Will Give</p>
             <p class="text-base font-black text-emerald-600">₹ <span id="khataTotalGive">0</span></p>
           </div>
           <div class="border-l">
-            <p class="text-[10px] text-slate-400 uppercase font-bold">You Get</p>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">You Will Get</p>
             <p class="text-base font-black text-rose-600">₹ <span id="khataTotalGet">0</span></p>
           </div>
         </div>
       </div>
-
-      <div class="px-4 space-y-3 pt-1">
-        <div class="flex gap-2">
-          <input type="text" id="khataSearch" oninput="filterKhataCustomers(this.value)" placeholder="Search Customer..." class="flex-1 bg-white border rounded-xl p-2.5 text-xs outline-none" />
-          <button onclick="openAddCustomerModal()" class="bg-blue-800 text-white text-xs font-bold px-3.5 rounded-xl">+ Add</button>
-        </div>
+      <div class="px-4 space-y-2">
+        <button onclick="openAddCustomerModal()" class="w-full bg-blue-800 text-white text-xs font-bold py-2.5 rounded-xl">+ Add Customer Entry</button>
         <div class="bg-white rounded-2xl border divide-y text-xs" id="khataCustomerList"></div>
       </div>
     </div>
 
-    <!-- 6. PRODUCTS -->
+    <!-- PRODUCTS VIEW -->
     <div id="view-products" class="hidden space-y-3">
       <div class="flex justify-between items-center">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Inventory</h3>
-        <button onclick="openProductModal()" class="bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">+ Add Item</button>
+        <h3 class="text-xs font-black text-slate-900 uppercase">Inventory Items</h3>
+        <button onclick="openProductModal()" class="bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">+ Add Product</button>
       </div>
       <div class="space-y-2" id="productsList"></div>
     </div>
@@ -227,60 +196,46 @@
   <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs">
       <h3 class="font-black text-sm">Add Category</h3>
-      <form onsubmit="handleCategorySubmit(event)" class="space-y-2">
-        <input type="text" id="cName" required placeholder="Name" class="w-full border p-2.5 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save</button>
-      </form>
+      <input type="text" id="cName" placeholder="Category Name" class="w-full border p-2.5 rounded-xl outline-none" />
+      <button onclick="handleCategorySubmit()" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save</button>
+      <button onclick="closeCategoryModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
   <div id="vendorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs">
-      <h3 class="font-black text-sm">Vendor Manager</h3>
-      <form onsubmit="handleVendorSubmit(event)" class="space-y-2">
-        <input type="text" id="vName" required placeholder="Supplier Name" class="w-full border p-2 rounded-xl outline-none" />
-        <input type="tel" id="vPhone" required placeholder="Mobile" class="w-full border p-2 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save Vendor</button>
-      </form>
-      <div id="vendorListContainer" class="space-y-1"></div>
+      <h3 class="font-black text-sm">Vendor Supplier</h3>
+      <input type="text" id="vName" placeholder="Vendor Name" class="w-full border p-2 rounded-xl outline-none" />
+      <input type="tel" id="vPhone" placeholder="Mobile Number" class="w-full border p-2 rounded-xl outline-none" />
+      <button onclick="handleVendorSubmit()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save Vendor</button>
+      <button onclick="closeVendorModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
   <div id="addCustomerModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs">
-      <h3 class="font-black text-sm">Add Khata Person</h3>
-      <form onsubmit="handleCustomerSubmit(event)" class="space-y-2">
-        <input type="text" id="custName" required placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="number" id="custBalance" required placeholder="Udhar Amount (₹)" class="w-full border p-2.5 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-blue-800 text-white font-black py-2.5 rounded-xl">Save</button>
-      </form>
+      <h3 class="font-black text-sm">Add Customer Khata</h3>
+      <input type="text" id="custName" placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <input type="number" id="custBalance" placeholder="Udhar Amount (₹)" class="w-full border p-2.5 rounded-xl outline-none" />
+      <button onclick="handleCustomerSubmit()" class="w-full bg-blue-800 text-white font-black py-2.5 rounded-xl">Save Khata</button>
+      <button onclick="closeAddCustomerModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs max-h-[90vh] overflow-y-auto">
-      <h3 class="font-black text-sm" id="modalTitle">Add Product</h3>
-      <form onsubmit="handleProductSubmit(event)" class="space-y-2">
-        <input type="hidden" id="editProductId" />
-        <input type="text" id="pName" required placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="pCost" placeholder="Cost Price ₹" class="w-full border p-2 rounded-xl outline-none" />
-          <input type="number" id="pPrice" required placeholder="Selling Price ₹" class="w-full border p-2 rounded-xl outline-none font-bold" />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="pStock" required placeholder="Stock Qty" class="w-full border p-2 rounded-xl outline-none" />
-          <input type="number" id="pThreshold" placeholder="Low Alert Limit" class="w-full border p-2 rounded-xl outline-none" />
-        </div>
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl">Save Product</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="upiQrModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-xs w-full text-center text-xs space-y-3">
-      <h3 class="font-black text-sm">UPI Payment QR</h3>
-      <div id="qrcodeCanvas" class="flex justify-center p-2 bg-slate-50 border rounded-2xl"></div>
-      <button onclick="toggleUpiQrModal()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Close</button>
+    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs">
+      <h3 class="font-black text-sm">Add Product</h3>
+      <input type="text" id="pName" placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" id="pCost" placeholder="Cost Price ₹" class="w-full border p-2 rounded-xl outline-none" />
+        <input type="number" id="pPrice" placeholder="Sell Price ₹ *" class="w-full border p-2 rounded-xl outline-none font-bold" />
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" id="pStock" placeholder="Stock Qty *" class="w-full border p-2 rounded-xl outline-none" />
+        <input type="number" id="pThreshold" placeholder="Low Stock Limit" class="w-full border p-2 rounded-xl outline-none" />
+      </div>
+      <button onclick="handleProductSubmit()" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl">Save Product</button>
+      <button onclick="closeProductModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
@@ -289,24 +244,24 @@
       <h3 class="font-black">UPI ID Config</h3>
       <input type="text" id="upiIdInput" placeholder="merchant@ybl" class="w-full border p-2.5 rounded-xl outline-none font-bold" />
       <button onclick="saveUpiSettings()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save</button>
+      <button onclick="closeSettingsModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
   <div id="createOrderModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs">
       <h3 class="font-black">Create Order</h3>
-      <form onsubmit="handleNewOrderSubmit(event)" class="space-y-2">
-        <input type="text" id="ordCustName" required placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="tel" id="ordCustPhone" required placeholder="Mobile *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="text" id="ordItems" required placeholder="Items Detail *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="number" id="ordAmount" required placeholder="Amount (₹) *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Create Order</button>
-      </form>
+      <input type="text" id="ordCustName" placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <input type="tel" id="ordCustPhone" placeholder="Mobile *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <input type="text" id="ordItems" placeholder="Items Details *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <input type="number" id="ordAmount" placeholder="Amount ₹ *" class="w-full border p-2.5 rounded-xl outline-none" />
+      <button onclick="handleNewOrderSubmit()" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Order</button>
+      <button onclick="closeCreateOrderModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-2xl max-w-md mx-auto no-print">
+  <!-- Bottom Nav -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t max-w-md mx-auto no-print">
     <div class="grid grid-cols-6 h-14">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center justify-center text-emerald-800 font-black">
         <span class="text-base leading-none">🏠</span>
@@ -335,36 +290,26 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT ENGINE -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // UNREGISTER OLD SERVICE WORKER TO CLEAR CACHE CRASH
+    // Force Service Worker Unregister to prevent cache freeze
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let registration of registrations) {
-          registration.unregister();
-        }
+        for (let registration of registrations) { registration.unregister(); }
       });
     }
 
     const $ = id => document.getElementById(id);
     const money = n => (Number(n) || 0).toLocaleString("en-IN");
-    const esc = v => String(v ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
 
-    let defaultCategories = [{ id: 'c1', name: 'Atta & Flour' }, { id: 'c2', name: 'Rice & Grains' }];
-    let defaultVendors = [{ id: 'v1', name: 'Solapur Market Wholesale', phone: '9822012345' }];
-    let defaultProducts = [{ id: 'HT-P101', name: 'Aashirvaad Chakki Atta 1kg', sellingPrice: 55, costPrice: 48, stock: 15, threshold: 5 }];
-    let defaultOrders = [{ id: 'HT-ORD-1001', customerName: 'Rahul Stores', phone: '9822011111', items: 'Aashirvaad Atta x 5', amount: 275, status: 'Placed' }];
-    let defaultKhata = [{ id: 'k1', name: 'Mahesh Kirana', balance: 1450 }];
-
-    let categories = JSON.parse(localStorage.getItem('ht_categories')) || defaultCategories;
-    let vendors = JSON.parse(localStorage.getItem('ht_vendors')) || defaultVendors;
-    let products = JSON.parse(localStorage.getItem('ht_products')) || defaultProducts;
-    let orders = JSON.parse(localStorage.getItem('ht_orders')) || defaultOrders;
-    let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || defaultKhata;
+    let categories = JSON.parse(localStorage.getItem('ht_categories')) || [{ id: 'c1', name: 'Atta & Flour' }, { id: 'c2', name: 'Rice & Grains' }];
+    let vendors = JSON.parse(localStorage.getItem('ht_vendors')) || [{ id: 'v1', name: 'Solapur Market Wholesale', phone: '9822012345' }];
+    let products = JSON.parse(localStorage.getItem('ht_products')) || [{ id: 'HT-P101', name: 'Aashirvaad Chakki Atta 1kg', sellingPrice: 55, costPrice: 48, stock: 15, threshold: 5 }];
+    let orders = JSON.parse(localStorage.getItem('ht_orders')) || [{ id: 'HT-ORD-1001', customerName: 'Rahul Stores', phone: '9822011111', items: 'Aashirvaad Atta x 5', amount: 275, status: 'Placed' }];
+    let khataCustomers = JSON.parse(localStorage.getItem('ht_khata')) || [{ id: 'k1', name: 'Mahesh Kirana', balance: 1450 }];
     let posCart = [];
     let salesHistory = JSON.parse(localStorage.getItem('ht_sales')) || [];
     let upiId = localStorage.getItem('ht_upi') || 'merchant@ybl';
-    let activeOrderFilter = 'All';
 
     function saveData() {
       try {
@@ -421,33 +366,31 @@
       if (recent) {
         recent.innerHTML = orders.slice(0, 5).map(o => `
           <div class="border rounded-xl p-2.5 flex justify-between text-xs">
-            <div><p class="font-black">${esc(o.customerName)}</p><p class="text-[10px] text-slate-500">${esc(o.id)}</p></div>
+            <div><p class="font-black">${o.customerName}</p><p class="text-[10px] text-slate-500">${o.id}</p></div>
             <b class="text-emerald-800">₹${money(o.amount)}</b>
           </div>
         `).join("") || '<p class="text-slate-400 text-xs">No orders</p>';
       }
     }
 
-    // Modal Controls
+    // Modal Handlers
     function openVendorModal() { $('vendorModal').classList.remove('hidden'); }
     function closeVendorModal() { $('vendorModal').classList.add('hidden'); }
-    function handleVendorSubmit(e) {
-      e.preventDefault();
+    function handleVendorSubmit() {
       vendors.unshift({ id: 'v_' + Date.now(), name: $('vName').value, phone:$('vPhone').value });
       saveData(); closeVendorModal(); showToast('Vendor Saved');
     }
 
     function openAddCustomerModal() { $('addCustomerModal').classList.remove('hidden'); }
     function closeAddCustomerModal() { $('addCustomerModal').classList.add('hidden'); }
-    function handleCustomerSubmit(e) {
-      e.preventDefault();
+    function handleCustomerSubmit() {
       khataCustomers.unshift({ id: 'k_' + Date.now(), name: $('custName').value, balance: Number($('custBalance').value) || 0 });
       saveData(); renderKhata(); closeAddCustomerModal(); showToast('Customer Saved');
     }
     function renderKhata() {
       $('khataCustomerList').innerHTML = khataCustomers.map(c => `
         <div class="p-3 flex justify-between items-center font-bold">
-          <span>${esc(c.name)}</span>
+          <span>${c.name}</span>
           <span class="text-rose-600">₹${money(c.balance)}</span>
         </div>
       `).join('');
@@ -455,8 +398,7 @@
 
     function openProductModal() { $('productModal').classList.remove('hidden'); }
     function closeProductModal() { $('productModal').classList.add('hidden'); }
-    function handleProductSubmit(e) {
-      e.preventDefault();
+    function handleProductSubmit() {
       products.unshift({
         id: 'HT-P' + Date.now(),
         name: $('pName').value,
@@ -471,7 +413,7 @@
       $('productsList').innerHTML = products.map(p => `
         <div class="bg-white p-3 rounded-2xl border text-xs flex justify-between items-center">
           <div>
-            <p class="font-black">${esc(p.name)}</p>
+            <p class="font-black">${p.name}</p>
             <p class="text-emerald-800 font-bold">Price: ₹${money(p.sellingPrice)} | Stock: ${p.stock}</p>
           </div>
         </div>
@@ -480,16 +422,15 @@
 
     function openCategoryModal() { $('categoryModal').classList.remove('hidden'); }
     function closeCategoryModal() { $('categoryModal').classList.add('hidden'); }
-    function handleCategorySubmit(e) {
-      e.preventDefault();
+    function handleCategorySubmit() {
       categories.push({ id: 'c' + Date.now(), name: $('cName').value });
       saveData(); renderCategories(); closeCategoryModal();
     }
     function renderCategories() {
-      $('categoriesGrid').innerHTML = categories.map(c => `<div class="bg-white p-3 rounded-2xl border font-black text-xs">${esc(c.name)}</div>`).join('');
+      $('categoriesGrid').innerHTML = categories.map(c => `<div class="bg-white p-3 rounded-2xl border font-black text-xs">${c.name}</div>`).join('');
     }
 
-    // POS Cart
+    // POS Cart Logic
     function addVariantToCart(prodId) {
       const p = products.find(x => String(x.id) === String(prodId));
       if (!p) return;
@@ -502,14 +443,14 @@
     function renderPosCart() {
       if (!posCart.length) { $('posCartBox').classList.add('hidden'); return; }
       $('posCartBox').classList.remove('hidden');$('posCartItems').innerHTML = posCart.map(i => `
-        <div class="flex justify-between"><span>${esc(i.name)} x ${i.qty}</span><b>₹${i.sellingPrice * i.qty}</b></div>
+        <div class="flex justify-between"><span>${i.name} x ${i.qty}</span><b>₹${i.sellingPrice * i.qty}</b></div>
       `).join('');
       $('posTotalAmount').innerText = money(posCart.reduce((s, i) => s + (i.sellingPrice * i.qty), 0));
     }
     function renderPosGrid() {
       $('posProductsGrid').innerHTML = products.map(p => `
         <div onclick="addVariantToCart('${p.id}')" class="bg-white p-3 rounded-2xl border text-xs cursor-pointer">
-          <h4 class="font-extrabold">${esc(p.name)}</h4>
+          <h4 class="font-extrabold">${p.name}</h4>
           <p class="text-emerald-800 font-black">₹${money(p.sellingPrice)}</p>
         </div>
       `).join('');
@@ -517,16 +458,15 @@
 
     function openCreateOrderModal() { $('createOrderModal').classList.remove('hidden'); }
     function closeCreateOrderModal() { $('createOrderModal').classList.add('hidden'); }
-    function handleNewOrderSubmit(e) {
-      e.preventDefault();
+    function handleNewOrderSubmit() {
       orders.unshift({ id: 'HT-ORD-' + Date.now(), customerName: $('ordCustName').value, phone:$('ordCustPhone').value, items: $('ordItems').value, amount: Number($('ordAmount').value), status: 'Placed' });
       saveData(); closeCreateOrderModal(); renderOrders(); updateDashboard(); showToast('Order Created');
     }
     function renderOrders() {
       $('fullOrdersList').innerHTML = orders.map(o => `
         <div class="bg-white p-3 rounded-2xl border text-xs space-y-1">
-          <div class="flex justify-between font-black"><span>${esc(o.customerName)}</span><span>₹${o.amount}</span></div>
-          <p class="text-slate-500">${esc(o.items)}</p>
+          <div class="flex justify-between font-black"><span>${o.customerName}</span><span>₹${o.amount}</span></div>
+          <p class="text-slate-500">${o.items}</p>
         </div>
       `).join('');
     }
@@ -536,25 +476,31 @@
       $('lowStockList').innerHTML = low.length ? low.map(p => `<div class="bg-white p-2 rounded-xl text-xs font-bold">${p.name} - Stock: ${p.stock}</div>`).join('') : '<p class="text-emerald-800 text-xs font-bold">✅ Stock OK</p>';
     }
 
-    function toggleUpiQrModal() {
-      const modal = $('upiQrModal');
-      if (modal.classList.contains('hidden')) {
-        $('qrcodeCanvas').innerHTML = '';
-        new QRCode($('qrcodeCanvas'), { text: `upi://pay?pa=${upiId}&pn=HumaTraders&cu=INR`, width: 140, height: 140 });
-        modal.classList.remove('hidden');
-      } else modal.classList.add('hidden');
+    function sendVendorStockOrder() {
+      const low = products.filter(p => Number(p.stock) <= Number(p.threshold || 10));
+      if (!low.length) return showToast("Low stock items nahi hain");
+      window.open(`https://wa.me/?text=${encodeURIComponent("HUMA TRADERS REORDER:\n" + low.map(p => `- ${p.name}: Current Stock${p.stock}`).join('\n'))}`, '_blank');
     }
-    function openSettingsModal() { $('upiIdInput').value = upiId; $('settingsModal').classList.remove('hidden'); }
-    function saveUpiSettings() { upiId = $('upiIdInput').value \vert{}\vert{} 'merchant@ybl'; saveData(); $('settingsModal').classList.add('hidden'); showToast('UPI Saved'); }
 
-    // Instant Splash Remover (Guaranteed 0.3s Exit)
+    function openSettingsModal() { $('upiIdInput').value = upiId; $('settingsModal').classList.remove('hidden'); }
+    function closeSettingsModal() { $('settingsModal').classList.add('hidden'); }
+    function saveUpiSettings() { upiId = $('upiIdInput').value || 'merchant@ybl'; saveData(); closeSettingsModal(); showToast('UPI Saved'); }
+
+    // Guaranteed Splash Screen Remover
+    function removeSplash() {
+      const splash = $('splashScreen');
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => { if (splash && splash.parentNode) splash.parentNode.removeChild(splash); }, 300);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      try { refreshAll(); } catch(e){}
-      setTimeout(() => {
-        const s = $('splashScreen');
-        if (s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 300); }
-      }, 300);
+      try { refreshAll(); } catch(e) {}
+      setTimeout(removeSplash, 200);
     });
+
+    setTimeout(removeSplash, 1000);
   </script>
 </body>
 </html>
