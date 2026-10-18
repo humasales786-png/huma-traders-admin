@@ -934,5 +934,724 @@
       window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); });
     }
   </script>
+
+  <script>
+  /* =====================================================
+     HUMA ADMIN ERP PRO - UPGRADE PATCH
+     Add before </body>, AFTER your existing scripts.
+     ===================================================== */
+
+  (() => {
+    "use strict";
+
+    const $ = id => document.getElementById(id);
+    const money = n => (Number(n) || 0).toLocaleString("en-IN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[ch]);
+
+    let salesHistory = [];
+    try {
+      salesHistory = JSON.parse(localStorage.getItem("ht_sales") || "[]");
+    } catch (_) {
+      salesHistory = [];
+    }
+
+    function persist() {
+      try {
+        saveData();
+        localStorage.setItem("ht_sales", JSON.stringify(salesHistory));
+        return true;
+      } catch (error) {
+        console.error(error);
+        showToast("Storage full! Image size kam karein");
+        return false;
+      }
+    }
+
+    function refreshAll() {
+      populateVendorDropdown();
+      renderProducts();
+      renderPosGrid();
+      renderPosCart();
+      renderLowStock();
+      renderCategories();
+      renderKhata();
+      renderOrders();
+      updateDashboard();
+    }
+
+    function updateDashboard() {
+      const today = new Date().toDateString();
+      const todaySales = salesHistory.filter(s =>
+        new Date(s.date).toDateString() === today
+      );
+
+      const orderToday = orders.filter(o => {
+        if (!o.createdAt) return false;
+        return new Date(o.createdAt).toDateString() === today;
+      });
+
+      const salesFromBills = todaySales.reduce(
+        (sum, s) => sum + Number(s.total || 0), 0
+      );
+
+      const salesFromDeliveredOrders = orders
+        .filter(o => o.status === "Delivered" &&
+          o.createdAt &&
+          new Date(o.createdAt).toDateString() === today &&
+          !o.saleRecorded)
+        .reduce((sum, o) => sum + Number(o.amount || 0), 0);
+
+      const totalSales = salesFromBills + salesFromDeliveredOrders;
+      const estimatedProfit = todaySales.reduce(
+        (sum, s) => sum + Number(s.profit || 0), 0
+      );
+
+      if ($("statSales")) $("statSales").textContent = money(totalSales);
+      if ($("statProfit")) $("statProfit").textContent = money(estimatedProfit);
+      if ($("statOrders")) $("statOrders").textContent = orderToday.length;
+      if ($("statPending")) {
+        $("statPending").textContent = orders.filter(o =>
+          o.status !== "Delivered"
+        ).length;
+      }
+      if ($("statKhata")) {
+        $("statKhata").textContent = money(
+          khataCustomers.reduce((sum, c) =>
+            sum + Math.max(0, Number(c.balance) || 0), 0)
+        );
+      }
+      if ($("statLowStock")) {
+        $("statLowStock").textContent = products.filter(p =>
+          Number(p.stock) <= Number(p.threshold || 10)
+        ).length;
+      }
+
+      const recent = $("dashboardOrdersList");
+      if (recent) {
+        recent.innerHTML = [...orders].slice(0, 5).map(o => `
+          <div class="border rounded-xl p-3 flex justify-between gap-2">
+            <div class="min-w-0">
+              <p class="font-black">${esc(o.customerName)}</p>
+              <p class="text-[10px] text-slate-500">${esc(o.id)} · ${esc(o.status)}</p>
+            </div>
+            <b class="text-emerald-800 shrink-0">₹${money(o.amount)}</b>
+          </div>
+        `).join("") || '<p class="text-slate-400 text-xs">No orders yet.</p>';
+      }
+    }
+
+    /* ---------- PRODUCT EDIT / DELETE / STOCK ---------- */
+
+    window.editProduct = function(id) {
+      const p = products.find(item => String(item.id) === String(id));
+      if (!p) return showToast("Product nahi mila");
+
+      openProductModal();
+      $("editProductId").value = p.id;
+      $("modalTitle").textContent = "Edit Product";
+      $("pName").value = p.name || "";
+      $("pHindiName").value = p.hindiName || "";
+      $("pBrand").value = p.brand || "";
+      $("pCode").value = p.code || "";
+      $("pCategory").value = p.category || "";
+      $("pUnit").value = p.unit || "1 Pc";
+      $("pCost").value = p.costPrice ?? 0;
+      $("pMrp").value = p.mrp ?? 0;
+      $("pPrice").value = p.sellingPrice ?? 0;
+      $("pStock").value = p.stock ?? 0;
+      $("pThreshold").value = p.threshold ?? 10;
+
+      uploadedImg = p.image || "";
+      if ($("pImgFile")) $("pImgFile").value = "";
+      calculateMargin();
+    };
+
+    window.deleteProduct = function(id) {
+      const p = products.find(item => String(item.id) === String(id));
+      if (!p) return;
+
+      if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+
+      products = products.filter(item => String(item.id) !== String(id));
+      posCart = posCart.filter(item =>
+        String(item.productId) !== String(id)
+      );
+
+      persist();
+      refreshAll();
+      showToast("Product deleted");
+    };
+
+    window.changeStock = function(id, direction) {
+      const p = products.find(item => String(item.id) === String(id));
+      if (!p) return;
+
+      const label = direction > 0 ? "Stock add quantity" : "Stock reduce quantity";
+      const qty = Number(prompt(`${p.name}\n${label}:`, "1"));
+
+      if (!Number.isFinite(qty) || qty <= 0) {
+        showToast("Valid quantity enter karein");
+        return;
+      }
+
+      const next = Number(p.stock || 0) + qty * direction;
+      if (next < 0) return showToast("Stock zero se kam nahi ho sakta");
+
+      p.stock = next;
+      persist();
+      refreshAll();
+      showToast("Stock updated");
+    };
+
+    window.handleProductSubmit = function(e) {
+      e.preventDefault();
+
+      const name = $("pName").value.trim();
+      const code = $("pCode").value.trim();
+
+      if (!name) return showToast("Product name required");
+
+      const editId = $("editProductId").value;
+      if (code && products.some(p =>
+        String(p.code) === code && String(p.id) !== String(editId)
+      )) {
+        return showToast("Barcode already exists");
+      }
+
+      const old = products.find(p => String(p.id) === String(editId));
+      const file = $("pImgFile")?.files?.[0];
+
+      const buildAndSave = image => {
+        const p = {
+          ...(old || {}),
+          id: editId || ("HT-P" + Date.now()),
+          name,
+          hindiName: $("pHindiName").value.trim(),
+          brand: $("pBrand").value.trim(),
+          code: code || ("HT" + Date.now()),
+          category: $("pCategory").value,
+          unit: $("pUnit").value,
+          costPrice: Math.max(0, Number($("pCost").value) || 0),
+          mrp: Math.max(0, Number($("pMrp").value) || 0),
+          sellingPrice: Math.max(0, Number($("pPrice").value) || 0),
+          stock: Math.max(0, Number($("pStock").value) || 0),
+          threshold: Math.max(0, Number($("pThreshold").value) || 10),
+          image: image || old?.image || uploadedImg || ""
+        };
+
+        if (old) {
+          products = products.map(item =>
+            String(item.id) === String(editId) ? p : item
+          );
+        } else {
+          products.unshift(p);
+        }
+
+        uploadedImg = p.image;
+        persist();
+        closeProductModal();
+        refreshAll();
+        showToast(old ? "Product updated" : "Product added");
+      };
+
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          return showToast("Image 2 MB se chhoti rakhein");
+        }
+        const reader = new FileReader();
+        reader.onload = () => buildAndSave(reader.result);
+        reader.onerror = () => showToast("Image read nahi hui");
+        reader.readAsDataURL(file);
+      } else {
+        buildAndSave(old?.image || uploadedImg);
+      }
+    };
+
+    const originalOpenProductModal = window.openProductModal;
+    window.openProductModal = function() {
+      originalOpenProductModal();
+      uploadedImg = "";
+      if ($("pImgFile")) $("pImgFile").value = "";
+      if ($("modalTitle")) $("modalTitle").textContent = "Add New Product Pro";
+      if ($("pCategory") && categories.length) {
+        $("pCategory").value = categories[0].name;
+      }
+    };
+
+    window.renderProducts = function() {
+      const container = $("productsList");
+      if (!container) return;
+
+      let filtered = products;
+      if (activeInventoryFilter === "low") {
+        filtered = products.filter(p =>
+          Number(p.stock) > 0 &&
+          Number(p.stock) <= Number(p.threshold || 10)
+        );
+      } else if (activeInventoryFilter === "out") {
+        filtered = products.filter(p => Number(p.stock) <= 0);
+      }
+
+      container.innerHTML = filtered.map(p => `
+        <div class="bg-white p-3 rounded-2xl border space-y-2 text-xs shadow-sm">
+          <div class="flex gap-3 items-center">
+            <img src="${esc(p.image || "")}" onerror="this.style.display='none'"
+              class="w-14 h-14 rounded-xl object-cover bg-slate-100"/>
+            <div class="min-w-0 flex-1">
+              <p class="font-black">${esc(p.name)}</p>
+              <p class="text-emerald-800 font-bold">
+                Cost ₹${money(p.costPrice)} · Sell ₹${money(p.sellingPrice)}
+              </p>
+              <p class="text-slate-500 text-[10px]">
+                Stock: ${money(p.stock)} ${esc(p.unit || "")} · Limit: ${money(p.threshold)}
+              </p>
+              <p class="text-slate-500 text-[10px]">Code: ${esc(p.code || "-")}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="editProduct('${esc(p.id)}')"
+              class="bg-blue-50 text-blue-800 px-2 py-1.5 rounded-lg font-bold">✏️ Edit</button>
+            <button onclick="changeStock('${esc(p.id)}',1)"
+              class="bg-emerald-50 text-emerald-800 px-2 py-1.5 rounded-lg font-bold">＋ Stock</button>
+            <button onclick="changeStock('${esc(p.id)}',-1)"
+              class="bg-amber-50 text-amber-800 px-2 py-1.5 rounded-lg font-bold">− Stock</button>
+            <button onclick="showBarcodeModal('${esc(p.name)}',${Number(p.mrp)||0},'${esc(p.code || p.id)}')"
+              class="bg-slate-100 px-2 py-1.5 rounded-lg font-bold">🏷️ Barcode</button>
+            <button onclick="deleteProduct('${esc(p.id)}')"
+              class="bg-rose-50 text-rose-700 px-2 py-1.5 rounded-lg font-bold">🗑 Delete</button>
+          </div>
+        </div>
+      `).join("") || '<p class="text-center text-slate-400 py-6">No products found.</p>';
+    };
+
+    /* ---------- CATEGORY MANAGEMENT ---------- */
+
+    window.handleCategorySubmit = function(e) {
+      e.preventDefault();
+      const name = $("cName").value.trim();
+      if (!name) return;
+
+      if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+        return showToast("Category already exists");
+      }
+
+      const file = document.querySelector('#categoryModal input[type="file"]')?.files?.[0];
+
+      const addCategory = image => {
+        categories.push({
+          id: "c" + Date.now(),
+          name,
+          subCategories: $("cSub").value.trim(),
+          defaultMargin: Number($("cMargin").value) || 0,
+          icon: $("cIcon").value.trim() || "📁",
+          active: true,
+          image: image || uploadedCatImg || ""
+        });
+
+        persist();
+        $("cName").value = "";
+        $("cSub").value = "";
+        $("cMargin").value = "";
+        $("cIcon").value = "";
+        closeCategoryModal();
+        renderCategories();
+        showToast("Category added");
+      };
+
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          return showToast("Image 2 MB se chhoti rakhein");
+        }
+        const reader = new FileReader();
+        reader.onload = () => addCategory(reader.result);
+        reader.onerror = () => showToast("Category image read nahi hui");
+        reader.readAsDataURL(file);
+      } else {
+        addCategory("");
+      }
+    };
+
+    window.deleteCategory = function(id) {
+      const c = categories.find(item => String(item.id) === String(id));
+      if (!c) return;
+
+      if (products.some(p => p.category === c.name)) {
+        return showToast("Pehle products ki category change karein");
+      }
+      if (!confirm(`Delete category "${c.name}"?`)) return;
+
+      categories = categories.filter(item => String(item.id) !== String(id));
+      persist();
+      renderCategories();
+      showToast("Category deleted");
+    };
+
+    window.renderCategories = function() {
+      const container = $("categoriesGrid");
+      const select = $("pCategory");
+
+      if (select) {
+        const current = select.value;
+        select.innerHTML = categories.map(c =>
+          `<option value="${esc(c.name)}">${esc(c.name)}</option>`
+        ).join("");
+        if (categories.some(c => c.name === current)) select.value = current;
+      }
+
+      if (container) {
+        container.innerHTML = categories.map(c => `
+          <div class="bg-white p-3 rounded-2xl border flex gap-3 items-center">
+            <img src="${esc(c.image || "")}" onerror="this.style.display='none'"
+              class="w-12 h-12 object-cover rounded-xl bg-slate-100"/>
+            <div class="flex-1 min-w-0">
+              <p class="font-black">${esc(c.icon || "📁")} ${esc(c.name)}</p>
+              <p class="text-[10px] text-slate-500">${esc(c.subCategories || "")}</p>
+              <p class="text-[10px] text-slate-500">Margin: ${money(c.defaultMargin)}%</p>
+            </div>
+            <button onclick="deleteCategory('${esc(c.id)}')"
+              class="bg-rose-50 text-rose-700 px-2 py-1.5 rounded-lg font-bold">Delete</button>
+          </div>
+        `).join("") || '<p class="text-slate-400 text-xs">No categories yet.</p>';
+      }
+    };
+
+    /* ---------- POS CART, STOCK AND BILL ---------- */
+
+    window.addVariantToCart = function(prodId) {
+      const p = products.find(item => String(item.id) === String(prodId));
+      if (!p) return;
+
+      const existing = posCart.find(i => String(i.productId) === String(prodId));
+      const currentQty = existing ? Number(existing.qty) : 0;
+
+      if (Number(p.stock) <= currentQty) {
+        return showToast("Stock available nahi hai");
+      }
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        posCart.push({
+          cartKey: String(prodId),
+          productId: prodId,
+          name: p.name,
+          sellingPrice: Number(p.sellingPrice) || 0,
+          costPrice: Number(p.costPrice) || 0,
+          unit: p.unit || "1 Pc",
+          qty: 1
+        });
+      }
+
+      persist();
+      renderPosCart();
+      showToast("Cart mein add hua");
+    };
+
+    window.renderPosCart = function() {
+      const box = $("posCartBox");
+      const list = $("posCartItems");
+      if (!box || !list) return;
+
+      if (!posCart.length) {
+        box.classList.add("hidden");
+        if ($("posTotalAmount")) $("posTotalAmount").textContent = "0";
+        return;
+      }
+
+      box.classList.remove("hidden");
+      list.innerHTML = posCart.map(i => `
+        <div class="flex justify-between items-center gap-2 py-2 border-b">
+          <div class="flex-1 min-w-0">
+            <p class="font-bold">${esc(i.name)}</p>
+            <p class="text-slate-500">₹${money(i.sellingPrice)} × ${money(i.qty)}</p>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="updateCartQty('${esc(i.cartKey)}',-1)"
+              class="bg-slate-100 rounded px-2 py-1 font-black">−</button>
+            <b>${money(i.qty)}</b>
+            <button onclick="updateCartQty('${esc(i.cartKey)}',1)"
+              class="bg-emerald-100 text-emerald-900 rounded px-2 py-1 font-black">+</button>
+          </div>
+          <b class="text-emerald-800">₹${money(i.sellingPrice * i.qty)}</b>
+        </div>
+      `).join("");
+
+      if ($("posTotalAmount")) $("posTotalAmount").textContent = money(getCartTotal());
+    };
+
+    window.updateCartQty = function(key, delta) {
+      const item = posCart.find(i => String(i.cartKey) === String(key));
+      if (!item) return;
+
+      if (delta > 0) {
+        const p = products.find(p => String(p.id) === String(item.productId));
+        if (!p || Number(p.stock) < Number(item.qty) + 1) {
+          return showToast("Stock available nahi hai");
+        }
+      }
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        posCart = posCart.filter(i => String(i.cartKey) !== String(key));
+      }
+      persist();
+      renderPosCart();
+    };
+
+    window.renderPosGrid = function() {
+      const grid = $("posProductsGrid");
+      if (!grid) return;
+
+      grid.innerHTML = products.map(p => `
+        <button type="button" onclick="addVariantToCart('${esc(p.id)}')"
+          class="bg-white p-3 rounded-2xl border text-left hover:border-emerald-500">
+          <img src="${esc(p.image || "")}" onerror="this.style.display='none'"
+            class="w-full h-20 object-cover rounded-xl mb-2 bg-slate-100"/>
+          <h4 class="font-extrabold text-xs">${esc(p.name)}</h4>
+          <span class="text-emerald-800 font-black">₹${money(p.sellingPrice)}</span>
+          <p class="text-[10px] text-slate-500">${esc(p.unit || "")} · Stock ${money(p.stock)}</p>
+        </button>
+      `).join("");
+    };
+
+    window.openPrintModal = function(mode) {
+      if (!posCart.length) return showToast("Cart empty hai");
+
+      let modal = $("printModal");
+      if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "printModal";
+        modal.className = "fixed inset-0 z-[60] bg-slate-900/60 flex items-center justify-center p-3 no-print";
+        document.body.appendChild(modal);
+      }
+
+      const billNo = "HT-" + Date.now();
+      const total = getCartTotal();
+      const billItems = posCart.map(i => ({...i}));
+      const width = mode === "58mm" ? "58mm" : "100%";
+
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-4 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-3 no-print">
+            <b>Invoice Preview · ${esc(mode)}</b>
+            <button onclick="document.getElementById('printModal').classList.add('hidden')"
+              class="text-xl px-2">×</button>
+          </div>
+          <div id="printArea" style="width:${width};max-width:100%;margin:auto;background:white;color:#111;padding:8px;font-family:Arial,sans-serif">
+            <div style="text-align:center">
+              <h2 style="font-weight:900;font-size:18px;margin:4px 0">HUMA TRADERS</h2>
+              <p style="font-size:11px">Solapur · Grocery & Wholesale</p>
+              <hr style="margin:8px 0;border-top:1px dashed #555">
+              <p style="font-size:11px">Bill: ${esc(billNo)}</p>
+              <p style="font-size:11px">${esc(new Date().toLocaleString("en-IN"))}</p>
+            </div>
+            <table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:8px">
+              <thead><tr>
+                <th style="text-align:left;border-bottom:1px solid #999;padding:4px 0">Item</th>
+                <th style="text-align:right;border-bottom:1px solid #999">Qty</th>
+                <th style="text-align:right;border-bottom:1px solid #999">Amount</th>
+              </tr></thead>
+              <tbody>${billItems.map(i => `
+                <tr>
+                  <td style="padding:5px 0">${esc(i.name)}</td>
+                  <td style="text-align:right">${money(i.qty)}</td>
+                  <td style="text-align:right">₹${money(i.qty * i.sellingPrice)}</td>
+                </tr>`).join("")}
+              </tbody>
+            </table>
+            <hr style="margin:8px 0;border-top:1px dashed #555">
+            <p style="text-align:right;font-weight:900;font-size:15px">TOTAL: ₹${money(total)}</p>
+            <p style="text-align:center;font-size:10px;margin-top:12px">Thank you! Visit Again.</p>
+          </div>
+          <div class="flex gap-2 mt-4 no-print">
+            <button onclick="completeHumaSale('${esc(billNo)}')"
+              class="flex-1 bg-emerald-800 text-white font-black p-3 rounded-xl">Save Sale & Print</button>
+            <button onclick="document.getElementById('printModal').classList.add('hidden')"
+              class="bg-slate-100 px-3 rounded-xl">Cancel</button>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2 no-print">Sale stock ko tabhi reduce karegi jab aap Save Sale & Print dabayenge.</p>
+        </div>
+      `;
+      modal.classList.remove("hidden");
+    };
+
+    window.completeHumaSale = function(billNo) {
+      if (!posCart.length) return showToast("Cart empty hai");
+
+      for (const item of posCart) {
+        const p = products.find(p => String(p.id) === String(item.productId));
+        if (!p || Number(p.stock) < Number(item.qty)) {
+          return showToast("Stock badal gaya hai; bill check karein");
+        }
+      }
+
+      const items = posCart.map(i => ({...i}));
+      const total = items.reduce((s, i) =>
+        s + Number(i.qty) * Number(i.sellingPrice), 0);
+      const profit = items.reduce((s, i) =>
+        s + Number(i.qty) *
+        (Number(i.sellingPrice) - Number(i.costPrice || 0)), 0);
+
+      items.forEach(i => {
+        const p = products.find(p => String(p.id) === String(i.productId));
+        p.stock = Number(p.stock) - Number(i.qty);
+      });
+
+      salesHistory.unshift({
+        id: billNo,
+        date: new Date().toISOString(),
+        total,
+        profit,
+        items
+      });
+
+      posCart = [];
+      persist();
+      $("printModal")?.classList.add("hidden");
+      refreshAll();
+
+      window.print();
+      showToast("Sale saved; stock updated");
+    };
+
+    /* ---------- ORDERS AND WHATSAPP ---------- */
+
+    const previousOrderSubmit = window.handleNewOrderSubmit;
+    window.handleNewOrderSubmit = function(e) {
+      e.preventDefault();
+      orders.unshift({
+        id: "HT-ORD-" + Date.now(),
+        customerName: $("ordCustName").value.trim(),
+        phone: $("ordCustPhone").value.trim(),
+        address: $("ordAddress").value.trim(),
+        items: $("ordItems").value.trim(),
+        amount: Number($("ordAmount").value) || 0,
+        status: "Placed",
+        createdAt: new Date().toISOString()
+      });
+
+      persist();
+      closeCreateOrderModal();
+      e.target.reset();
+      renderOrders();
+      updateDashboard();
+      showToast("Order created");
+    };
+
+    window.updateOrderStatus = function(id, status) {
+      const o = orders.find(item => String(item.id) === String(id));
+      if (!o) return;
+
+      o.status = status;
+      o.updatedAt = new Date().toISOString();
+      persist();
+      renderOrders();
+      updateDashboard();
+      showToast("Order status updated");
+    };
+
+    window.shareOrderWhatsApp = function(id) {
+      const o = orders.find(item => String(item.id) === String(id));
+      if (!o) return;
+
+      const message = `HUMA TRADERS ORDER\nOrder: ${o.id}\nCustomer: ${o.customerName}\nItems: ${o.items}\nAmount: ₹${o.amount}\nStatus: ${o.status}\nAddress: ${o.address}`;
+      const phone = String(o.phone || "").replace(/\D/g, "");
+      const url = phone
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+        : `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+    };
+
+    window.renderOrders = function() {
+      const list = $("fullOrdersList");
+      if (!list) return;
+
+      const filtered = activeOrderFilter === "All"
+        ? orders : orders.filter(o => o.status === activeOrderFilter);
+
+      list.innerHTML = filtered.map(o => `
+        <div class="bg-white p-3.5 rounded-2xl border shadow-sm space-y-2">
+          <div class="flex justify-between gap-2">
+            <b>${esc(o.id)} · ${esc(o.customerName)}</b>
+            <span class="text-[10px] font-black">${esc(o.status)}</span>
+          </div>
+          <p class="text-xs text-slate-600">${esc(o.items)}</p>
+          <p class="text-[10px] text-slate-500">${esc(o.phone || "")} · ${esc(o.address)}</p>
+          <p class="font-black text-emerald-800">₹${money(o.amount)}</p>
+          <div class="flex flex-wrap gap-1.5">
+            ${["Placed","Packing","Out for Delivery","Delivered"].map(s => `
+              <button onclick="updateOrderStatus('${esc(o.id)}','${s}')"
+                class="px-2 py-1.5 rounded-lg text-[10px] font-bold ${o.status===s ? "bg-emerald-800 text-white" : "bg-slate-100"}">${s}</button>
+            `).join("")}
+            <button onclick="shareOrderWhatsApp('${esc(o.id)}')"
+              class="px-2 py-1.5 rounded-lg text-[10px] font-bold bg-green-100 text-green-800">WhatsApp</button>
+          </div>
+        </div>
+      `).join("") || '<p class="text-center text-slate-400 py-6">No orders found.</p>';
+
+      updateDashboard();
+    };
+
+    /* ---------- LOW STOCK REORDER ---------- */
+
+    window.renderLowStock = function() {
+      const box = $("lowStockList");
+      if (!box) return;
+
+      const low = products.filter(p =>
+        Number(p.stock) <= Number(p.threshold || 10)
+      );
+
+      box.innerHTML = low.map(p => `
+        <div class="bg-white rounded-xl border p-3 flex justify-between gap-2">
+          <div>
+            <p class="font-bold">${esc(p.name)}</p>
+            <p class="text-[10px] text-rose-700">Stock: ${money(p.stock)} ${esc(p.unit || "")}</p>
+          </div>
+          <button onclick="changeStock('${esc(p.id)}',1)"
+            class="bg-emerald-50 text-emerald-800 rounded-lg px-2 font-bold">＋ Stock</button>
+        </div>
+      `).join("") || '<div class="bg-white p-3 rounded-xl text-emerald-800 font-bold">All items in stock</div>';
+    };
+
+    window.sendVendorStockOrder = function() {
+      const low = products.filter(p =>
+        Number(p.stock) <= Number(p.threshold || 10)
+      );
+      if (!low.length) return showToast("Low stock items nahi hain");
+
+      const message = [
+        "HUMA TRADERS - REORDER LIST",
+        "",
+        ...low.map(p =>
+          `${p.name}: Current stock ${p.stock} ${p.unit || ""}; Low limit ${p.threshold}`
+        ),
+        "",
+        "Please confirm availability and rates."
+      ].join("\n");
+
+      window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
+    };
+
+    /* ---------- STARTUP ---------- */
+    window.addEventListener("load", () => {
+      try {
+        orders.forEach(o => {
+          if (!o.createdAt) o.createdAt = new Date().toISOString();
+        });
+        refreshAll();
+      } catch (error) {
+        console.error("Huma Admin startup error:", error);
+        showToast("Refresh ke baad bhi issue ho to console error check karein");
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
