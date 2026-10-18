@@ -26,7 +26,7 @@
 </head>
 <body class="bg-slate-100 antialiased min-h-screen pb-24 font-sans text-slate-800">
 
-  <!-- Main App Header -->
+  <!-- Header -->
   <header class="sticky top-0 z-40 glass-header text-white shadow-lg border-b border-emerald-800/50 no-print">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
@@ -61,7 +61,7 @@
             <span class="text-emerald-700 font-black">POS →</span>
           </p>
           <p class="text-lg font-black text-emerald-800 mt-1">₹<span id="statSales">0</span></p>
-          <span class="text-[9px] text-emerald-600 font-bold">Profit: ₹<span id="statProfit">0</span></span>
+          <span class="text-[9px] text-emerald-600 font-bold">Est. Profit: ₹<span id="statProfit">0</span></span>
         </div>
 
         <div onclick="switchTab('orders')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
@@ -70,7 +70,7 @@
             <span class="text-slate-600 font-black">Track →</span>
           </p>
           <p class="text-lg font-black text-slate-900 mt-1"><span id="statOrders">0</span> Orders</p>
-          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending</span>
+          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending Delivery</span>
         </div>
 
         <div onclick="switchTab('khata')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
@@ -208,7 +208,7 @@
       <div class="flex justify-between items-center">
         <h3 class="text-xs font-black text-slate-900 uppercase">Inventory & Barcodes</h3>
         <div class="flex gap-1.5">
-          <button type="button" onclick="openBulkImportModal()" class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1.5 rounded-xl">🚀 Import</button>
+          <button type="button" onclick="openBulkImportModal()" class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1.5 rounded-xl">🚀 Import Demo</button>
           <button type="button" onclick="openProductModal()" class="bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">+ Product</button>
         </div>
       </div>
@@ -268,7 +268,7 @@
     </div>
   </div>
 
-  <!-- ADVANCED PRODUCT MODAL -->
+  <!-- ADVANCED PRODUCT MODAL WITH MARGIN CALCULATOR -->
   <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -277,7 +277,7 @@
       </div>
       <form onsubmit="handleProductSubmit(event)" class="space-y-2">
         <input type="hidden" id="editProductId" />
-        <input type="text" id="pName" required placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none" />
+        <input type="text" id="pName" required placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none font-bold" />
         <div class="flex items-center gap-1">
           <input type="text" id="pCode" placeholder="Barcode Code" class="w-full border p-2.5 rounded-xl outline-none font-mono" />
           <button type="button" onclick="generateAutoBarcode()" class="text-[9px] bg-amber-100 text-amber-900 font-black px-2 py-2.5 rounded-xl shrink-0">⚡ Auto</button>
@@ -400,7 +400,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT ADVANCED LOGIC ENGINE -->
+  <!-- JAVASCRIPT ADVANCED ENGINE -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -761,7 +761,7 @@
       saveData(); refreshAll(); showToast('Wholesale Demo Items Imported!');
     }
 
-    // Load Data
+    // Direct Load
     window.addEventListener('DOMContentLoaded', () => {
       try { refreshAll(); } catch(e) {}
     });
