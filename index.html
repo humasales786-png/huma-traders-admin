@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HUMA TRADERS - Speed ERP Pro</title>
+  <title>Huma Admin - Speed ERP Pro</title>
   <meta name="theme-color" content="#022c22">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.png" type="image/png">
-  
-  <!-- CDNs -->
+  <!-- Tailwind CSS & CDN Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -22,758 +18,193 @@
     @media print {
       body * { visibility: hidden !important; }
       #printArea, #printArea * { visibility: visible !important; }
-      #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; }
-      .no-print { display: none !important; }
+      #printArea { display:block !important; position:absolute; left:0; top:0; width:100%; font-size:11px; color:#000; background:#fff; }
+      #printModal, #barcodePrintModal, .no-print { display:none !important; }
       @page { margin: 5mm; }
     }
   </style>
 </head>
-<body class="bg-slate-100 antialiased min-h-screen pb-20 font-sans text-slate-800">
-
-  <!-- Toast Notification -->
-  <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-amber-300 font-extrabold text-xs px-5 py-2.5 rounded-2xl shadow-2xl border border-amber-400/30 transition-all duration-300">
-    ✓ Action Successful
-  </div>
-
+<body class="bg-slate-100 antialiased min-h-screen pb-24 font-sans text-slate-800">
   <!-- Header -->
   <header class="sticky top-0 z-40 glass-header text-white shadow-lg border-b border-emerald-800/50 no-print">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="App.switchTab('dashboard')">
+      <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-2xl bg-emerald-900 text-amber-300 font-black text-xl flex items-center justify-center border border-amber-400/50">H</div>
-        <div>
-          <h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS</h1>
-          <p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p>
-        </div>
+        <div><h1 class="text-xs font-black tracking-wide text-white leading-tight">HUMA TRADERS</h1><p class="text-[10px] font-extrabold text-amber-300">Solapur ERP & POS Pro</p></div>
       </div>
       <div class="flex items-center gap-1.5">
-        <button type="button" onclick="App.openModal('vendorModal')" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-700 active:scale-95">🏭 Vendors</button>
-        <button type="button" onclick="App.openModal('settingsModal')" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-700 active:scale-95">⚙️ UPI</button>
-        <button type="button" onclick="App.openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-950 text-xs font-black px-3 py-2 rounded-xl shadow-md active:scale-95">+ Item</button>
+        <button type="button" onclick="openVendorModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700 active:scale-95">🏭 Vendors</button>
+        <button type="button" onclick="openSettingsModal()" class="bg-emerald-900/80 text-amber-300 text-[10px] font-black px-2 py-2 rounded-xl border border-emerald-700 active:scale-95">⚙️ UPI</button>
+        <button type="button" onclick="openProductModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-950 text-xs font-black px-3 py-2 rounded-xl shadow-md active:scale-95">+ Item</button>
       </div>
     </div>
   </header>
-
-  <!-- Main Container -->
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-extrabold text-xs px-5 py-2.5 rounded-2xl shadow-2xl border border-emerald-700 no-print">✓ Saved</div>
   <main class="px-4 py-4 max-w-md mx-auto no-print">
-
-    <!-- TAB 1: DASHBOARD -->
-    <section id="view-dashboard" class="tab-view space-y-4">
+    <div id="view-dashboard" class="space-y-4">
       <div class="grid grid-cols-2 gap-2.5 text-xs">
-        <div onclick="App.switchTab('pos')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
-          <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Sales Today</span><span class="text-emerald-700 font-black">POS →</span></p>
-          <p class="text-lg font-black text-emerald-800 mt-1">₹<span id="statSales">0</span></p>
-          <span class="text-[9px] text-emerald-600 font-bold">Est. Profit: ₹<span id="statProfit">0</span></span>
-        </div>
-        <div onclick="App.switchTab('orders')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
-          <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Orders</span><span class="text-slate-600 font-black">Track →</span></p>
-          <p class="text-lg font-black text-slate-900 mt-1"><span id="statOrders">0</span> Total</p>
-          <span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending</span>
-        </div>
-        <div onclick="App.switchTab('khata')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
-          <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Control</span><span class="text-blue-700 font-black">Reports →</span></p>
-          <p class="text-lg font-black text-blue-700 mt-1"><span id="statProfitControl">₹0</span></p>
-          <span class="text-[9px] text-slate-500 font-bold">Gross Profit</span>
-        </div>
-        <div onclick="App.switchTab('products')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
-          <p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Low Stock</span><span class="text-amber-800 font-black">Stock →</span></p>
-          <p class="text-lg font-black text-amber-600 mt-1"><span id="statLowStock">0</span> Items</p>
-          <span class="text-[9px] text-rose-500 font-bold">Restock Needed</span>
-        </div>
+        <div onclick="switchTab('pos')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50"><p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Sales Today</span><span class="text-emerald-700 font-black">POS →</span></p><p class="text-lg font-black text-emerald-800 mt-1">₹<span id="statSales">0</span></p><span class="text-[9px] text-emerald-600 font-bold">Est. Profit: ₹<span id="statProfit">0</span></span></div>
+        <div onclick="switchTab('orders')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50"><p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Orders Today</span><span class="text-slate-600 font-black">Track →</span></p><p class="text-lg font-black text-slate-900 mt-1"><span id="statOrders">0</span> Orders</p><span class="text-[9px] text-amber-600 font-bold"><span id="statPending">0</span> Pending Delivery</span></div>
+        <div onclick="switchTab('khata')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50"><p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Business Control</span><span class="text-blue-700 font-black">Reports →</span></p><p class="text-lg font-black text-blue-700 mt-1"><span id="statProfitControl">₹0</span></p><span class="text-[9px] text-slate-500 font-bold">Recorded Gross Profit</span></div>
+        <div onclick="switchTab('products')" class="bg-white p-3.5 rounded-2xl border shadow-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50"><p class="text-[10px] font-extrabold text-slate-400 uppercase flex justify-between"><span>Low Stock</span><span class="text-amber-800 font-black">Stock →</span></p><p class="text-lg font-black text-amber-600 mt-1"><span id="statLowStock">0</span> Items</p><span class="text-[9px] text-rose-500 font-bold">Restock Required</span></div>
       </div>
-
-      <!-- Low Stock Section -->
-      <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2 text-xs">
-        <div class="flex justify-between items-center border-b border-rose-200 pb-2">
-          <h3 class="font-black text-rose-950 uppercase flex items-center gap-1.5">🚨 Low Stock Alert</h3>
-          <button type="button" onclick="App.sendWhatsAppOrder()" class="bg-rose-700 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-xl shadow-xs active:scale-95">💬 WhatsApp Order</button>
-        </div>
-        <div class="space-y-1.5" id="lowStockList"></div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" onclick="App.switchTab('purchase')" class="bg-blue-50 border border-blue-200 text-blue-900 p-3 rounded-2xl text-xs font-black shadow-xs">🧾 Purchase & Expense</button>
-        <button type="button" onclick="App.switchTab('products')" class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-2xl text-xs font-black shadow-xs">📦 All Inventory</button>
-      </div>
-
-      <!-- Recent Orders Pipeline -->
-      <div class="bg-white p-4 rounded-2xl border space-y-2">
-        <div class="flex justify-between items-center border-b pb-2">
-          <h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders</h3>
-          <button type="button" onclick="App.switchTab('orders')" class="text-xs font-bold text-emerald-800">View All →</button>
-        </div>
-        <div class="space-y-2" id="dashboardOrdersList"></div>
-      </div>
-    </section>
-
-    <!-- TAB 2: ORDERS -->
-    <section id="view-orders" class="tab-view hidden space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Order Pipeline</h3>
-        <button type="button" onclick="App.openModal('createOrderModal')" class="text-[10px] bg-emerald-800 text-white font-extrabold px-3 py-1.5 rounded-xl shadow-xs active:scale-95">+ Create Order</button>
-      </div>
-      <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar" id="orderFilterBar">
-        <button type="button" onclick="App.filterOrders('All')" class="filter-ord-btn bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All</button>
-        <button type="button" onclick="App.filterOrders('Placed')" class="filter-ord-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Placed</button>
-        <button type="button" onclick="App.filterOrders('Packing')" class="filter-ord-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Packing</button>
-        <button type="button" onclick="App.filterOrders('Out for Delivery')" class="filter-ord-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Out</button>
-        <button type="button" onclick="App.filterOrders('Delivered')" class="filter-ord-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Delivered</button>
-      </div>
+      <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2 text-xs"><div class="flex justify-between items-center border-b border-rose-200 pb-2"><h3 class="font-black text-rose-950 uppercase flex items-center gap-1.5">🚨 Low Stock Control Center</h3><button type="button" onclick="sendVendorStockOrder()" class="bg-rose-700 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-xl shadow-xs active:scale-95">💬 WhatsApp Reorder</button></div><div class="space-y-1.5" id="lowStockList"></div></div>
+      <div class="bg-white border rounded-2xl p-3 space-y-3"><div class="flex justify-between items-center"><div><h3 class="font-black text-xs uppercase">🎯 Offer & Scheme Banners</h3><p class="text-[10px] text-slate-500">Banner tap karne par linked product khulega</p></div><button type="button" onclick="openBannerModal()" class="bg-emerald-800 text-white text-[10px] font-black px-3 py-2 rounded-xl">+ Add Banner</button></div><div id="offerBannerList" class="space-y-2"></div></div>
+      <div class="grid grid-cols-2 gap-2"><button type="button" onclick="switchTab('purchase')" class="bg-blue-50 border border-blue-200 text-blue-900 p-3 rounded-2xl text-xs font-black">🧾 Purchase & P&L</button><button type="button" onclick="switchTab('products')" class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-2xl text-xs font-black">📦 Inventory Items</button></div><div class="bg-white p-4 rounded-2xl border space-y-2"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-xs text-slate-900 uppercase">Recent Orders Pipeline</h3><button type="button" onclick="switchTab('orders')" class="text-xs font-bold text-emerald-800">View All →</button></div><div class="space-y-2" id="dashboardOrdersList"></div></div>
+    </div>
+    <div id="view-orders" class="hidden space-y-3">
+      <div class="flex items-center justify-between"><h3 class="text-xs font-black text-slate-900 uppercase">Order Tracking Pipeline</h3><button type="button" onclick="openCreateOrderModal()" class="text-[10px] bg-emerald-800 text-white font-extrabold px-2.5 py-1 rounded-xl shadow-xs active:scale-95">+ New Order</button></div>
+      <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar"><button type="button" onclick="filterOrders('All')" id="btnFilterAll" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All</button><button type="button" onclick="filterOrders('Placed')" id="btnFilterPlaced" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Placed</button><button type="button" onclick="filterOrders('Packing')" id="btnFilterPacking" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Packing</button><button type="button" onclick="filterOrders('Out for Delivery')" id="btnFilterOut" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Out</button><button type="button" onclick="filterOrders('Delivered')" id="btnFilterDelivered" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">Delivered</button></div>
       <div class="space-y-3" id="fullOrdersList"></div>
-    </section>
-
-    <!-- TAB 3: POS COUNTER -->
-    <section id="view-pos" class="tab-view hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3>
-        <span class="text-[10px] text-slate-500 font-bold">Tap item to add</span>
-      </div>
-      <div class="grid grid-cols-2 gap-2.5" id="posProductsGrid"></div>
-
-      <!-- POS Cart Box -->
-      <div id="posCartBox" class="hidden bg-white p-4 rounded-2xl border-2 border-emerald-500 shadow-2xl space-y-3 text-xs sticky bottom-16 z-30">
-        <div class="flex justify-between items-center border-b pb-2">
-          <h4 class="font-extrabold text-xs uppercase text-slate-900">🛒 Current Cart</h4>
-          <button type="button" onclick="App.clearCart()" class="text-[10px] bg-rose-50 text-rose-600 font-extrabold px-2 py-1 rounded-lg">Clear Cart</button>
-        </div>
-        <div id="posCartItems" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
-        <div class="pt-2 border-t flex justify-between items-center font-black">
-          <div>
-            <span class="text-[10px] text-slate-400 block">TOTAL AMOUNT</span>
-            <span class="text-base font-black text-emerald-900">₹<span id="posTotalAmount">0</span></span>
-          </div>
-          <div class="flex gap-1.5">
-            <button type="button" onclick="App.toggleUpiQrModal()" class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-2 rounded-xl shadow-xs">📲 QR Pay</button>
-            <button type="button" onclick="App.checkoutBill('58mm')" class="bg-emerald-800 text-white px-3 py-2 rounded-xl text-xs font-black shadow-md">🖨️ Bill Print</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: CATEGORIES -->
-    <section id="view-categories" class="tab-view hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Categories Manager</h3>
-        <button type="button" onclick="App.openModal('categoryModal')" class="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">+ Category</button>
-      </div>
-      <div class="grid grid-cols-1 gap-2" id="categoriesGrid"></div>
-    </section>
-
-    <!-- TAB 5: PURCHASE & EXPENSES -->
-    <section id="view-purchase" class="tab-view hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black uppercase">🧾 Purchase & Supplier Automation</h3>
-        <button type="button" onclick="App.openPurchaseForm()" class="bg-emerald-800 text-white text-[10px] font-black px-3 py-2 rounded-xl">+ Purchase Bill</button>
-      </div>
+    </div>
+    <div id="view-pos" class="hidden space-y-4"><div class="flex items-center justify-between"><h3 class="text-xs font-black text-slate-900 uppercase">Counter POS Billing</h3><span class="text-[10px] text-slate-500 font-bold">Tap product to add</span></div><div class="grid grid-cols-2 gap-2.5" id="posProductsGrid"></div>
+      <div id="posCartBox" class="hidden bg-white p-4 rounded-2xl border-2 border-emerald-500 shadow-xl space-y-3 text-xs sticky bottom-16 z-30"><div class="flex justify-between items-center border-b pb-2"><h4 class="font-extrabold text-xs uppercase">🛒 Current Cart Summary</h4><button type="button" onclick="clearPosCart()" class="text-[10px] bg-rose-50 text-rose-600 font-extrabold px-2 py-1 rounded-lg">Clear Cart</button></div><div id="posCartItems" class="space-y-1.5 max-h-40 overflow-y-auto"></div><div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex items-center justify-between"><div><span class="font-black text-amber-950 text-[11px] block">Dynamic Scan & Pay QR Code</span><span class="text-[9px] text-amber-800 font-extrabold">PhonePe / GPay Integration</span></div><button type="button" onclick="toggleUpiQrModal()" class="bg-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-1.5 rounded-xl">Show QR</button></div><div class="pt-2 border-t flex justify-between items-center font-black"><div><span class="text-[10px] text-slate-400 block">TOTAL BILL AMOUNT</span><span class="text-base font-black text-emerald-900">₹<span id="posTotalAmount">0</span></span></div><div class="flex gap-1.5"><button type="button" onclick="openPrintModal('58mm')" class="bg-emerald-800 text-white px-3 py-2 rounded-xl text-xs font-black shadow-md">🖨️ 58mm</button><button type="button" onclick="openPrintModal('a4')" class="bg-blue-800 text-white px-3 py-2 rounded-xl text-xs font-black shadow-md">📄 A4</button></div></div></div>
+    </div>
+    <div id="view-categories" class="hidden space-y-4"><div class="flex items-center justify-between"><h3 class="text-xs font-black text-slate-900 uppercase">Categories Manager Pro</h3><button type="button" onclick="openCategoryModal()" class="bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">+ Category</button></div><div class="grid grid-cols-1 gap-2" id="categoriesGrid"></div></div>
+    <div id="view-purchase" class="hidden space-y-3">
+      <div class="flex items-center justify-between"><h3 class="text-xs font-black uppercase">🧾 Purchase & Supplier Automation</h3><button type="button" onclick="openPurchaseForm()" class="bg-emerald-800 text-white text-[10px] font-black px-3 py-2 rounded-xl">+ Purchase Bill</button></div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2 text-xs"><p class="font-black">Record supplier delivery</p><p class="text-slate-500">Purchase entry se item stock aur average cost update honge. Supplier bill image attach bhi kar sakte hain.</p><div id="purchaseSummary" class="grid grid-cols-2 gap-2"></div></div>
       <div id="purchaseList" class="space-y-2"></div>
-      
-      <div class="bg-white border rounded-2xl p-3 space-y-2">
-        <h4 class="font-black text-xs">💸 Add Expense / Kharch</h4>
-        <form onsubmit="App.addExpense(event)" class="space-y-2">
-          <input id="expenseTitle" required placeholder="Rent, Transport, Salary..." class="w-full border p-2 rounded-xl text-xs outline-none">
-          <div class="grid grid-cols-2 gap-2">
-            <input id="expenseAmount" required type="number" step="0.01" placeholder="Amount ₹" class="border p-2 rounded-xl text-xs outline-none">
-            <input id="expenseDate" type="date" class="border p-2 rounded-xl text-xs outline-none">
-          </div>
-          <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl text-xs">Save Expense</button>
-        </form>
-        <div id="expenseList" class="space-y-1 pt-2"></div>
-      </div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2"><h4 class="font-black">💸 Expenses / Kharch</h4><form onsubmit="addExpense(event)" class="space-y-2"><input id="expenseTitle" required placeholder="Expense (rent, salary, transport...)" class="w-full border p-2 rounded-xl"><div class="grid grid-cols-2 gap-2"><input id="expenseAmount" required type="number" min="0.01" step="0.01" placeholder="Amount ₹" class="border p-2 rounded-xl"><input id="expenseDate" type="date" class="border p-2 rounded-xl"></div><button class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save Expense</button></form><div id="expenseList" class="space-y-1"></div></div>
+      <div class="bg-emerald-950 text-white p-3 rounded-2xl space-y-1"><h4 class="font-black">📈 Real recorded P&L</h4><div class="flex justify-between"><span>Sales</span><b id="plSales">₹0</b></div><div class="flex justify-between"><span>Gross profit (saved bills)</span><b id="plGross">₹0</b></div><div class="flex justify-between"><span>Expenses</span><b id="plExpenses">₹0</b></div><div class="flex justify-between border-t border-emerald-700 pt-2"><span>Net recorded profit</span><b id="plNet">₹0</b></div><p class="text-[9px] text-emerald-200">Profit is based on saved POS bills and entered expenses; unrecorded costs are not included.</p></div>
 
-      <!-- Real P&L Summary -->
-      <div class="bg-emerald-950 text-white p-4 rounded-2xl space-y-1.5 text-xs">
-        <h4 class="font-black text-amber-300">📈 Real Business P&L Summary</h4>
-        <div class="flex justify-between"><span>Sales Revenue:</span><b id="plSales">₹0</b></div>
-        <div class="flex justify-between"><span>Gross Profit:</span><b id="plGross">₹0</b></div>
-        <div class="flex justify-between"><span>Total Expenses:</span><b id="plExpenses" class="text-rose-400">₹0</b></div>
-        <div class="flex justify-between border-t border-emerald-800 pt-2 text-sm font-black">
-          <span>Net Profit:</span><b id="plNet" class="text-amber-300">₹0</b>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 6: BUSINESS CONTROL -->
-    <section id="view-khata" class="tab-view hidden space-y-4">
-      <div class="bg-emerald-950 text-white p-4 rounded-2xl space-y-2">
-        <p class="text-[10px] uppercase tracking-widest text-emerald-300 font-black">HUMA TRADERS · CONTROL</p>
-        <h3 class="text-lg font-black">📊 Business Overview</h3>
-      </div>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="bg-white border rounded-2xl p-3">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">Total Sales</p>
-          <p class="text-lg font-black text-emerald-800">₹<span id="biSales">0</span></p>
-        </div>
-        <div class="bg-white border rounded-2xl p-3">
-          <p class="text-[10px] text-slate-500 font-bold uppercase">Gross Profit</p>
-          <p class="text-lg font-black text-blue-800">₹<span id="biProfit">0</span></p>
-        </div>
-      </div>
-      <div class="bg-white border rounded-2xl p-3 space-y-2">
-        <h4 class="font-black text-xs">📦 Low Stock Summary</h4>
-        <div id="biStockList" class="space-y-1.5 text-xs"></div>
-      </div>
-    </section>
-
-    <!-- TAB 7: INVENTORY PRODUCTS -->
-    <section id="view-products" class="tab-view hidden space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xs font-black text-slate-900 uppercase">Inventory Items</h3>
-        <div class="flex gap-1.5">
-          <button type="button" onclick="App.importDemoProduct()" class="bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1.5 rounded-xl">🚀 Import Demo</button>
-          <button type="button" onclick="App.openProductModal()" class="bg-emerald-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">+ Product</button>
-        </div>
-      </div>
-      <div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar">
-        <button type="button" onclick="App.filterInventory('all')" id="btnStockAll" class="inv-filter-btn bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All Inventory</button>
-        <button type="button" onclick="App.filterInventory('low')" id="btnStockLow" class="inv-filter-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">🚨 Low Stock</button>
-        <button type="button" onclick="App.filterInventory('out')" id="btnStockOut" class="inv-filter-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">🔴 Out of Stock</button>
-      </div>
-      <div class="space-y-2" id="productsList"></div>
-    </section>
-
+    </div>
+    <div id="view-khata" class="hidden space-y-3">
+      <div class="bg-emerald-950 text-white p-4 rounded-2xl space-y-2"><p class="text-[10px] uppercase tracking-widest text-emerald-300 font-black">HUMA TRADERS · PRO ERP</p><h3 class="text-lg font-black">📊 Business Control Center</h3><p class="text-[10px] text-emerald-100">Reports are calculated from sales, purchase cost and stock records saved in this app.</p></div>
+      <div class="grid grid-cols-2 gap-2 text-xs"><div class="bg-white border rounded-2xl p-3"><p class="text-[10px] text-slate-500 font-bold uppercase">Recorded Sales</p><p class="text-lg font-black text-emerald-800">₹<span id="biSales">0</span></p></div><div class="bg-white border rounded-2xl p-3"><p class="text-[10px] text-slate-500 font-bold uppercase">Gross Profit</p><p class="text-lg font-black text-blue-800">₹<span id="biProfit">0</span></p></div><div class="bg-white border rounded-2xl p-3"><p class="text-[10px] text-slate-500 font-bold uppercase">Inventory Items</p><p class="text-lg font-black"><span id="biProducts">0</span></p></div><div class="bg-white border rounded-2xl p-3"><p class="text-[10px] text-slate-500 font-bold uppercase">Low / Out Stock</p><p class="text-lg font-black text-rose-700"><span id="biLowStock">0</span></p></div></div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2"><h4 class="font-black text-xs">📦 Stock & Reorder Summary</h4><div id="biStockList" class="space-y-2 text-xs"></div><button type="button" onclick="sendVendorStockOrder()" class="w-full bg-emerald-800 text-white rounded-xl py-2.5 font-black text-xs">💬 Create WhatsApp Reorder List</button></div>
+      <div class="bg-white border rounded-2xl p-3 space-y-2"><h4 class="font-black text-xs">💰 Recent Sales Summary</h4><p class="text-[10px] text-slate-500">Sales and profit are recorded when a bill is completed. Expenses are not deducted yet, so this is gross profit, not net profit.</p><div id="biRecentSales" class="space-y-2 text-xs"></div></div>
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-[10px] text-amber-950"><b>Data note:</b> Existing customer Khata records are not deleted from browser storage, but the Khata Book screen is replaced by this Business Control Center.</div>
+    </div>
+    <div id="view-products" class="hidden space-y-3"><div class="flex justify-between items-center"><h3 class="text-xs font-black text-slate-900 uppercase">Inventory & Barcodes</h3><div class="flex gap-1.5"><button type="button" onclick="openBulkImportModal()" class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1.5 rounded-xl">🚀 Import Demo</button><button type="button" onclick="openProductModal()" class="bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">+ Product</button></div></div><div class="flex gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold no-scrollbar"><button type="button" onclick="filterInventory('all')" id="btnStockAll" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0">All Inventory</button><button type="button" onclick="filterInventory('low')" id="btnStockLow" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">🚨 Low Stock</button><button type="button" onclick="filterInventory('out')" id="btnStockOut" class="bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0">🔴 Out of Stock</button></div><div class="space-y-2" id="productsList"></div></div>
   </main>
-
-  <!-- ALL MODALS SYSTEM -->
-
-  <!-- Product Modal -->
-  <div id="productModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-slate-900 uppercase text-sm" id="modalTitle">Add Product</h3>
-        <button type="button" onclick="App.closeModal('productModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <form onsubmit="App.handleProductSubmit(event)" class="space-y-2.5">
-        <input type="hidden" id="editProductId" />
-        <input type="text" id="pName" required placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none font-bold" />
-        <div class="grid grid-cols-2 gap-2">
-          <select id="pCategory" class="w-full border p-2.5 rounded-xl outline-none font-bold"></select>
-          <select id="pUnit" class="w-full border p-2.5 rounded-xl outline-none font-bold">
-            <option value="1 kg">1 KG</option>
-            <option value="500 g">500 Gram</option>
-            <option value="1 Pc">1 Piece</option>
-            <option value="1 Pkt">1 Packet</option>
-            <option value="1 Box">1 Box</option>
-            <option value="1 L">1 Litre</option>
-          </select>
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <input type="number" id="pCost" oninput="App.calculateMargin()" placeholder="Cost ₹" class="w-full border p-2 rounded-xl outline-none" />
-          <input type="number" id="pMrp" placeholder="MRP ₹" class="w-full border p-2 rounded-xl outline-none" />
-          <input type="number" id="pPrice" oninput="App.calculateMargin()" required placeholder="Sell ₹ *" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" />
-        </div>
-        <div id="marginBadge" class="hidden bg-emerald-100 border border-emerald-300 p-2 rounded-xl text-center text-[10px] font-black text-emerald-900">
-          Profit: ₹<span id="calcProfit">0</span> | Margin: <span id="calcMargin">0</span>% 🟢
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="pStock" required placeholder="Stock Qty *" class="w-full border p-2 rounded-xl outline-none" />
-          <input type="number" id="pThreshold" placeholder="Low Limit *" class="w-full bg-rose-50 border border-rose-300 p-2 rounded-xl font-bold outline-none" />
-        </div>
-        <input type="text" id="pCode" placeholder="Barcode (Optional)" class="w-full border p-2.5 rounded-xl outline-none font-mono" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl shadow-md">Save Product</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Vendor Modal -->
-  <div id="vendorModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-sm">Vendor & Suppliers</h3>
-        <button type="button" onclick="App.closeModal('vendorModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <form onsubmit="App.handleVendorSubmit(event)" class="space-y-2 bg-slate-50 p-3 rounded-2xl border">
-        <input type="text" id="vName" required placeholder="Supplier Name *" class="w-full bg-white border p-2 rounded-xl outline-none" />
-        <input type="tel" id="vPhone" required placeholder="Mobile *" class="w-full bg-white border p-2 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">+ Add Vendor</button>
-      </form>
-      <div id="vendorListContainer" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
-    </div>
-  </div>
-
-  <!-- Category Modal -->
-  <div id="categoryModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-sm">Add Category</h3>
-        <button type="button" onclick="App.closeModal('categoryModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <form onsubmit="App.handleCategorySubmit(event)" class="space-y-2">
-        <input type="text" id="cName" required placeholder="Category Name" class="w-full border p-2.5 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Category</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- UPI Settings Modal -->
-  <div id="settingsModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3 text-xs shadow-2xl">
-      <h3 class="font-black uppercase">UPI ID Config</h3>
-      <input type="text" id="upiIdInput" placeholder="merchant@upi" class="w-full border p-2.5 rounded-xl font-bold outline-none" />
-      <button type="button" onclick="App.saveUpiSettings()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save</button>
-      <button type="button" onclick="App.closeModal('settingsModal')" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
-    </div>
-  </div>
-
-  <!-- UPI QR Pay Modal -->
-  <div id="upiQrModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-xs w-full text-center text-xs space-y-3.5 shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-sm">Scan & Pay QR</h3>
-        <button type="button" onclick="App.closeModal('upiQrModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <div id="qrcodeCanvas" class="flex justify-center p-2 bg-slate-50 border rounded-2xl min-h-36 items-center"></div>
-      <div class="bg-emerald-50 border border-emerald-200 p-2 rounded-xl">
-        <span class="text-[10px] text-emerald-900 font-black block">Bill Amount: ₹<span id="qrBillAmount">0</span></span>
-      </div>
-      <button type="button" onclick="App.closeModal('upiQrModal')" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Close</button>
-    </div>
-  </div>
-
-  <!-- Create Order Modal -->
-  <div id="createOrderModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black">Create New Order</h3>
-        <button type="button" onclick="App.closeModal('createOrderModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <form onsubmit="App.handleNewOrderSubmit(event)" class="space-y-2">
-        <input type="text" id="ordCustName" required placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="tel" id="ordCustPhone" required placeholder="Mobile *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="text" id="ordItems" required placeholder="Items Details *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <input type="number" id="ordAmount" required placeholder="Amount ₹ *" class="w-full border p-2.5 rounded-xl outline-none" />
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Order</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Purchase Modal -->
-  <div id="purchaseModal" class="modal hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-black text-sm">Supplier Purchase Entry</h3>
-        <button type="button" onclick="App.closeModal('purchaseModal')" class="text-slate-400 font-bold p-1">✕</button>
-      </div>
-      <form onsubmit="App.savePurchase(event)" class="space-y-2">
-        <label class="block font-bold">Supplier</label><select id="buyVendor" required class="w-full border p-2 rounded-xl"></select>
-        <label class="block font-bold">Stock Product</label><select id="buyProduct" required class="w-full border p-2 rounded-xl"></select>
-        <div class="grid grid-cols-2 gap-2">
-          <input id="buyQty" required type="number" step="0.001" placeholder="Qty Received" class="border p-2 rounded-xl">
-          <input id="buyCost" required type="number" step="0.01" placeholder="Cost per unit ₹" class="border p-2 rounded-xl">
-        </div>
-        <input id="buyDate" type="date" class="w-full border p-2 rounded-xl">
-        <button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Purchase & Add Stock</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Print Thermal Bill Area -->
-  <div id="printArea" style="display:none;"></div>
-
-  <!-- Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t max-w-md mx-auto no-print">
-    <div class="grid grid-cols-7 h-14">
-      <button type="button" onclick="App.switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center justify-center text-emerald-800 font-black"><span class="text-base leading-none">🏠</span><span class="text-[9px] mt-1 font-bold">Home</span></button>
-      <button type="button" onclick="App.switchTab('orders')" id="nav-orders" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📦</span><span class="text-[9px] mt-1 font-bold">Orders</span></button>
-      <button type="button" onclick="App.switchTab('pos')" id="nav-pos" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🛒</span><span class="text-[9px] mt-1 font-bold">POS</span></button>
-      <button type="button" onclick="App.switchTab('categories')" id="nav-categories" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📚</span><span class="text-[9px] mt-1 font-bold">Category</span></button>
-      <button type="button" onclick="App.switchTab('khata')" id="nav-khata" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📊</span><span class="text-[9px] mt-1 font-bold">Business</span></button>
-      <button type="button" onclick="App.switchTab('purchase')" id="nav-purchase" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🧾</span><span class="text-[9px] mt-1 font-bold">Purchase</span></button>
-      <button type="button" onclick="App.switchTab('products')" id="nav-products" class="nav-btn flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🛍️</span><span class="text-[9px] mt-1 font-bold">Items</span></button>
-    </div>
-  </div>
-
-  <!-- APPLICATION JAVASCRIPT ENGINE -->
+  <!-- MODALS -->
+  <div id="categoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Add New Category</h3><button type="button" onclick="closeCategoryModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="handleCategorySubmit(event)" class="space-y-2"><input type="text" id="cName" required placeholder="Category Name (e.g. Atta & Flour)" class="w-full border p-2.5 rounded-xl outline-none" /><label class="block font-bold">Category Image (phone gallery)</label><input type="file" id="cImageFile" accept="image/*" onchange="previewImageFile(this,'cImagePreview')" class="w-full border p-2 rounded-xl"/><img id="cImagePreview" class="hidden w-20 h-20 object-cover rounded-xl border" alt="Category preview"/><button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Category Pro</button></form></div></div>
+  <div id="vendorModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Vendor & Supplier Manager</h3><button type="button" onclick="closeVendorModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="handleVendorSubmit(event)" class="space-y-2 bg-slate-50 p-3 rounded-2xl border"><input type="text" id="vName" required placeholder="Supplier Name *" class="w-full bg-white border p-2 rounded-xl outline-none" /><input type="tel" id="vPhone" required placeholder="Mobile *" class="w-full bg-white border p-2 rounded-xl outline-none" /><button type="submit" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">+ Add Vendor</button></form><div id="vendorListContainer" class="space-y-1.5 max-h-36 overflow-y-auto"></div></div></div>
+  <div id="addCustomerModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Add Customer Khata Entry</h3><button type="button" onclick="closeAddCustomerModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="handleCustomerSubmit(event)" class="space-y-2"><input type="text" id="custName" required placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none font-bold" /><input type="tel" id="custPhone" placeholder="Mobile Number" class="w-full border p-2.5 rounded-xl outline-none" /><input type="number" id="custBalance" required placeholder="Udhar Amount (₹)" class="w-full border p-2.5 rounded-xl outline-none font-bold text-rose-600" /><button type="submit" class="w-full bg-blue-800 text-white font-black py-2.5 rounded-xl">Save Khata</button></form></div></div>
+  <div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[92vh] overflow-y-auto text-xs"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-slate-900 uppercase text-sm" id="modalTitle">Add New Product Pro</h3><button type="button" onclick="closeProductModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="handleProductSubmit(event)" class="space-y-2"><input type="hidden" id="editProductId" /><input type="text" id="pName" required placeholder="Product Name *" class="w-full border p-2.5 rounded-xl outline-none font-bold" /><label class="block font-bold text-slate-700">Product Image (phone gallery)</label><input type="file" id="pImageFile" accept="image/*" onchange="previewImageFile(this,'pImagePreview')" class="w-full border p-2 rounded-xl"/><img id="pImagePreview" class="hidden w-24 h-24 object-contain rounded-xl border bg-slate-50" alt="Product preview"/><input type="hidden" id="pImageData"/><div class="rounded-xl bg-amber-50 border border-amber-200 p-2"><p class="font-black mb-1">Enable sizes only for selected loose products</p><div class="grid grid-cols-3 gap-1"><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="50 g"> 50 g</label><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="100 g"> 100 g</label><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="250 g"> 250 g</label><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="500 g"> 500 g</label><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="1 kg"> 1 kg</label><label class="flex items-center gap-1"><input type="checkbox" class="pVariant" value="2 kg"> 2 kg</label></div><p class="text-[9px] text-slate-500 mt-1">POS par size select karne par rate enter/confirm kar sakte hain.</p></div><div class="flex items-center gap-1"><input type="text" id="pCode" placeholder="Barcode Code" class="w-full border p-2.5 rounded-xl outline-none font-mono" /><button type="button" onclick="generateAutoBarcode()" class="text-[9px] bg-amber-100 text-amber-900 font-black px-2 py-2.5 rounded-xl shrink-0">⚡ Auto</button></div><div class="grid grid-cols-2 gap-2"><select id="pCategory" class="w-full border p-2.5 rounded-xl outline-none font-bold"></select><select id="pUnit" class="w-full border p-2.5 rounded-xl outline-none font-bold"><optgroup label="Loose Weight"><option value="50 g">50 Gram Loose</option><option value="100 g">100 Gram Loose</option><option value="250 g">250 Gram Loose</option><option value="500 g">500 Gram Loose</option><option value="1 kg">1 KG Loose</option><option value="2 kg">2 KG Loose</option></optgroup><optgroup label="Packing Units"><option value="1 Pc">Piece</option><option value="1 Pkt">Packet</option><option value="1 Box">Box / Carton</option><option value="1 Roll">Roll</option><option value="1 Bag">Bag</option><option value="1 Patti">Patti</option><option value="1 Crate">Crate / Carrat</option><option value="1 Bottle">Bottle</option><option value="1 Jar">Jar</option><option value="1 Tin">Tin</option><option value="1 L">Litre</option></optgroup></select></div><div class="grid grid-cols-3 gap-2"><input type="number" id="pCost" oninput="calculateMargin()" placeholder="Cost ₹" class="w-full border p-2 rounded-xl outline-none" /><input type="number" id="pMrp" placeholder="MRP ₹" class="w-full border p-2 rounded-xl outline-none" /><input type="number" id="pPrice" oninput="calculateMargin()" required placeholder="Sell ₹ *" class="w-full bg-emerald-50 border border-emerald-300 p-2 rounded-xl font-bold outline-none" /></div><div id="marginBadge" class="hidden bg-emerald-100 border border-emerald-300 p-2 rounded-xl text-center text-[10px] font-black text-emerald-900">Profit: ₹<span id="calcProfit">0</span> | Margin: <span id="calcMargin">0</span>% 🟢</div><div class="grid grid-cols-2 gap-2"><input type="number" id="pStock" required placeholder="Stock Qty *" class="w-full border p-2 rounded-xl outline-none" /><input type="number" id="pThreshold" placeholder="Low Limit *" class="w-full bg-rose-50 border border-rose-300 p-2 rounded-xl font-bold outline-none" /></div><div class="space-y-1"><div class="flex items-center justify-between"><label for="pDescription" class="font-bold text-slate-700">Product Description</label><button type="button" onclick="generateProductDescription()" class="bg-amber-100 text-amber-900 font-black px-2.5 py-1.5 rounded-lg">✨ Auto Generate</button></div><textarea id="pDescription" rows="3" placeholder="Description auto-generate karein ya khud likhein..." class="w-full border p-2.5 rounded-xl outline-none"></textarea><p class="text-[9px] text-slate-500">Generated description ko save karne se pehle edit bhi kar sakte hain.</p></div><button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl shadow-md">Save Product Pro</button></form></div></div>
+  <div id="upiQrModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-xs w-full text-center text-xs space-y-3.5 shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Scan & Pay UPI QR</h3><button type="button" onclick="toggleUpiQrModal()" class="text-slate-400 font-bold p-1">✕</button></div><div id="qrcodeCanvas" class="flex justify-center p-2 bg-slate-50 border rounded-2xl min-h-40 items-center"></div><div class="bg-emerald-50 border border-emerald-200 p-2 rounded-xl"><span class="text-[10px] text-emerald-900 font-black block">Bill Amount: ₹<span id="qrBillAmount">0</span></span></div><button type="button" onclick="toggleUpiQrModal()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Done Payment</button></div></div>
+  <div id="barcodePrintModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-xs w-full text-center text-xs space-y-3.5 shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Product Barcode Label</h3><button type="button" onclick="closeBarcodeModal()" class="text-slate-400 font-bold p-1">✕</button></div><div id="barcodeStickerArea" class="bg-white border-2 border-slate-900 p-3 rounded-xl space-y-1 text-slate-900"><p class="font-black text-xs uppercase" id="bcProdName">ITEM</p><p class="font-extrabold text-[11px] text-emerald-800">MRP: ₹<span id="bcProdMrp">25.00</span></p><svg id="barcodeCanvas" class="mx-auto my-1 max-w-full"></svg><p class="text-[9px] font-bold font-mono">CODE: <span id="bcProdCode">8901234567890</span></p></div><div class="flex gap-2"><button type="button" onclick="window.print()" class="flex-1 bg-emerald-800 text-white font-black py-2 rounded-xl">Print Label</button><button type="button" onclick="closeBarcodeModal()" class="px-3 bg-slate-100 font-bold py-2 rounded-xl">Close</button></div></div></div>
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-xs w-full space-y-3 text-xs shadow-2xl"><h3 class="font-black uppercase">UPI ID Config</h3><input type="text" id="upiIdInput" placeholder="merchant@ybl" class="w-full border p-2.5 rounded-xl font-bold outline-none" /><button type="button" onclick="saveUpiSettings()" class="w-full bg-emerald-800 text-white font-black py-2 rounded-xl">Save</button><button type="button" onclick="closeSettingsModal()" class="w-full bg-slate-100 py-2 rounded-xl font-bold">Cancel</button></div></div>
+  <div id="createOrderModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black">Create Order</h3><button type="button" onclick="closeCreateOrderModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="handleNewOrderSubmit(event)" class="space-y-2"><input type="text" id="ordCustName" required placeholder="Customer Name *" class="w-full border p-2.5 rounded-xl outline-none" /><input type="tel" id="ordCustPhone" required placeholder="Mobile *" class="w-full border p-2.5 rounded-xl outline-none" /><input type="text" id="ordItems" required placeholder="Items Details *" class="w-full border p-2.5 rounded-xl outline-none" /><input type="number" id="ordAmount" required placeholder="Amount ₹ *" class="w-full border p-2.5 rounded-xl outline-none" /><button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Order</button></form></div></div>
+  <div id="purchaseModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 no-print"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Supplier Purchase Entry</h3><button type="button" onclick="closePurchaseForm()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="savePurchase(event)" class="space-y-2"><label class="block font-bold">Supplier</label><select id="buyVendor" required class="w-full border p-2 rounded-xl"></select><input id="buyInvoice" placeholder="Supplier invoice / bill number" class="w-full border p-2 rounded-xl"><div class="flex items-center justify-between"><label class="block font-bold">Brand</label><div class="flex gap-2"><button type="button" onclick="addPurchaseBrand()" class="text-emerald-800 font-black">+ Add</button><button type="button" onclick="deletePurchaseBrand()" class="text-rose-700 font-black">− Delete</button></div></div><select id="buyBrand" required class="w-full border p-2 rounded-xl"></select><label class="block font-bold">Stock item (stock isi product mein add hoga)</label><select id="buyProduct" required class="w-full border p-2 rounded-xl"></select><div class="grid grid-cols-2 gap-2"><input id="buyQty" required type="number" min="0.001" step="0.001" placeholder="Qty received" class="border p-2 rounded-xl"><input id="buyCost" required type="number" min="0" step="0.01" placeholder="Cost per unit ₹" class="border p-2 rounded-xl"></div><input id="buyDate" type="date" class="w-full border p-2 rounded-xl"><label class="block font-bold">Bill photo (optional, image up to 1.5MB)</label><input id="buyBillFile" type="file" accept="image/*" class="w-full border p-2 rounded-xl"><p class="text-amber-700">Save karne par stock add hoga aur purchase record banega. Pehle bill details check karein.</p><button type="submit" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Save Purchase & Update Stock</button></form></div></div>
+  <div id="bannerModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 text-xs shadow-2xl max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center border-b pb-2"><h3 class="font-black text-sm">Offer Banner Manager</h3><button type="button" onclick="closeBannerModal()" class="text-slate-400 font-bold p-1">✕</button></div><form onsubmit="saveOfferBanner(event)" class="space-y-2"><input type="hidden" id="bannerEditId"><label class="block font-bold">Banner title</label><input id="bannerTitle" required maxlength="80" placeholder="Jaise: Madhur Sugar Special Offer" class="w-full border p-2.5 rounded-xl"><label class="block font-bold">Banner image (phone gallery)</label><input id="bannerImageFile" type="file" accept="image/*" onchange="previewBannerImage(this)" class="w-full border p-2 rounded-xl"><img id="bannerImagePreview" class="hidden w-full h-28 object-contain bg-slate-50 border rounded-xl" alt="Banner preview"><input type="hidden" id="bannerImageData"><label class="block font-bold">Scheme product</label><select id="bannerProduct" required class="w-full border p-2.5 rounded-xl"></select><label class="block font-bold">Scheme note (optional)</label><input id="bannerNote" maxlength="120" placeholder="Jaise: Special wholesale rate" class="w-full border p-2.5 rounded-xl"><button type="submit" class="w-full bg-emerald-800 text-white font-black py-3 rounded-xl">Save Banner</button></form></div></div>
+  <div id="bannerProductModal" class="hidden fixed inset-0 z-50 bg-slate-900/70 flex items-center justify-center p-4"><div class="bg-white rounded-3xl p-5 max-w-sm w-full space-y-3 shadow-2xl max-h-[85vh] overflow-y-auto"><div class="flex justify-between items-center border-b pb-2"><h3 id="bannerProductTitle" class="font-black text-sm">Scheme Products</h3><button type="button" onclick="$('bannerProductModal').classList.add('hidden')" class="text-slate-400 font-bold p-1">✕</button></div><div id="bannerProductDetails" class="space-y-2"></div></div></div>
+  <div id="printArea" style="display:none"></div>
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t max-w-md mx-auto no-print"><div class="grid grid-cols-7 h-14">
+    <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center justify-center text-emerald-800 font-black"><span class="text-base leading-none">🏠</span><span class="text-[9px] mt-1 font-bold">Home</span></button>
+    <button type="button" onclick="switchTab('orders')" id="nav-orders" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📦</span><span class="text-[9px] mt-1 font-bold">Orders</span></button>
+    <button type="button" onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🛒</span><span class="text-[9px] mt-1 font-bold">POS</span></button>
+    <button type="button" onclick="switchTab('categories')" id="nav-categories" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📚</span><span class="text-[9px] mt-1 font-bold">Category</span></button>
+    <button type="button" onclick="switchTab('khata')" id="nav-khata" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">📊</span><span class="text-[9px] mt-1 font-bold">Business</span></button>
+    <button type="button" onclick="switchTab('purchase')" id="nav-purchase" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🧾</span><span class="text-[9px] mt-1 font-bold">Purchase</span></button><button type="button" onclick="switchTab('products')" id="nav-products" class="flex flex-col items-center justify-center text-slate-400"><span class="text-base leading-none">🛍️</span><span class="text-[9px] mt-1 font-bold">Items</span></button>
+  </div></div>
   <script>
     const $ = id => document.getElementById(id);
     const money = n => (Number(n) || 0).toLocaleString("en-IN");
     const esc = v => String(v ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+    const readStore = (key, fallback) => { try { const value = JSON.parse(localStorage.getItem(key)); return value ?? fallback; } catch { return fallback; } };
+    let categories = readStore('ht_categories', [{ id: 'c1', name: 'Atta & Flour' }, { id: 'c2', name: 'Rice & Grains' }]);
+    let vendors = readStore('ht_vendors', [{ id: 'v1', name: 'Solapur Market Wholesale', phone: '9822012345' }]);
+    let products = readStore('ht_products', [{ id: 'HT-P101', name: 'Aashirvaad Chakki Atta 1kg', code: '8901234567890', mrp: 65, sellingPrice: 55, costPrice: 48, stock: 15, threshold: 5 }]);
+    let orders = readStore('ht_orders', [{ id: 'HT-ORD-1001', customerName: 'Rahul Stores', phone: '9822011111', items: 'Aashirvaad Atta x 5', amount: 275, status: 'Placed' }]);
+    let khataCustomers = readStore('ht_khata', [{ id: 'k1', name: 'Mahesh Kirana', phone: '9822033333', balance: 1450 }]);
+    let posCart = [];
+    let salesHistory = readStore('ht_sales', []);
+    let purchaseHistory = readStore('ht_purchases', []);
+    let purchaseBrands = readStore('ht_purchase_brands', ['Parle','Britannia','Madhur','Aashirvaad','Fortune','Tata','Other']);
+    let offerBanners = readStore('ht_offer_banners', []);
+    let expenseHistory = readStore('ht_expenses', []);
+    let upiId = localStorage.getItem('ht_upi') || 'merchant@ybl';
+    let activeInventoryFilter = 'all';
+    let activeOrderFilter = 'All';
+    let editingProductId = null;
+    function saveData() {
+      try {
+        localStorage.setItem('ht_categories', JSON.stringify(categories)); localStorage.setItem('ht_vendors', JSON.stringify(vendors));
+        localStorage.setItem('ht_products', JSON.stringify(products)); localStorage.setItem('ht_orders', JSON.stringify(orders));
+        localStorage.setItem('ht_khata', JSON.stringify(khataCustomers)); localStorage.setItem('ht_sales', JSON.stringify(salesHistory)); localStorage.setItem('ht_purchases', JSON.stringify(purchaseHistory)); localStorage.setItem('ht_expenses', JSON.stringify(expenseHistory)); localStorage.setItem('ht_purchase_brands', JSON.stringify(purchaseBrands)); localStorage.setItem('ht_offer_banners', JSON.stringify(offerBanners)); localStorage.setItem('ht_upi', upiId);
+      } catch (e) { showToast('Storage full or unavailable'); }
+    }
+    function showToast(msg) { const toast = $('toast'); if (toast) { toast.innerText = '✓ ' + msg; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 2000); } }
+    function switchTab(tabId) {
+      ['dashboard','orders','pos','categories','khata','products','purchase'].forEach(t => { $(`view-${t}`)?.classList.add('hidden'); $(`nav-${t}`)?.classList.remove('text-emerald-800','font-black'); $(`nav-${t}`)?.classList.add('text-slate-400'); });
+      $(`view-${tabId}`)?.classList.remove('hidden'); $(`nav-${tabId}`)?.classList.add('text-emerald-800','font-black'); $(`nav-${tabId}`)?.classList.remove('text-slate-400');
+    }
+    function refreshAll() { populateDropdowns(); renderProducts(); renderPosGrid(); renderPosCart(); renderLowStock(); renderCategories(); renderOrders(); updateDashboard(); renderBusinessCenter(); renderVendorList(); renderPurchases(); renderExpenses(); renderPnl(); renderOfferBanners(); }
+    function updateDashboard() {
+      $('statSales').textContent = money(salesHistory.reduce((s,x)=>s+(Number(x.total)||0),0)); $('statProfit').textContent = money(salesHistory.reduce((s,x)=>s+(Number(x.profit)||0),0));
+      $('statOrders').textContent = orders.length; $('statPending').textContent = orders.filter(o=>o.status!=='Delivered').length;
+      if($('statProfitControl')) $('statProfitControl').textContent = '₹'+money(salesHistory.reduce((s,x)=>s+(Number(x.profit)||0),0));
+      $('statLowStock').textContent = products.filter(p=>Number(p.stock)<=Number(p.threshold||10)).length;
+      $('dashboardOrdersList').innerHTML = orders.slice(0,5).map(o=>`<div class="border rounded-xl p-2.5 flex justify-between items-center text-xs"><div><p class="font-black">${esc(o.customerName)}</p><p class="text-[10px] text-slate-500">${esc(o.id)} · ${esc(o.status)}</p></div><b class="text-emerald-800">₹${money(o.amount)}</b></div>`).join('') || '<p class="text-slate-400 text-xs">No orders</p>';
+    }
+    function populateDropdowns() { const sel=$('pCategory'); if(sel) sel.innerHTML=categories.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join(''); }
+    function calculateMargin() { const cost=Number($('pCost').value)||0, sell=Number($('pPrice').value)||0; if(cost>0&&sell>0){$('calcProfit').innerText=(sell-cost).toFixed(2);$('calcMargin').innerText=(((sell-cost)/sell)*100).toFixed(1);$('marginBadge').classList.remove('hidden');}else $('marginBadge').classList.add('hidden'); }
+    function generateAutoBarcode() { $('pCode').value='890'+Math.floor(1000000000+Math.random()*9000000000); }
+    function renderPurchaseBrands(){const s=$('buyBrand');if(s)s.innerHTML=purchaseBrands.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('');}
+    function addPurchaseBrand(){const name=prompt('Brand ka naam enter karein:');if(!name||!name.trim())return;const brand=name.trim();if(purchaseBrands.some(b=>b.toLowerCase()===brand.toLowerCase()))return showToast('Brand pehle se hai');purchaseBrands.push(brand);saveData();renderPurchaseBrands();$('buyBrand').value=brand;showToast('Brand added');}
+    function deletePurchaseBrand(){const s=$('buyBrand');if(!s||!s.value)return showToast('Delete karne ke liye brand select karein');const brand=s.value;if(!confirm('Brand "'+brand+'" delete karein? Purane purchase records safe rahenge.'))return;purchaseBrands=purchaseBrands.filter(b=>b!==brand);saveData();renderPurchaseBrands();showToast('Brand deleted');}
+    function openPurchaseForm(){if(!vendors.length)return showToast('Pehle supplier add karein');if(!products.length)return showToast('Pehle product add karein');$('buyVendor').innerHTML=vendors.map(v=>`<option value="${esc(v.id)}">${esc(v.name)} — ${esc(v.phone||'')}</option>`).join('');$('buyProduct').innerHTML=products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} (${esc(p.unit||'unit')})</option>`).join('');renderPurchaseBrands();$('buyDate').value=new Date().toISOString().slice(0,10);$('buyBillFile').value='';$('purchaseModal').classList.remove('hidden');}
+    function closePurchaseForm(){$('purchaseModal').classList.add('hidden');}
+    async function savePurchase(e){e.preventDefault();const file=$('buyBillFile').files?.[0];if(file&&(!file.type.startsWith('image/')||file.size>1.5*1024*1024))return showToast('Bill photo image aur 1.5MB se chhoti honi chahiye');const vendor=vendors.find(v=>String(v.id)===$('buyVendor').value),product=products.find(p=>String(p.id)===$('buyProduct').value),qty=Number($('buyQty').value),cost=Number($('buyCost').value);if(!vendor||!product||qty<=0||cost<0)return showToast('Purchase details check karein');let billImage='';if(file){try{billImage=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=reject;r.readAsDataURL(file);});}catch{return showToast('Bill photo read nahi hui');}}const total=qty*cost;const rec={id:'PUR-'+Date.now(),date:$('buyDate').value||new Date().toISOString().slice(0,10),vendorId:vendor.id,vendorName:vendor.name,brand:$('buyBrand').value,invoice:$('buyInvoice').value.trim(),productId:product.id,productName:product.name,qty,cost,total,billImage};product.stock=Number(product.stock||0)+qty;product.costPrice=cost;purchaseHistory.unshift(rec);saveData();closePurchaseForm();e.target.reset();refreshAll();showToast('Purchase saved; stock updated');}
+    function renderPurchases(){const list=$('purchaseList');if(!list)return;const total=purchaseHistory.reduce((a,x)=>a+Number(x.total||0),0);const sum=$('purchaseSummary');if(sum)sum.innerHTML=`<div class="bg-blue-50 p-2 rounded-xl"><span class="text-slate-500 block">Purchase entries</span><b>${purchaseHistory.length}</b></div><div class="bg-blue-50 p-2 rounded-xl"><span class="text-slate-500 block">Recorded purchase value</span><b>₹${money(total)}</b></div>`;list.innerHTML=purchaseHistory.map(x=>`<div class="bg-white border rounded-2xl p-3 text-xs space-y-1"><div class="flex justify-between gap-2"><b>${esc(x.brand||'Brand not set')} · ${esc(x.productName)}</b><b>₹${money(x.total)}</b></div><p class="text-slate-500">${esc(x.vendorName)} · ${esc(x.date)} · Qty ${money(x.qty)} × ₹${money(x.cost)}</p><p>Invoice: ${esc(x.invoice||'Not entered')}</p>${x.billImage?`<a class="text-blue-700 underline" href="${x.billImage}" target="_blank" rel="noopener">🧾 View attached bill photo</a>`:''}</div>`).join('')||'<p class="text-slate-400 text-center p-4">Purchase records abhi nahi hain.</p>';}
+    function addExpense(e){e.preventDefault();const amount=Number($('expenseAmount').value);if(amount<=0)return showToast('Valid expense amount enter karein');expenseHistory.unshift({id:'EXP-'+Date.now(),title:$('expenseTitle').value.trim(),amount,date:$('expenseDate').value||new Date().toISOString().slice(0,10)});saveData();e.target.reset();renderExpenses();renderPnl();showToast('Expense saved');}
+    function renderExpenses(){const list=$('expenseList');if(!list)return;list.innerHTML=expenseHistory.slice(0,50).map(x=>`<div class="flex justify-between gap-2 border-b py-1"><span>${esc(x.title)} <small class="text-slate-400">${esc(x.date)}</small></span><b class="text-rose-700">₹${money(x.amount)}</b></div>`).join('')||'<p class="text-slate-400">No expenses recorded.</p>';}
+    function renderPnl(){const sales=salesHistory.reduce((s,x)=>s+Number(x.total||0),0),gross=salesHistory.reduce((s,x)=>s+Number(x.profit||0),0),expenses=expenseHistory.reduce((s,x)=>s+Number(x.amount||0),0);if($('plSales'))$('plSales').textContent='₹'+money(sales);if($('plGross'))$('plGross').textContent='₹'+money(gross);if($('plExpenses'))$('plExpenses').textContent='₹'+money(expenses);if($('plNet'))$('plNet').textContent='₹'+money(gross-expenses);}
+    function openVendorModal(){  $('vendorModal').classList.remove('hidden'); } function closeVendorModal(){ $('vendorModal').classList.add('hidden'); }
+    function handleVendorSubmit(e){e.preventDefault();vendors.unshift({id:'v_'+Date.now(),name:$('vName').value.trim(),phone:$('vPhone').value.trim()});saveData();renderVendorList();$('vName').value='';$('vPhone').value='';showToast('Vendor Saved');}
+    function renderVendorList(){const c=$('vendorListContainer');if(c)c.innerHTML=vendors.map(v=>`<div class="p-2 bg-slate-50 border rounded-xl flex justify-between text-xs"><span>${esc(v.name)}</span><b>📱 ${esc(v.phone)}</b></div>`).join('');}
+    function openAddCustomerModal(){$('addCustomerModal').classList.remove('hidden');} function closeAddCustomerModal(){$('addCustomerModal').classList.add('hidden');}
+    function handleCustomerSubmit(e){e.preventDefault();khataCustomers.unshift({id:'k_'+Date.now(),name:$('custName').value.trim(),phone:$('custPhone').value.trim(),balance:Number($('custBalance').value)||0});saveData();renderKhata();closeAddCustomerModal();e.target.reset();showToast('Customer Saved');}
+    function filterKhataCustomers(q){const list=$('khataCustomerList');const f=khataCustomers.filter(c=>String(c.name).toLowerCase().includes(String(q).toLowerCase()));list.innerHTML=f.map(c=>`<div class="p-3 flex justify-between items-center font-bold"><div><p>${esc(c.name)}</p><p class="text-[10px] text-slate-400">📱 ${esc(c.phone||'N/A')}</p></div><span class="text-rose-600">₹${money(c.balance)}</span></div>`).join('')||'<p class="text-center text-slate-400 py-4">No customers found.</p>';}
+    function renderKhata(){const list=$('khataCustomerList'),total=khataCustomers.reduce((s,c)=>s+Number(c.balance||0),0);$('khataTotalGet').innerText=money(total);$('khataTotalGive').innerText='0';$('khataCustCount').innerText=khataCustomers.length+' Customer';if(!list)return;filterKhataCustomers($('khataSearch').value||'');}
+    function setPreview(id,data){const img=$(id);if(!img)return;if(data){img.src=data;img.dataset.image=data;img.classList.remove('hidden');}else{img.removeAttribute('src');img.dataset.image='';img.classList.add('hidden');}}
+    function previewImageFile(input,previewId){const file=input.files&&input.files[0];if(!file)return;if(!file.type.startsWith('image/'))return showToast('Image file select karein');if(file.size>8*1024*1024)return showToast('Image 8 MB se chhoti select karein');const reader=new FileReader();reader.onload=()=>{const image=new Image();image.onload=()=>{const canvas=document.createElement('canvas'),max=600,scale=Math.min(1,max/Math.max(image.width,image.height));canvas.width=Math.round(image.width*scale);canvas.height=Math.round(image.height*scale);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);const data=canvas.toDataURL('image/jpeg',0.78);setPreview(previewId,data);if(previewId==='pImagePreview')$('pImageData').value=data;};image.onerror=()=>showToast('Image read nahi ho paayi');image.src=reader.result;};reader.readAsDataURL(file);}
 
-    // Main App Namespace to avoid global variable conflicts
-    const App = {
-      categories: [],
-      vendors: [],
-      products: [],
-      orders: [],
-      salesHistory: [],
-      purchaseHistory: [],
-      expenseHistory: [],
-      posCart: [],
-      upiId: 'merchant@upi',
-      activeInventoryFilter: 'all',
-      activeOrderFilter: 'All',
-      editingProductId: null,
-
-      init() {
-        this.loadState();
-        this.refreshAll();
-        this.switchTab('dashboard');
-      },
-
-      loadState() {
-        const readStore = (key, fallback) => {
-          try { const val = JSON.parse(localStorage.getItem(key)); return val ?? fallback; }
-          catch { return fallback; }
-        };
-        this.categories = readStore('ht_categories', [{ id: 'c1', name: 'Atta & Flour' }, { id: 'c2', name: 'Rice & Grains' }]);
-        this.vendors = readStore('ht_vendors', [{ id: 'v1', name: 'Solapur Market Wholesale', phone: '9822012345' }]);
-        this.products = readStore('ht_products', [{ id: 'HT-P101', name: 'Aashirvaad Chakki Atta 1kg', code: '8901234567890', mrp: 65, sellingPrice: 55, costPrice: 48, stock: 15, threshold: 5, unit: '1 kg', category: 'Atta & Flour' }]);
-        this.orders = readStore('ht_orders', [{ id: 'HT-ORD-1001', customerName: 'Rahul Stores', phone: '9822011111', items: 'Aashirvaad Atta x 5', amount: 275, status: 'Placed' }]);
-        this.salesHistory = readStore('ht_sales', []);
-        this.purchaseHistory = readStore('ht_purchases', []);
-        this.expenseHistory = readStore('ht_expenses', []);
-        this.upiId = localStorage.getItem('ht_upi') || 'merchant@upi';
-      },
-
-      saveData() {
-        try {
-          localStorage.setItem('ht_categories', JSON.stringify(this.categories));
-          localStorage.setItem('ht_vendors', JSON.stringify(this.vendors));
-          localStorage.setItem('ht_products', JSON.stringify(this.products));
-          localStorage.setItem('ht_orders', JSON.stringify(this.orders));
-          localStorage.setItem('ht_sales', JSON.stringify(this.salesHistory));
-          localStorage.setItem('ht_purchases', JSON.stringify(this.purchaseHistory));
-          localStorage.setItem('ht_expenses', JSON.stringify(this.expenseHistory));
-          localStorage.setItem('ht_upi', this.upiId);
-        } catch(e) { console.error('LocalStorage write failed:', e); }
-      },
-
-      showToast(msg) {
-        const t = $('toast');
-        if (t) {
-          t.innerText = '✓ ' + msg;
-          t.classList.remove('hidden');
-          setTimeout(() => t.classList.add('hidden'), 2000);
-        }
-      },
-
-      switchTab(tabId) {
-        document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.nav-btn').forEach(el => {
-          el.classList.remove('text-emerald-800', 'font-black');
-          el.classList.add('text-slate-400');
-        });
-
-        $(`view-${tabId}`)?.classList.remove('hidden');
-        $(`nav-${tabId}`)?.classList.add('text-emerald-800', 'font-black');
-        $(`nav-${tabId}`)?.classList.remove('text-slate-400');
-      },
-
-      openModal(id) { $(id)?.classList.remove('hidden'); },
-      closeModal(id) { $(id)?.classList.add('hidden'); },
-
-      refreshAll() {
-        this.populateDropdowns();
-        this.renderProducts();
-        this.renderPosGrid();
-        this.renderPosCart();
-        this.renderLowStock();
-        this.renderCategories();
-        this.renderOrders();
-        this.updateDashboard();
-        this.renderBusinessCenter();
-        this.renderVendorList();
-        this.renderPurchases();
-        this.renderExpenses();
-        this.renderPnl();
-      },
-
-      updateDashboard() {
-        const sales = this.salesHistory.reduce((s, x) => s + Number(x.total || 0), 0);
-        const profit = this.salesHistory.reduce((s, x) => s + Number(x.profit || 0), 0);
-        
-        if ($('statSales'))$('statSales').textContent = money(sales);
-        if ($('statProfit'))$('statProfit').textContent = money(profit);
-        if ($('statOrders'))$('statOrders').textContent = this.orders.length;
-        if ($('statPending'))$('statPending').textContent = this.orders.filter(o => o.status !== 'Delivered').length;
-        if ($('statProfitControl'))$('statProfitControl').textContent = '₹' + money(profit);
-        if ($('statLowStock'))$('statLowStock').textContent = this.products.filter(p => Number(p.stock) <= Number(p.threshold || 10)).length;
-
-        if ($('dashboardOrdersList')) {$('dashboardOrdersList').innerHTML = this.orders.slice(0, 5).map(o => `
-            <div class="border rounded-xl p-2.5 flex justify-between items-center text-xs">
-              <div>
-                <p class="font-black">${esc(o.customerName)}</p>
-                <p class="text-[10px] text-slate-500">${esc(o.id)} · ${esc(o.status)}</p>
-              </div>
-              <b class="text-emerald-800">₹${money(o.amount)}</b>
-            </div>
-          `).join('') || '<p class="text-slate-400 text-xs">No orders</p>';
-        }
-      },
-
-      populateDropdowns() {
-        const sel = $('pCategory');
-        if (sel) sel.innerHTML = this.categories.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-      },
-
-      calculateMargin() {
-        const cost = Number($('pCost')?.value) || 0;
-        const sell = Number($('pPrice')?.value) || 0;
-        if (cost > 0 && sell > 0) {
-          if ($('calcProfit'))$('calcProfit').innerText = (sell - cost).toFixed(2);
-          if ($('calcMargin')) $('calcMargin').innerText = (((sell - cost) / sell) * 100).toFixed(1);$('marginBadge')?.classList.remove('hidden');
-        } else {
-          $('marginBadge')?.classList.add('hidden');
-        }
-      },
-
-      openProductModal(id = null) {
-        this.editingProductId = id;
-        const p = id ? this.products.find(x => String(x.id) === String(id)) : null;
-        if ($('modalTitle'))$('modalTitle').innerText = p ? 'Edit Product' : 'Add Product';
-        if ($('editProductId'))$('editProductId').value = p ? p.id : '';
-        if ($('pName'))$('pName').value = p?.name || '';
-        if ($('pCode'))$('pCode').value = p?.code || '';
-        if ($('pCategory'))$('pCategory').value = p?.category || this.categories[0]?.name || '';
-        if ($('pUnit'))$('pUnit').value = p?.unit || '1 kg';
-        if ($('pCost'))$('pCost').value = p?.costPrice ?? '';
-        if ($('pMrp'))$('pMrp').value = p?.mrp ?? '';
-        if ($('pPrice'))$('pPrice').value = p?.sellingPrice ?? '';
-        if ($('pStock'))$('pStock').value = p?.stock ?? '';
-        if ($('pThreshold'))$('pThreshold').value = p?.threshold ?? 10;
-        this.calculateMargin();
-        this.openModal('productModal');
-      },
-
-      handleProductSubmit(e) {
-        e.preventDefault();
-        const id = this.editingProductId;
-        const old = id ? this.products.find(p => String(p.id) === String(id)) : null;
-        const data = {
-          id: old ? old.id : 'HT-P' + Date.now(),
-          name: $('pName').value.trim(),
-          code: $('pCode').value.trim() || ('890' + Math.floor(1000000000 + Math.random() * 9000000000)),
-          category: $('pCategory').value,
-          unit: $('pUnit').value,
-          mrp: Number($('pMrp').value) || 0,
-          costPrice: Number($('pCost').value) || 0,
-          sellingPrice: Number($('pPrice').value) || 0,
-          stock: Number($('pStock').value) || 0,
-          threshold: Number($('pThreshold').value) || 10
-        };
-
-        if (old) this.products = this.products.map(p => String(p.id) === String(id) ? data : p);
-        else this.products.unshift(data);
-
-        this.saveData();
-        this.closeModal('productModal');
-        this.refreshAll();
-        this.showToast('Product Saved Pro');
-      },
-
-      deleteProduct(id) {
-        if (!confirm('Delete this product?')) return;
-        this.products = this.products.filter(p => String(p.id) !== String(id));
-        this.saveData();
-        this.refreshAll();
-        this.showToast('Product deleted');
-      },
-
-      changeStock(id, dir) {
-        const p = this.products.find(item => String(item.id) === String(id));
-        if (!p) return;
-        const q = Number(prompt(`${p.name}\nQty to change:`, '1'));
-        if (!Number.isFinite(q) || q <= 0) return;
-        p.stock = Math.max(0, Number(p.stock || 0) + (q * dir));
-        this.saveData();
-        this.refreshAll();
-        this.showToast('Stock Updated');
-      },
-
-      filterInventory(type) {
-        this.activeInventoryFilter = type;
-        document.querySelectorAll('.inv-filter-btn').forEach(btn => {
-          btn.className = 'inv-filter-btn bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0';
-        });
-        const activeBtn = $(`btnStock${type === 'all' ? 'All' : type === 'low' ? 'Low' : 'Out'}`);
-        if (activeBtn) activeBtn.className = 'inv-filter-btn bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0';
-        this.renderProducts();
-      },
-
-      renderProducts() {
-        const c = $('productsList');
-        if (!c) return;
-        let list = this.products;
-        if (this.activeInventoryFilter === 'low') list = this.products.filter(p => Number(p.stock) > 0 && Number(p.stock) <= Number(p.threshold || 10));
-        else if (this.activeInventoryFilter === 'out') list = this.products.filter(p => Number(p.stock) <= 0);
-
-        c.innerHTML = list.map(p => `
-          <div class="bg-white p-3 rounded-2xl border text-xs space-y-2">
-            <div class="flex justify-between items-start">
-              <div>
-                <p class="font-black text-sm">${esc(p.name)}</p>
-                <p class="text-emerald-800 font-bold">MRP: ₹${money(p.mrp)} · Sell: ₹${money(p.sellingPrice)} / ${esc(p.unit)}</p>
-                <p class="text-slate-500 text-[10px]">Stock: ${money(p.stock)} ${esc(p.unit)}</p>
-              </div>
-            </div>
-            <div class="flex gap-1.5 pt-1 border-t">
-              <button type="button" onclick="App.openProductModal('${p.id}')" class="bg-blue-50 text-blue-800 px-2 py-1 rounded font-bold">✏️ Edit</button>
-              <button type="button" onclick="App.changeStock('${p.id}', 1)" class="bg-emerald-50 text-emerald-800 px-2 py-1 rounded font-bold">＋ Stock</button>
-              <button type="button" onclick="App.deleteProduct('${p.id}')" class="bg-rose-50 text-rose-700 px-2 py-1 rounded font-bold">🗑 Delete</button>
-            </div>
-          </div>
-        `).join('') || '<p class="text-center text-slate-400 py-4">No products found.</p>';
-      },
-
-      addToCart(prodId) {
-        const p = this.products.find(x => String(x.id) === String(prodId));
-        if (!p || Number(p.stock) <= 0) return this.showToast('Out of Stock!');
-        const ex = this.posCart.find(x => x.productId === p.id);
-        if (ex) {
-          if (ex.qty >= p.stock) return this.showToast('Stock limit reached');
-          ex.qty++;
-        } else {
-          this.posCart.push({ productId: p.id, name: p.name, sellingPrice: p.sellingPrice, costPrice: p.costPrice || 0, qty: 1 });
-        }
-        this.renderPosCart();
-      },
-
-      clearCart() { this.posCart = []; this.renderPosCart(); },
-      getCartTotal() { return this.posCart.reduce((s, i) => s + (Number(i.sellingPrice) * Number(i.qty)), 0); },
-
-      renderPosCart() {
-        if (!this.posCart.length) {
-          $('posCartBox')?.classList.add('hidden');
-          if ($('posCartItems'))$('posCartItems').innerHTML = '';
-          if ($('posTotalAmount'))$('posTotalAmount').innerText = '0';
-          return;
-        }
-        $('posCartBox')?.classList.remove('hidden');
-        if ($('posCartItems')) {$('posCartItems').innerHTML = this.posCart.map(i => `
-            <div class="flex justify-between items-center py-1 border-b">
-              <span>${esc(i.name)} x ${i.qty}</span>
-              <div class="flex items-center gap-2">
-                <b class="text-emerald-800">₹${money(i.sellingPrice * i.qty)}</b>
-                <button type="button" onclick="App.changeCartQty('${i.productId}', -1)" class="px-2 bg-slate-100 rounded">−</button>
-                <button type="button" onclick="App.changeCartQty('${i.productId}', 1)" class="px-2 bg-slate-100 rounded">+</button>
-              </div>
-            </div>
-          `).join('');
-        }
-        if ($('posTotalAmount'))$('posTotalAmount').innerText = money(this.getCartTotal());
-      },
-
-      changeCartQty(id, dir) {
-        const item = this.posCart.find(i => i.productId === id);
-        const p = this.products.find(prod => prod.id === id);
-        if (!item || !p) return;
-        item.qty += dir;
-        if (item.qty <= 0) this.posCart = this.posCart.filter(i => i.productId !== id);
-        else if (item.qty > Number(p.stock)) { item.qty = Number(p.stock); this.showToast('Stock limit reached'); }
-        this.renderPosCart();
-      },
-
-      renderPosGrid() {
-        const grid = $('posProductsGrid');
-        if (grid) {
-          grid.innerHTML = this.products.map(p => `
-            <button type="button" onclick="App.addToCart('${p.id}')" class="text-left bg-white p-3 rounded-2xl border text-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50">
-              <h4 class="font-extrabold text-slate-900">${esc(p.name)}</h4>
-              <p class="text-emerald-800 font-black">₹${money(p.sellingPrice)} / ${esc(p.unit)}</p>
-              <p class="text-[9px] text-slate-400">Stock: ${money(p.stock)}</p>
-            </button>
-          `).join('');
-        }
-      },
-
-      checkoutBill(mode) {
-        if (!this.posCart.length) return this.showToast('Cart is empty');
-        const total = this.getCartTotal();
-        const billNo = 'HT-' + Date.now();
-        const items = [...this.posCart];
-        const profit = items.reduce((s, i) => s + ((Number(i.sellingPrice) - Number(i.costPrice)) * Number(i.qty)), 0);
-
-        this.salesHistory.unshift({ id: billNo, date: new Date().toISOString(), total, profit });
-        items.forEach(i => {
-          const p = this.products.find(x => x.id === i.productId);
-          if (p) p.stock = Math.max(0, Number(p.stock) - i.qty);
-        });
-
-        this.saveData();
-        this.refreshAll();
-        this.posCart = [];
-        this.renderPosCart();
-        this.showToast('Bill Completed Successfully!');
-      },
-
-      openPurchaseForm() {
-        if (!this.vendors.length) return this.showToast('Pehle Vendor Add Karein');
-        if (!this.products.length) return this.showToast('Pehle Product Add Karein');
-        if ($('buyVendor'))$('buyVendor').innerHTML = this.vendors.map(v => `<option value="${esc(v.id)}">${esc(v.name)}</option>`).join('');
-        if ($('buyProduct'))$('buyProduct').innerHTML = this.products.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
-        if ($('buyDate'))$('buyDate').value = new Date().toISOString().slice(0, 10);
-        this.openModal('purchaseModal');
-      },
-
-      savePurchase(e) {
-        e.preventDefault();
-        const vendor = this.vendors.find(v => String(v.id) === $('buyVendor')?.value);
-        const product = this.products.find(p => String(p.id) === $('buyProduct')?.value);
-        const qty = Number($('buyQty')?.value);
-        const cost = Number($('buyCost')?.value);
-
-        if (!vendor || !product || qty <= 0 || cost < 0) return this.showToast('Valid Purchase Details Bhariye');
-
-        const total = qty * cost;
-        product.stock = Number(product.stock || 0) + qty;
-        product.costPrice = cost;
-
-        this.purchaseHistory.unshift({ id: 'PUR-' + Date.now(), date: $('buyDate')?.value, vendorName: vendor.name, productName: product.name, qty, cost, total });
-        this.saveData();
-        this.closeModal('purchaseModal');
-        e.target.reset();
-        this.refreshAll();
-        this.showToast('Purchase Saved & Stock Updated');
-      },
-
-      renderPurchases() {
-        const list = $('purchaseList');
-        if (!list) return;
-        list.innerHTML = this.purchaseHistory.map(x => `
-          <div class="bg-white border rounded-2xl p-3 text-xs space-y-1">
-            <div class="flex justify-between"><b>${esc(x.productName)}</b><b>₹${money(x.total)}</b></div>
-            <p class="text-slate-500">${esc(x.vendorName)} · Qty: ${money(x.qty)} @ ₹${money(x.cost)}</p>
-          </div>
-        `).join('') || '<p class="text-slate-400 text-center py-2 text-xs">No purchase records.</p>';
-      },
-
-      addExpense(e) {
-        e.preventDefault();
-        const amount = Number($('expenseAmount')?.value);
-        if (amount <= 0) return;
-        this.expenseHistory.unshift({ id: 'EXP-' + Date.now(), title: $('expenseTitle')?.value, amount, date:$('expenseDate')?.value || new Date().toISOString().slice(0, 10) });
-        this.saveData();
-        e.target.reset();
-        this.renderExpenses();
-        this.renderPnl();
-        this.showToast('Expense Saved');
-      },
-
-      renderExpenses() {
-        const list = $('expenseList');
-        if (!list) return;
-        list.innerHTML = this.expenseHistory.map(x => `
-          <div class="flex justify-between text-xs border-b py-1"><span>${esc(x.title)}</span><b class="text-rose-700">₹${money(x.amount)}</b></div>
-        `).join('');
-      },
-
-      renderPnl() {
-        const sales = this.salesHistory.reduce((s, x) => s + Number(x.total || 0), 0);
-        const gross = this.salesHistory.reduce((s, x) => s + Number(x.profit || 0), 0);
-        const expenses = this.expenseHistory.reduce((s, x) => s + Number(x.amount || 0), 0);
-        if ($('plSales'))$('plSales').textContent = '₹' + money(sales);
-        if ($('plGross'))$('plGross').textContent = '₹' + money(gross);
-        if ($('plExpenses'))$('plExpenses').textContent = '₹' + money(expenses);
-        if ($('plNet'))$('plNet').textContent = '₹' + money(gross - expenses);
-      },
-
-      handleVendorSubmit(e) {
-        e.preventDefault();
-        this.vendors.unshift({ id: 'v_' + Date.now(), name: $('vName')?.value.trim(), phone:$('vPhone')?.value.trim() });
-        this.saveData();
-        this.renderVendorList();
-        e.target.reset();
-        this.showToast('Vendor Saved');
-      },
-
-      renderVendorList() {
-        const c = $('vendorList
+    function openBannerModal(id=null){if(!products.length)return showToast('Pehle products add karein');const b=id?offerBanners.find(x=>String(x.id)===String(id)):null;$('bannerEditId').value=b?.id||'';$('bannerTitle').value=b?.title||'';$('bannerNote').value=b?.note||'';$('bannerImageData').value=b?.image||'';$('bannerImageFile').value='';$('bannerProduct').innerHTML=products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('bannerProduct').value=b?.productId||products[0].id;const im=$('bannerImagePreview');if(b?.image){im.src=b.image;im.classList.remove('hidden')}else{im.removeAttribute('src');im.classList.add('hidden')}$('bannerModal').classList.remove('hidden');}
+    function closeBannerModal(){$('bannerModal').classList.add('hidden')}
+    function previewBannerImage(input){const f=input.files?.[0];if(!f)return;if(!f.type.startsWith('image/')||f.size>2*1024*1024){input.value='';return showToast('Image 2MB se chhoti honi chahiye')}const r=new FileReader();r.onload=()=>{$('bannerImageData').value=String(r.result);$('bannerImagePreview').src=String(r.result);$('bannerImagePreview').classList.remove('hidden')};r.readAsDataURL(f)}
+    function saveOfferBanner(e){e.preventDefault();const title=$('bannerTitle').value.trim(),productId=$('bannerProduct').value;if(!title||!productId)return showToast('Title aur product select karein');const id=$('bannerEditId').value;const old=id?offerBanners.find(x=>String(x.id)===String(id)):null;const image=$('bannerImageData').value||old?.image||'';if(!image)return showToast('Banner image upload karein');const item={id:old?.id||'BN-'+Date.now(),title,note:$('bannerNote').value.trim(),productId,image};if(old)offerBanners=offerBanners.map(x=>String(x.id)===String(id)?item:x);else offerBanners.unshift(item);saveData();closeBannerModal();renderOfferBanners();showToast(old?'Banner updated':'Banner saved')}
+    function deleteOfferBanner(id){if(!confirm('Ye banner delete karein?'))return;offerBanners=offerBanners.filter(x=>String(x.id)!==String(id));saveData();renderOfferBanners();showToast('Banner deleted')}
+    function renderOfferBanners(){const c=$('offerBannerList');if(!c)return;c.innerHTML=offerBanners.map(b=>{const p=products.find(x=>String(x.id)===String(b.productId));return `<div class="border rounded-xl overflow-hidden"><button type="button" onclick="openBannerProducts('${esc(b.id)}')" class="block w-full text-left"><img src="${b.image}" alt="${esc(b.title)}" class="w-full h-28 object-cover bg-slate-50"><div class="p-2"><b>${esc(b.title)}</b><p class="text-[10px] text-slate-500">${esc(b.note||'Tap to view scheme product')} · ${esc(p?.name||'Product unavailable')}</p><span class="text-emerald-800 font-black">View offer →</span></div></button><div class="flex gap-2 border-t p-2"><button type="button" onclick="openBannerModal('${esc(b.id)}')" class="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg font-bold">✏️ Edit</button><button type="button" onclick="deleteOfferBanner('${esc(b.id)}')" class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold">🗑 Delete</button></div></div>`}).join('')||'<p class="text-[10px] text-slate-400">Abhi banner nahi hai. + Add Banner se image aur scheme product set karein.</p>'}
+    function openBannerProducts(id){const b=offerBanners.find(x=>String(x.id)===String(id));if(!b)return;const p=products.find(x=>String(x.id)===String(b.productId));$('bannerProductTitle').textContent=b.title;$('bannerProductDetails').innerHTML=p?`<div class="border rounded-2xl p-3 space-y-2">${p.image?`<img src="${p.image}" class="w-full h-32 object-contain bg-slate-50 rounded-xl" alt="">`:''}<h4 class="font-black text-base">${esc(p.name)}</h4><p class="text-emerald-800 font-black">Offer price: ₹${money(p.sellingPrice)} / ${esc(p.unit||'unit')}</p><p class="text-slate-500">MRP: ₹${money(p.mrp)} · Stock: ${money(p.stock)}</p><p>${esc(b.note||'Special scheme')}</p><button type="button" onclick="$('bannerProductModal').classList.add('hidden');switchTab('products')" class="w-full bg-emerald-800 text-white font-black py-2.5 rounded-xl">Open Inventory Product</button></div>`:'<p>Linked product nahi mila. Banner edit karke product dobara select karein.</p>';$('bannerProductModal').classList.remove('hidden')}
+    function generateProductDescription(){const name=$('pName').value.trim(),category=$('pCategory').value,unit=$('pUnit').value;if(!name)return showToast('Pehle product ka naam likhein');const unitText=String(unit||'unit');const templates=[`${name} — ${category||'Grocery'} category ka ${unitText} pack. Daily grocery, home aur shop use ke liye.`,`${name} (${unitText}) — ${category||'General Grocery'} item. Stock aur selling rate HUMA TRADERS Admin se manage karein.`];$('pDescription').value=templates[0];showToast('Description generated — save se pehle edit kar sakte hain');}
+    function renderBusinessCenter(){const set=(id,val)=>{const el=$(id);if(el)el.textContent=val;};set('biSales',money(salesHistory.reduce((s,x)=>s+(Number(x.total)||0),0)));set('biProfit',money(salesHistory.reduce((s,x)=>s+(Number(x.profit)||0),0)));set('biProducts',products.length);const low=products.filter(p=>Number(p.stock)<=Number(p.threshold||10));set('biLowStock',low.length);const stock=$('biStockList');if(stock)stock.innerHTML=low.slice(0,12).map(p=>`<div class="flex justify-between gap-2 border-b pb-1"><span>${esc(p.name)} <span class="text-slate-400">(${esc(p.unit||'unit')})</span></span><b class="text-rose-700">${money(p.stock)} left</b></div>`).join('')||'<p class="text-emerald-700">All recorded items are above their low-stock limits.</p>';const recent=$('biRecentSales');if(recent)recent.innerHTML=salesHistory.slice(0,8).map(x=>`<div class="flex justify-between border-b pb-1"><span>${esc(x.id||'Sale')} <span class="text-slate-400">${x.date?new Date(x.date).toLocaleDateString('en-IN'):''}</span></span><b>₹${money(x.total)}</b></div>`).join('')||'<p class="text-slate-400">Abhi koi completed bill record nahi hai.</p>';}
+    function openProductModal(id=null){editingProductId=id;const p=id?products.find(x=>String(x.id)===String(id)):null;$('pImageData').value=p?.image||'';document.querySelectorAll('.pVariant').forEach(el=>el.checked=!!(p?.variants||[]).includes(el.value));$('pImageFile').value='';setPreview('pImagePreview',p?.image||'');$('modalTitle').innerText=p?'Edit Product Pro':'Add New Product Pro';$('editProductId').value=p?p.id:'';$('pName').value=p?.name||'';$('pCode').value=p?.code||'';$('pCategory').value=p?.category||categories[0]?.name||'';$('pUnit').value=p?.unit||'1 kg';$('pCost').value=p?.costPrice??'';$('pMrp').value=p?.mrp??'';$('pPrice').value=p?.sellingPrice??'';$('pStock').value=p?.stock??'';$('pThreshold').value=p?.threshold??10;$('pDescription').value=p?.description||'';calculateMargin();$('productModal').classList.remove('hidden');}
+    function closeProductModal(){$('productModal').classList.add('hidden');editingProductId=null;}
+    function handleProductSubmit(e){e.preventDefault();const id=editingProductId;const old=id?products.find(p=>String(p.id)===String(id)):null;const data={id:old?old.id:'HT-P'+Date.now(),name:$('pName').value.trim(),code:$('pCode').value.trim()||('890'+Math.floor(1000000000+Math.random()*9000000000)),category:$('pCategory').value,unit:$('pUnit').value,description:$('pDescription').value.trim(),image:$('pImageData').value||old?.image||'',variants:Array.from(document.querySelectorAll('.pVariant:checked')).map(el=>el.value),mrp:Number($('pMrp').value)||0,costPrice:Number($('pCost').value)||0,sellingPrice:Number($('pPrice').value)||0,stock:Number($('pStock').value)||0,threshold:Number($('pThreshold').value)||10};if(old)products=products.map(p=>String(p.id)===String(id)?data:p);else products.unshift(data);saveData();closeProductModal();refreshAll();showToast(old?'Product Updated':'Product Saved Pro');}
+    function deleteProduct(id){if(!confirm('Delete this product?'))return;products=products.filter(p=>String(p.id)!==String(id));saveData();refreshAll();showToast('Product deleted');}
+    function changeStock(id,dir){const p=products.find(item=>String(item.id)===String(id));if(!p)return;const q=Number(prompt(`${p.name}\nQty:`,'1'));if(!Number.isFinite(q)||q<=0)return;p.stock=Math.max(0,Number(p.stock||0)+(q*dir));saveData();refreshAll();showToast('Stock Updated');}
+    function filterInventory(type){activeInventoryFilter=type;['all','low','out'].forEach(t=>{const btn=$(`btnStock${t==='all'?'All':t==='low'?'Low':'Out'}`);if(btn)btn.className=t===type?'bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0':'bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0';});renderProducts();}
+    function renderProducts(){const c=$('productsList');if(!c)return;let f=products;if(activeInventoryFilter==='low')f=products.filter(p=>Number(p.stock)>0&&Number(p.stock)<=Number(p.threshold||10));else if(activeInventoryFilter==='out')f=products.filter(p=>Number(p.stock)<=0);c.innerHTML=f.map(p=>`<div class="bg-white p-3 rounded-2xl border text-xs space-y-2"><div class="flex gap-3">${p.image?`<img src="${p.image}" class="w-16 h-16 object-contain rounded-lg bg-slate-50 border" alt="">`:`<div class="w-16 h-16 flex items-center justify-center rounded-lg bg-slate-50 border text-xl">📦</div>`}<div class="flex-1"><p class="font-black text-sm">${esc(p.name)}</p><p class="text-emerald-800 font-bold">MRP: ₹${money(p.mrp)} · Sell: ₹${money(p.sellingPrice)} / ${esc(p.unit||'unit')}</p><p class="text-slate-500 text-[10px]">Stock: ${money(p.stock)} ${esc(p.unit||'unit')} (Limit: ${money(p.threshold)})</p>${p.description?`<p class="text-slate-500 text-[10px] leading-relaxed">${esc(p.description)}</p>`:''}${p.variants?.length?`<p class="text-blue-700 text-[10px] font-bold">Sizes: ${p.variants.map(esc).join(', ')}</p>`:''}</div></div><div class="flex gap-1.5 pt-1 border-t flex-wrap"><button type="button" onclick="openProductModal('${esc(p.id)}')" class="bg-blue-50 text-blue-800 px-2 py-1 rounded font-bold">✏️ Edit</button><button type="button" onclick="changeStock('${esc(p.id)}',1)" class="bg-emerald-50 text-emerald-800 px-2 py-1 rounded font-bold">＋ Stock</button><button type="button" onclick="changeStock('${esc(p.id)}',-1)" class="bg-amber-50 text-amber-800 px-2 py-1 rounded font-bold">− Stock</button><button type="button" onclick="showBarcodeModal('${esc(p.name)}',${Number(p.mrp)||0},'${esc(p.code||p.id)}')" class="bg-slate-100 px-2 py-1 rounded font-bold">🏷️ Label</button><button type="button" onclick="deleteProduct('${esc(p.id)}')" class="bg-rose-50 text-rose-700 px-2 py-1 rounded font-bold">🗑 Delete</button></div></div>`).join('')||'<p class="text-center text-slate-400 py-4">No products found.</p>';}
+    function openCategoryModal(){$('cImageFile').value='';setPreview('cImagePreview','');$('categoryModal').classList.remove('hidden');}function closeCategoryModal(){$('categoryModal').classList.add('hidden');}
+    function handleCategorySubmit(e){e.preventDefault();const name=$('cName').value.trim();if(!name)return;categories.push({id:'c'+Date.now(),name,image:$('cImagePreview').dataset.image||''});saveData();renderCategories();populateDropdowns();closeCategoryModal();e.target.reset();showToast('Category Added');}
+    function renderCategories(){$('categoriesGrid').innerHTML=categories.map(c=>`<div class="bg-white p-3 rounded-2xl border font-black text-xs flex justify-between items-center gap-3">${c.image?`<img src="${c.image}" class="w-12 h-12 object-cover rounded-lg" alt="">`:`<div class="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center">📦</div>`}<span class="flex-1">${esc(c.name)}</span><button type="button" onclick="deleteCategory('${esc(c.id)}')" class="text-rose-700">🗑</button></div>`).join('')||'<p class="text-slate-400 text-xs">No categories yet</p>';}
+    function deleteCategory(id){if(!confirm('Delete category?'))return;categories=categories.filter(c=>String(c.id)!==String(id));saveData();renderCategories();populateDropdowns();showToast('Category deleted');}
+    function addVariantToCart(prodId){const p=products.find(x=>String(x.id)===String(prodId));if(!p||Number(p.stock)<=0)return showToast('Out of stock!');let size=p.unit||'unit',rate=Number(p.sellingPrice)||0;if(p.variants?.length){const choice=prompt('Size choose karein:\n'+p.variants.map((v,i)=>`${i+1}. ${v}`).join('\n')+'\nNumber enter karein');if(choice===null)return;const idx=Number(choice)-1;if(!Number.isInteger(idx)||!p.variants[idx])return showToast('Valid size select karein');size=p.variants[idx];const r=prompt(`${p.name} ${size} ka selling rate (₹)`,String(rate));if(r===null)return;rate=Number(r);if(!Number.isFinite(rate)||rate<0)return showToast('Valid rate enter karein');}const key=String(p.id)+'::'+size;const ex=posCart.find(x=>String(x.cartKey)===key);if(ex){if(ex.qty>=p.stock)return showToast('Stock limit reached!');ex.qty++;}else posCart.push({cartKey:key,productId:p.id,name:p.name+' ('+size+')',sellingPrice:rate,costPrice:Number(p.costPrice)||0,qty:1,unit:size});renderPosCart();}
+    function clearPosCart(){posCart=[];renderPosCart();}
+    function getCartTotal(){return posCart.reduce((s,i)=>s+(Number(i.sellingPrice)*Number(i.qty)),0);}
+    function renderPosCart(){if(!posCart.length){$('posCartBox').classList.add('hidden');$('posCartItems').innerHTML='';$('posTotalAmount').innerText='0';return;}$('posCartBox').classList.remove('hidden');$('posCartItems').innerHTML=posCart.map(i=>`<div class="flex justify-between items-center py-1 border-b"><span>${esc(i.name)} x ${i.qty}</span><div class="flex items-center gap-2"><b class="text-emerald-800">₹${money(i.sellingPrice*i.qty)}</b><button type="button" onclick="changeCartQty('${esc(i.cartKey||i.productId)}',-1)" class="px-2 bg-slate-100 rounded">−</button><button type="button" onclick="changeCartQty('${esc(i.cartKey||i.productId)}',1)" class="px-2 bg-slate-100 rounded">+</button></div></div>`).join('');$('posTotalAmount').innerText=money(getCartTotal());}
+    function changeCartQty(id,dir){const item=posCart.find(i=>String(i.cartKey||i.productId)===String(id));const p=products.find(p=>String(p.id)===String(item?.productId));if(!item||!p)return;item.qty+=dir;if(item.qty<=0)posCart=posCart.filter(i=>String(i.productId)!==String(id));else if(item.qty>Number(p.stock)) {item.qty=Number(p.stock);showToast('Stock limit reached');}renderPosCart();}
+    function renderPosGrid(){$('posProductsGrid').innerHTML=products.map(p=>`<button type="button" onclick="addVariantToCart('${esc(p.id)}')" class="text-left bg-white p-3 rounded-2xl border text-xs cursor-pointer hover:border-emerald-500 active:bg-slate-50"><h4 class="font-extrabold">${esc(p.name)}</h4><p class="text-emerald-800 font-black">₹${money(p.sellingPrice)} / ${esc(p.unit||'unit')}</p><p class="text-[9px] text-slate-400">Stock: ${money(p.stock)}</p></button>`).join('');}
+    function openPrintModal(mode){if(!posCart.length)return showToast('Cart is empty');if(typeof QRCode==='undefined')return showToast('QR library load nahi hui');const total=getCartTotal(),billNo='HT-'+Date.now(),items=[...posCart];const profit=items.reduce((s,i)=>s+((Number(i.sellingPrice)-Number(i.costPrice||0))*Number(i.qty)),0);const upiParams=new URLSearchParams({pa:upiId,pn:'HumaTraders',am:total.toFixed(2),cu:'INR',tn:'Bill '+billNo});$('printArea').innerHTML=`<div style="font-family:Arial,sans-serif;padding:8px;max-width:${mode==='58mm'?'58mm':'100%'};margin:auto"><h2 style="text-align:center;font-weight:bold">HUMA TRADERS</h2><p style="text-align:center">Solapur ERP & POS Pro</p><hr><p>Bill: ${esc(billNo)}</p><p>Date: ${new Date().toLocaleString('en-IN')}</p><hr><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Item</th><th>Qty</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead><tbody>${items.map(i=>`<tr><td>${esc(i.name)}</td><td style="text-align:center">${i.qty}</td><td style="text-align:right">₹${money(i.sellingPrice)}</td><td style="text-align:right">₹${money(i.sellingPrice*i.qty)}</td></tr>`).join('')}</tbody></table><hr><h3 style="text-align:right">TOTAL: ₹${money(total)}</h3><div style="text-align:center;margin:10px auto"><p style="font-weight:bold">Scan to Pay ₹${money(total)}</p><div id="printQr" style="display:flex;justify-content:center;margin:6px auto"></div><p style="font-size:9px">UPI: ${esc(upiId)}</p></div><p style="text-align:center">Thank you for shopping!</p></div>`;new QRCode($('printQr'),{text:'upi://pay?'+upiParams.toString(),width:mode==='58mm'?100:140,height:mode==='58mm'?100:140});$('printArea').style.display='block';salesHistory.unshift({id:billNo,date:new Date().toISOString(),total,profit});items.forEach(i=>{const p=products.find(p=>String(p.id)===String(i.productId));if(p)p.stock=Math.max(0,Number(p.stock)-Number(i.qty));});saveData();refreshAll();window.print();$('printArea').style.display='none';posCart=[];renderPosCart();showToast('Bill saved with amount-specific UPI QR');}
+    function openCreateOrderModal(){$('createOrderModal').classList.remove('hidden');}function closeCreateOrderModal(){$('createOrderModal').classList.add('hidden');}
+    function handleNewOrderSubmit(e){e.preventDefault();orders.unshift({id:'HT-ORD-'+Date.now(),customerName:$('ordCustName').value.trim(),phone:$('ordCustPhone').value.trim(),items:$('ordItems').value.trim(),amount:Number($('ordAmount').value)||0,status:'Placed'});saveData();closeCreateOrderModal();e.target.reset();renderOrders();updateDashboard();showToast('Order Created');}
+    function updateOrderStatus(id,status){const o=orders.find(item=>String(item.id)===String(id));if(o){o.status=status;saveData();renderOrders();updateDashboard();showToast('Status Updated');}}
+    function filterOrders(status){activeOrderFilter=status;['All','Placed','Packing','Out for Delivery','Delivered'].forEach(s=>{const btn=$(`btnFilter${s==='Out for Delivery'?'Out':s}`);if(btn)btn.className=s===status?'bg-emerald-800 text-white px-3 py-1.5 rounded-xl shrink-0':'bg-white border text-slate-700 px-3 py-1.5 rounded-xl shrink-0';});renderOrders();}
+    function renderOrders(){const list=$('fullOrdersList');if(!list)return;const f=activeOrderFilter==='All'?orders:orders.filter(o=>o.status===activeOrderFilter);list.innerHTML=f.map(o=>`<div class="bg-white p-3 rounded-2xl border text-xs space-y-1.5"><div class="flex justify-between font-black"><span>${esc(o.id)} - ${esc(o.customerName)}</span><span class="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">${esc(o.status)}</span></div><p class="text-slate-600 font-bold">${esc(o.items)}</p><div class="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t"><span class="font-black text-emerald-900">Amount: ₹${money(o.amount)}</span><span>${esc(o.phone||'')}</span></div><div class="flex gap-1 pt-1 overflow-x-auto"><button type="button" onclick="updateOrderStatus('${esc(o.id)}','Packing')" class="bg-slate-100 px-2 py-1 rounded text-[9px] font-bold">📦 Packing</button><button type="button" onclick="updateOrderStatus('${esc(o.id)}','Out for Delivery')" class="bg-slate-100 px-2 py-1 rounded text-[9px] font-bold">🚀 Out</button><button type="button" onclick="updateOrderStatus('${esc(o.id)}','Delivered')" class="bg-emerald-50 text-emerald-800 px-2 py-1 rounded text-[9px] font-bold">✅ Deliver</button></div></div>`).join('')||'<p class="text-center text-slate-400 py-4">No orders found.</p>';}
+    function renderLowStock(){const low=products.filter(p=>Number(p.stock)<=Number(p.threshold||10));$('lowStockList').innerHTML=low.length?low.map(p=>`<div class="flex justify-between items-center bg-white p-2 rounded-xl text-xs"><span>${esc(p.name)} - Stock: ${money(p.stock)}</span><button type="button" onclick="changeStock('${esc(p.id)}',1)" class="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold">+ Add</button></div>`).join(''):'<p class="text-emerald-800 text-xs font-bold">✅ Stock Level Healthy</p>';}
+    function sendVendorStockOrder(){const low=products.filter(p=>Number(p.stock)<=Number(p.threshold||10));if(!low.length)return showToast('Low stock items nahi hain');window.open('https://wa.me/?text='+encodeURIComponent('HUMA TRADERS REORDER:\n'+low.map(p=>`- ${p.name}: Current Stock ${p.stock}`).join('\n')),'_blank');}
+    function toggleUpiQrModal(){const modal=$('upiQrModal');if(modal.classList.contains('hidden')){if(typeof QRCode==='undefined')return showToast('QR library load nahi hui');$('qrcodeCanvas').innerHTML='';$('qrBillAmount').innerText=money(getCartTotal());const params=new URLSearchParams({pa:upiId,pn:'HumaTraders',am:getCartTotal().toFixed(2),cu:'INR'});new QRCode($('qrcodeCanvas'),{text:'upi://pay?'+params.toString(),width:140,height:140});modal.classList.remove('hidden');}else modal.classList.add('hidden');}
+    function openSettingsModal(){$('upiIdInput').value=upiId;$('settingsModal').classList.remove('hidden');}function closeSettingsModal(){$('settingsModal').classList.add('hidden');}function saveUpiSettings(){const val=$('upiIdInput').value.trim();if(val&&!val.includes('@'))return showToast('Valid UPI ID enter karein');upiId=val||'merchant@ybl';saveData();closeSettingsModal();showToast('UPI Saved');}
+    function showBarcodeModal(name,mrp,code){if(typeof JsBarcode==='undefined')return showToast('Barcode library load nahi hui');$('bcProdName').innerText=name;$('bcProdMrp').innerText=Number(mrp).toFixed(2);$('bcProdCode').innerText=code;try{JsBarcode('#barcodeCanvas',code,{format:'CODE128',width:1.5,height:40,displayValue:false});$('barcodePrintModal').classList.remove('hidden');}catch(e){showToast('Invalid barcode code');}}
+    function closeBarcodeModal(){$('barcodePrintModal').classList.add('hidden');}
+    function openBulkImportModal(){if(!confirm('Demo sugar product import karein?'))return;products.unshift({id:'HT-P'+Date.now(),name:'Madhur Sugar 1 kg',code:'8901234567891',mrp:55,sellingPrice:48,costPrice:42,stock:100,threshold:20,unit:'1 kg',category:'Atta & Flour'});saveData();refreshAll();showToast('Demo Item Imported');}
+    window.addEventListener('DOMContentLoaded',()=>{refreshAll();switchTab('dashboard');});
+    if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')) {
+      window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.error('Service worker registration failed:',err)));
+    }
+  </script>
+</body>
+</html>
